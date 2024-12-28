@@ -38,16 +38,16 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black">
+    <div className="fixed inset-0 z-[9999] bg-black flex flex-col">
       <Button
         variant="ghost"
-        className="absolute top-4 right-4 text-white z-10"
+        className="absolute top-4 right-4 text-white z-[10000]"
         onClick={onClose}
       >
         <X className="h-6 w-6" />
       </Button>
       
-      <div className="relative h-full" onClick={startCountdown}>
+      <div className="relative flex-1 w-full h-full" onClick={startCountdown}>
         {!capturedPhoto ? (
           <CameraView
             videoRef={videoRef}
