@@ -23,7 +23,7 @@ export const PhotoUploadSection = ({
     <Card className={`${isMobile ? 'shadow-none rounded-none border-0 border-b' : 'shadow-sm'} bg-white`}>
       <div className="p-4 space-y-4">
         <div className="flex flex-col gap-3">
-          <div className="flex gap-2">
+          <div className={`flex ${isMobile ? 'flex-col' : ''} gap-2`}>
             <Input
               type="file"
               accept="image/*"
@@ -35,14 +35,16 @@ export const PhotoUploadSection = ({
             <Button
               onClick={() => document.getElementById("photo-upload")?.click()}
               variant="secondary"
-              className="flex-1 bg-gradient-to-r from-violet-500/90 to-purple-500/90 hover:from-violet-600 hover:to-purple-600 text-white border-none shadow-md hover:shadow-lg transition-all duration-300"
+              size={isMobile ? "sm" : "default"}
+              className={`${isMobile ? 'w-full' : 'flex-1'} bg-gradient-to-r from-violet-500/90 to-purple-500/90 hover:from-violet-600 hover:to-purple-600 text-white border-none shadow-md hover:shadow-lg transition-all duration-300`}
             >
               <Upload className="mr-2 h-4 w-4" /> Upload Photos
             </Button>
             <Button
               variant={isPhotoBooth ? "destructive" : "secondary"}
+              size={isMobile ? "sm" : "default"}
               onClick={() => setIsPhotoBooth(!isPhotoBooth)}
-              className={`flex-1 ${isPhotoBooth ? 
+              className={`${isMobile ? 'w-full' : 'flex-1'} ${isPhotoBooth ? 
                 "bg-red-500 hover:bg-red-600 text-white border-none shadow-md" : 
                 "bg-gradient-to-r from-pink-500/90 to-rose-500/90 hover:from-pink-600 hover:to-rose-600 text-white border-none shadow-md hover:shadow-lg"} transition-all duration-300`}
             >

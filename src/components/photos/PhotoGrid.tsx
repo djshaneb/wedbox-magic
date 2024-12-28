@@ -19,6 +19,7 @@ export const PhotoGrid = ({
 }: PhotoGridProps) => {
   const breakpointColumns = {
     default: 3,
+    1100: 3,
     768: 2,
     500: 2
   };
