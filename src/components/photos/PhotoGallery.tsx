@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { ImageIcon } from "lucide-react";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
 import { useIsMobile } from "@/hooks/use-mobile";
-import Masonry from 'react-masonry-css';
 import { usePhotos } from "@/hooks/use-photos";
-import { PhotoCard } from "./PhotoCard";
 import { PhotoUploadSection } from "./PhotoUploadSection";
 import { ShareGalleryButton } from "./ShareGalleryButton";
+import { EmptyGallery } from "./EmptyGallery";
+import { PhotoGrid } from "./PhotoGrid";
+import { PhotoLightbox } from "./PhotoLightbox";
 
 interface PhotoGalleryProps {
   sharedGalleryOwnerId?: string;
@@ -56,17 +54,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     });
   };
 
-  const openLightbox = (index: number) => {
-    setCurrentPhotoIndex(index);
-    setLightboxOpen(true);
-  };
-
-  const breakpointColumns = {
-    default: 3,
-    768: 2,
-    500: 2
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -89,36 +76,25 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       </div>
 
       {photos.length === 0 ? (
-        <div className="col-span-full p-12 text-center bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-100">
-          <ImageIcon className="mx-auto h-16 w-16 text-violet-300" />
-          <p className="mt-4 text-base text-gray-600">
-            No photos yet. Start by taking or uploading photos!
-          </p>
-        </div>
+        <EmptyGallery />
       ) : (
-        <Masonry
-          breakpointCols={breakpointColumns}
-          className="flex w-full -ml-1 -mr-1"
-          columnClassName="pl-1 pr-1"
-        >
-          {photos.map((photo, index) => (
-            <PhotoCard
-              key={photo.id}
-              photo={photo}
-              onClick={() => openLightbox(index)}
-              onDelete={(e) => handleDeletePhoto(e, photo)}
-              isMobile={isMobile}
-              hideDelete={isSharedView}
-            />
-          ))}
-        </Masonry>
+        <PhotoGrid
+          photos={photos}
+          onPhotoClick={(index) => {
+            setCurrentPhotoIndex(index);
+            setLightboxOpen(true);
+          }}
+          onPhotoDelete={handleDeletePhoto}
+          isMobile={isMobile}
+          isSharedView={isSharedView}
+        />
       )}
 
-      <Lightbox
-        open={lightboxOpen}
-        close={() => setLightboxOpen(false)}
-        index={currentPhotoIndex}
-        slides={photos.map(photo => ({ src: photo.url }))}
+      <PhotoLightbox
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        currentIndex={currentPhotoIndex}
+        photos={photos}
       />
     </div>
   );
