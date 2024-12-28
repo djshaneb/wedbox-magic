@@ -15,12 +15,12 @@ export const CameraView: React.FC<CameraViewProps> = ({
   countdown,
 }) => {
   return (
-    <div className="w-full h-full">
+    <div className="relative w-full h-full">
       <video
         ref={videoRef}
         autoPlay
         playsInline
-        className="w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover"
       />
       
       {!isCameraReady && (
@@ -30,15 +30,15 @@ export const CameraView: React.FC<CameraViewProps> = ({
       )}
 
       {isCountingDown && (
-        <div className="absolute top-8 left-8">
-          <span className="text-[100px] font-bold text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)] animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-[120px] font-bold text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)] animate-pulse">
             {countdown}
           </span>
         </div>
       )}
 
       {isCameraReady && !isCountingDown && (
-        <div className="absolute inset-0 flex items-center justify-center" style={{ marginTop: '-30vh' }}>
+        <div className="absolute inset-0 flex items-center justify-center">
           <Hand 
             className="text-white/80 animate-bounce transform rotate-45" 
             size={80} 
