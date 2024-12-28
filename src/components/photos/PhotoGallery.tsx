@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,56 +9,144 @@ import "yet-another-react-lightbox/styles.css";
 import { PhotoBooth } from "./PhotoBooth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Masonry from 'react-masonry-css';
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Photo {
-  id: number;
+  id: string;
   url: string;
+  storage_path: string;
 }
 
 export const PhotoGallery = () => {
-  const [photos, setPhotos] = useState<Photo[]>([]);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
+
+  // Fetch photos from Supabase
+  const { data: photos = [], isLoading } = useQuery({
+    queryKey: ['photos'],
+    queryFn: async () => {
+      const { data: photos, error } = await supabase
+        .from('photos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const photosWithUrls = await Promise.all(photos.map(async (photo) => {
+        const { data: { publicUrl } } = supabase.storage
+          .from('photos')
+          .getPublicUrl(photo.storage_path);
+        
+        return {
+          id: photo.id,
+          storage_path: photo.storage_path,
+          url: publicUrl
+        };
+      }));
+
+      return photosWithUrls;
+    }
+  });
+
+  // Upload photo mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('photos')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { error: dbError } = await supabase
+        .from('photos')
+        .insert({ storage_path: fileName });
+
+      if (dbError) throw dbError;
+
+      return fileName;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['photos'] });
+      toast({
+        title: "Photo uploaded",
+        description: "Your photo has been added to the gallery",
+      });
+    },
+    onError: (error) => {
+      console.error('Upload error:', error);
+      toast({
+        title: "Upload failed",
+        description: "There was an error uploading your photo",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete photo mutation
+  const deleteMutation = useMutation({
+    mutationFn: async ({ id, storage_path }: { id: string, storage_path: string }) => {
+      const { error: storageError } = await supabase.storage
+        .from('photos')
+        .remove([storage_path]);
+
+      if (storageError) throw storageError;
+
+      const { error: dbError } = await supabase
+        .from('photos')
+        .delete()
+        .eq('id', id);
+
+      if (dbError) throw dbError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['photos'] });
+      toast({
+        title: "Photo deleted",
+        description: "The photo has been removed from the gallery",
+      });
+    },
+    onError: (error) => {
+      console.error('Delete error:', error);
+      toast({
+        title: "Delete failed",
+        description: "There was an error deleting your photo",
+        variant: "destructive",
+      });
+    }
+  });
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) return;
 
     const fileArray = Array.from(files);
-    const uploadPromises = fileArray.map((file) => {
-      return new Promise<Photo>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve({
-            id: Date.now() + Math.random(),
-            url: reader.result as string,
-          });
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-
-    const newPhotos = await Promise.all(uploadPromises);
-    setPhotos((prevPhotos) => [...newPhotos, ...prevPhotos]);
-
-    toast({
-      title: `${newPhotos.length} ${newPhotos.length === 1 ? 'photo' : 'photos'} uploaded`,
-      description: "Your photos have been added to the gallery",
-    });
+    for (const file of fileArray) {
+      await uploadMutation.mutateAsync(file);
+    }
   };
 
-  const handlePhotoTaken = (photoUrl: string) => {
-    const newPhoto = {
-      id: Date.now() + Math.random(),
-      url: photoUrl,
-    };
-    setPhotos((prevPhotos) => [newPhoto, ...prevPhotos]);
-    toast({
-      title: "Photo captured",
-      description: "Your photo has been added to the gallery",
+  const handlePhotoTaken = async (photoUrl: string) => {
+    // Convert base64 to blob
+    const response = await fetch(photoUrl);
+    const blob = await response.blob();
+    const file = new File([blob], `photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    
+    await uploadMutation.mutateAsync(file);
+  };
+
+  const handleDeletePhoto = async (event: React.MouseEvent, photo: Photo) => {
+    event.stopPropagation();
+    await deleteMutation.mutateAsync({ 
+      id: photo.id, 
+      storage_path: photo.storage_path 
     });
   };
 
@@ -67,20 +155,19 @@ export const PhotoGallery = () => {
     setLightboxOpen(true);
   };
 
-  const handleDeletePhoto = (event: React.MouseEvent, photoId: number) => {
-    event.stopPropagation();
-    setPhotos(prevPhotos => prevPhotos.filter(photo => photo.id !== photoId));
-    toast({
-      title: "Photo deleted",
-      description: "The photo has been removed from the gallery",
-    });
-  };
-
   const breakpointColumns = {
     default: 3,
     768: 2,
     500: 2
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -149,14 +236,14 @@ export const PhotoGallery = () => {
               <div className="relative">
                 <img
                   src={photo.url}
-                  alt="Uploaded photo"
+                  alt="Gallery photo"
                   className="w-full h-full object-cover group-hover:brightness-105 transition-all duration-300"
                 />
                 <Button
                   variant="destructive"
                   size="icon"
                   className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-500 hover:bg-red-600 text-white shadow-lg"
-                  onClick={(e) => handleDeletePhoto(e, photo.id)}
+                  onClick={(e) => handleDeletePhoto(e, photo)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
