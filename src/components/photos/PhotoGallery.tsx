@@ -7,13 +7,22 @@ import Masonry from 'react-masonry-css';
 import { usePhotos } from "@/hooks/use-photos";
 import { PhotoCard } from "./PhotoCard";
 import { PhotoUploadSection } from "./PhotoUploadSection";
+import { ShareGalleryButton } from "./ShareGalleryButton";
 
-export const PhotoGallery = () => {
+interface PhotoGalleryProps {
+  sharedGalleryOwnerId?: string;
+  isSharedView?: boolean;
+}
+
+export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ 
+  sharedGalleryOwnerId,
+  isSharedView = false 
+}) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
   const isMobile = useIsMobile();
-  const { photos, isLoading, uploadMutation, deleteMutation } = usePhotos();
+  const { photos, isLoading, uploadMutation, deleteMutation } = usePhotos(sharedGalleryOwnerId);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -21,7 +30,10 @@ export const PhotoGallery = () => {
 
     const fileArray = Array.from(files);
     for (const file of fileArray) {
-      await uploadMutation.mutateAsync(file);
+      await uploadMutation.mutateAsync({
+        file,
+        ownerId: sharedGalleryOwnerId
+      });
     }
   };
 
@@ -30,7 +42,10 @@ export const PhotoGallery = () => {
     const blob = await response.blob();
     const file = new File([blob], `photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
     
-    await uploadMutation.mutateAsync(file);
+    await uploadMutation.mutateAsync({
+      file,
+      ownerId: sharedGalleryOwnerId
+    });
   };
 
   const handleDeletePhoto = async (event: React.MouseEvent, photo: { id: string, storage_path: string }) => {
@@ -62,13 +77,16 @@ export const PhotoGallery = () => {
 
   return (
     <div className="space-y-4">
-      <PhotoUploadSection
-        onFileUpload={handleFileUpload}
-        onPhotoTaken={handlePhotoTaken}
-        isPhotoBooth={isPhotoBooth}
-        setIsPhotoBooth={setIsPhotoBooth}
-        isMobile={isMobile}
-      />
+      <div className="flex justify-between items-center">
+        <PhotoUploadSection
+          onFileUpload={handleFileUpload}
+          onPhotoTaken={handlePhotoTaken}
+          isPhotoBooth={isPhotoBooth}
+          setIsPhotoBooth={setIsPhotoBooth}
+          isMobile={isMobile}
+        />
+        {!isSharedView && <ShareGalleryButton />}
+      </div>
 
       {photos.length === 0 ? (
         <div className="col-span-full p-12 text-center bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-100">
@@ -90,6 +108,7 @@ export const PhotoGallery = () => {
               onClick={() => openLightbox(index)}
               onDelete={(e) => handleDeletePhoto(e, photo)}
               isMobile={isMobile}
+              hideDelete={isSharedView}
             />
           ))}
         </Masonry>

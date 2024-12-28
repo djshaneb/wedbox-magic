@@ -8,9 +8,16 @@ interface PhotoCardProps {
   onClick: () => void;
   onDelete: (event: React.MouseEvent) => void;
   isMobile: boolean;
+  hideDelete?: boolean;
 }
 
-export const PhotoCard = ({ photo, onClick, onDelete, isMobile }: PhotoCardProps) => {
+export const PhotoCard = ({ 
+  photo, 
+  onClick, 
+  onDelete, 
+  isMobile,
+  hideDelete = false 
+}: PhotoCardProps) => {
   return (
     <Card 
       className={`mb-2 overflow-hidden ${
@@ -24,14 +31,16 @@ export const PhotoCard = ({ photo, onClick, onDelete, isMobile }: PhotoCardProps
           alt="Gallery photo"
           className="w-full h-full object-cover group-hover:brightness-105 transition-all duration-300"
         />
-        <Button
-          variant="destructive"
-          size="icon"
-          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-500 hover:bg-red-600 text-white shadow-lg"
-          onClick={onDelete}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        {!hideDelete && (
+          <Button
+            variant="destructive"
+            size="icon"
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-500 hover:bg-red-600 text-white shadow-lg"
+            onClick={onDelete}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </Card>
   );

@@ -8,17 +8,23 @@ export interface Photo {
   storage_path: string;
 }
 
-export const usePhotos = () => {
+export const usePhotos = (sharedGalleryOwnerId?: string) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: photos = [], isLoading } = useQuery({
-    queryKey: ['photos'],
+    queryKey: ['photos', sharedGalleryOwnerId],
     queryFn: async () => {
-      const { data: photos, error } = await supabase
+      const query = supabase
         .from('photos')
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (sharedGalleryOwnerId) {
+        query.eq('user_id', sharedGalleryOwnerId);
+      }
+
+      const { data: photos, error } = await query;
 
       if (error) throw error;
 
@@ -39,12 +45,18 @@ export const usePhotos = () => {
   });
 
   const uploadMutation = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async ({ 
+      file, 
+      ownerId 
+    }: { 
+      file: File; 
+      ownerId?: string;
+    }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) throw new Error("User not authenticated");
+      if (!user && !ownerId) throw new Error("User not authenticated");
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
@@ -59,7 +71,7 @@ export const usePhotos = () => {
         .from('photos')
         .insert({ 
           storage_path: fileName,
-          user_id: user.id
+          user_id: ownerId || user!.id
         });
 
       if (dbError) throw dbError;

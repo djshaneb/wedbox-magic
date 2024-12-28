@@ -54,6 +54,27 @@ export type Database = {
         }
         Relationships: []
       }
+      shared_galleries: {
+        Row: {
+          access_code: string
+          created_at: string
+          id: string
+          owner_id: string
+        }
+        Insert: {
+          access_code: string
+          created_at?: string
+          id?: string
+          owner_id: string
+        }
+        Update: {
+          access_code?: string
+          created_at?: string
+          id?: string
+          owner_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
