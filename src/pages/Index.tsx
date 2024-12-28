@@ -7,14 +7,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="fixed top-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-sm border-b">
+      <div className="fixed top-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-sm border-b border-wedding-pink/20">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex flex-col items-start">
             <h1 className="font-semibold text-xl flex items-center gap-2">
-              <Camera className="h-5 w-5 text-purple-500" />
-              <span>Wedding Win</span>
+              <Camera className="h-5 w-5 text-wedding-pink" />
+              <span className="text-wedding-pink">Wedding Win</span>
             </h1>
-            <span className="text-sm font-medium text-purple-600">PHOTO SHARE</span>
+            <span className="text-sm font-medium text-wedding-pink/80">PHOTO SHARE</span>
           </div>
         </div>
       </div>

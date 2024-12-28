@@ -34,7 +34,7 @@ export const PhotoGallery = () => {
         const reader = new FileReader();
         reader.onloadend = () => {
           resolve({
-            id: Date.now() + Math.random(), // Ensure unique IDs
+            id: Date.now() + Math.random(),
             url: reader.result as string,
             caption: caption,
           });
@@ -91,12 +91,12 @@ export const PhotoGallery = () => {
                 onChange={handleFileUpload}
                 className="hidden"
                 id="photo-upload"
-                multiple // Enable multiple file selection
+                multiple
               />
               <Button
                 onClick={() => document.getElementById("photo-upload")?.click()}
                 variant="secondary"
-                className="flex-1 bg-purple-50 hover:bg-purple-100 text-purple-700"
+                className="flex-1 bg-wedding-pink/10 hover:bg-wedding-pink/20 text-wedding-pink"
               >
                 <Upload className="mr-2 h-4 w-4" /> Upload Photos
               </Button>
@@ -105,7 +105,7 @@ export const PhotoGallery = () => {
                 onClick={() => setIsPhotoBooth(!isPhotoBooth)}
                 className={`flex-1 ${isPhotoBooth ? 
                   "bg-red-50 hover:bg-red-100 text-red-700" : 
-                  "bg-blue-50 hover:bg-blue-100 text-blue-700"}`}
+                  "bg-wedding-pink/10 hover:bg-wedding-pink/20 text-wedding-pink"}`}
               >
                 <Camera className="mr-2 h-4 w-4" />
                 {isPhotoBooth ? "Stop Camera" : "Take Photo"}
@@ -127,7 +127,7 @@ export const PhotoGallery = () => {
         {photos.map((photo, index) => (
           <Card 
             key={photo.id} 
-            className={`overflow-hidden ${isMobile ? 'shadow-none border' : 'shadow-sm'} cursor-pointer transform transition-transform hover:scale-[1.02]`}
+            className={`overflow-hidden ${isMobile ? 'shadow-none border-wedding-pink/20' : 'shadow-sm'} cursor-pointer transform transition-transform hover:scale-[1.02]`}
             onClick={() => openLightbox(index)}
           >
             <div className="relative aspect-square">
@@ -139,15 +139,15 @@ export const PhotoGallery = () => {
             </div>
             {photo.caption && (
               <div className="p-2">
-                <p className="text-xs text-muted-foreground truncate">{photo.caption}</p>
+                <p className="text-xs text-wedding-pink/80 truncate">{photo.caption}</p>
               </div>
             )}
           </Card>
         ))}
         {photos.length === 0 && (
           <div className="col-span-full p-8 text-center">
-            <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
-            <p className="mt-2 text-sm text-muted-foreground">
+            <ImageIcon className="mx-auto h-12 w-12 text-wedding-pink opacity-50" />
+            <p className="mt-2 text-sm text-wedding-pink/80">
               No photos yet. Start by taking or uploading photos!
             </p>
           </div>

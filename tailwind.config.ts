@@ -19,6 +19,7 @@ export default {
 		},
 		extend: {
 			colors: {
+				'wedding-pink': '#e69fa3',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
