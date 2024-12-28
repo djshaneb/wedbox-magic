@@ -19,12 +19,12 @@ export function Toaster() {
             key={id} 
             {...props}
             duration={1500}
-            className="backdrop-blur-sm border-wedding-pink/20 shadow-lg bg-transparent"
+            className="backdrop-blur-sm border-wedding-pink/20 shadow-lg bg-black/40"
           >
             <div className="grid gap-1">
-              {title && <ToastTitle className="text-2xl font-extralight tracking-wider text-wedding-pink drop-shadow-md">{title}</ToastTitle>}
+              {title && <ToastTitle className="text-2xl font-extralight tracking-wider text-wedding-pink drop-shadow-md relative z-10">{title}</ToastTitle>}
               {description && (
-                <ToastDescription className="text-base font-medium text-white/90 drop-shadow-lg tracking-wide">{description}</ToastDescription>
+                <ToastDescription className="text-base font-medium text-white/90 drop-shadow-lg tracking-wide relative z-10">{description}</ToastDescription>
               )}
             </div>
             {action}
