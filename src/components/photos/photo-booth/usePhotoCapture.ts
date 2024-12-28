@@ -4,7 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 export const usePhotoCapture = (
   videoRef: RefObject<HTMLVideoElement>,
   isCameraReady: boolean,
-  onPhotoTaken: (photoUrl: string) => void
+  onPhotoTaken: (photoUrl: string) => void,
+  startCamera: () => void
 ) => {
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [countdown, setCountdown] = useState(5);
@@ -83,12 +84,15 @@ export const usePhotoCapture = (
     }
   };
 
-  const handleDiscardPhoto = () => {
+  const handleDiscardPhoto = async () => {
     setCapturedPhoto(null);
     setReviewCountdown(9);
-    // Reset countdown to ensure it's ready for the next photo
     setCountdown(5);
     setIsCountingDown(false);
+    
+    // Restart the camera stream
+    await startCamera();
+    
     toast({
       title: "Photo Discarded",
       description: "Let's try again!",

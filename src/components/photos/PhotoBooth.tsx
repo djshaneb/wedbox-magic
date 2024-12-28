@@ -25,7 +25,7 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
     startCountdown,
     handleSavePhoto,
     handleDiscardPhoto
-  } = usePhotoCapture(videoRef, isCameraReady, onPhotoTaken);
+  } = usePhotoCapture(videoRef, isCameraReady, onPhotoTaken, startCamera);
 
   React.useEffect(() => {
     startCamera();
