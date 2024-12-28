@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Image as ImageIcon, Camera } from "lucide-react";
+import { Upload, Image as ImageIcon, Camera, RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -19,8 +19,18 @@ export const PhotoGallery = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
+  const [isCameraReady, setIsCameraReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Cleanup function to stop camera when component unmounts
+    return () => {
+      if (isPhotoBooth) {
+        stopCamera();
+      }
+    };
+  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -45,9 +55,19 @@ export const PhotoGallery = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: "user",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      });
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          setIsCameraReady(true);
+        };
       }
       setIsPhotoBooth(true);
       toast({
@@ -70,6 +90,7 @@ export const PhotoGallery = () => {
       videoRef.current.srcObject = null;
     }
     setIsPhotoBooth(false);
+    setIsCameraReady(false);
   };
 
   const takePhoto = () => {
@@ -121,12 +142,17 @@ export const PhotoGallery = () => {
             />
             <Button
               onClick={() => document.getElementById("photo-upload")?.click()}
+              variant="secondary"
+              className="bg-purple-100 hover:bg-purple-200 text-purple-700"
             >
               <Upload className="mr-2 h-4 w-4" /> Upload Photo
             </Button>
             <Button
               variant={isPhotoBooth ? "destructive" : "secondary"}
               onClick={isPhotoBooth ? stopCamera : startCamera}
+              className={isPhotoBooth ? 
+                "bg-red-100 hover:bg-red-200 text-red-700" : 
+                "bg-blue-100 hover:bg-blue-200 text-blue-700"}
             >
               <Camera className="mr-2 h-4 w-4" />
               {isPhotoBooth ? "Stop Camera" : "Photo Booth"}
@@ -134,20 +160,29 @@ export const PhotoGallery = () => {
           </div>
 
           {isPhotoBooth && (
-            <div className="relative">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className="w-full max-w-xl mx-auto rounded-lg"
-              />
-              <Button
-                onClick={takePhoto}
-                className="mt-4"
-                variant="secondary"
-              >
-                Take Photo
-              </Button>
+            <div className="relative bg-gradient-to-b from-purple-50 to-blue-50 p-6 rounded-xl shadow-lg">
+              <div className="relative aspect-video max-w-2xl mx-auto overflow-hidden rounded-lg border-4 border-white shadow-xl">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+                {!isCameraReady && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm">
+                    <RefreshCw className="w-8 h-8 text-white animate-spin" />
+                  </div>
+                )}
+              </div>
+              <div className="mt-6 flex justify-center">
+                <Button
+                  onClick={takePhoto}
+                  className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold px-8 py-2 rounded-full shadow-lg transform transition-all hover:scale-105"
+                  disabled={!isCameraReady}
+                >
+                  Take Photo
+                </Button>
+              </div>
             </div>
           )}
         </div>
