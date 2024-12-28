@@ -70,7 +70,7 @@ export const PhotoGallery = () => {
   const breakpointColumns = {
     default: 3,
     768: 2,
-    500: 3
+    500: 2
   };
 
   return (
@@ -126,8 +126,8 @@ export const PhotoGallery = () => {
       ) : (
         <Masonry
           breakpointCols={breakpointColumns}
-          className="flex w-full gap-2"
-          columnClassName="masonry-grid_column"
+          className="flex w-full -ml-1 -mr-1"
+          columnClassName="pl-1 pr-1"
         >
           {photos.map((photo, index) => (
             <Card 
@@ -137,7 +137,7 @@ export const PhotoGallery = () => {
               } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
               onClick={() => openLightbox(index)}
             >
-              <div className={`relative ${isMobile ? 'h-[250px]' : 'h-auto'}`}>
+              <div className={`relative ${isMobile ? 'h-[300px]' : 'h-auto'}`}>
                 <img
                   src={photo.url}
                   alt="Uploaded photo"

@@ -100,10 +100,6 @@
   }
 }
 
-.masonry-grid_column {
-  @apply pl-4 bg-clip-padding; /* gutter size */
-}
-
 .masonry-grid_column > div {
-  @apply mb-4;
+  @apply mb-2;
 }
