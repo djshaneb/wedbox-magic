@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Camera, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface PhotoBoothProps {
@@ -14,6 +14,8 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
+  const [isCountingDown, setIsCountingDown] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -23,6 +25,20 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isCountingDown && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(prev => prev - 1);
+      }, 1000);
+    } else if (isCountingDown && countdown === 0) {
+      takePhoto();
+      setIsCountingDown(false);
+      setCountdown(5);
+    }
+    return () => clearTimeout(timer);
+  }, [isCountingDown, countdown]);
+
   const startCamera = async () => {
     try {
       setIsCameraReady(false);
@@ -30,8 +46,8 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "user",
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
         },
         audio: false
       });
@@ -42,7 +58,6 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
 
       videoRef.current.srcObject = stream;
       
-      // Wait for the video to be loaded
       await new Promise((resolve, reject) => {
         if (!videoRef.current) {
           reject(new Error("Video element not initialized"));
@@ -64,8 +79,8 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
       });
 
       toast({
-        title: "Camera started",
-        description: "Photo booth mode is now active",
+        title: "Photo Booth Ready!",
+        description: "Strike a pose and get ready for your photo!",
       });
     } catch (error) {
       console.error("Camera error:", error);
@@ -87,6 +102,14 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
     setIsCameraReady(false);
   };
 
+  const startCountdown = () => {
+    setIsCountingDown(true);
+    toast({
+      title: "Get Ready!",
+      description: "Photo will be taken in 5 seconds...",
+    });
+  };
+
   const takePhoto = () => {
     if (!videoRef.current || !isCameraReady) {
       toast({
@@ -105,32 +128,55 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0);
       onPhotoTaken(canvas.toDataURL('image/jpeg'));
+      toast({
+        title: "Photo Captured!",
+        description: "Looking good! 📸",
+      });
     }
   };
 
   return (
-    <div className="relative bg-gradient-to-b from-purple-50 to-blue-50 p-6 rounded-xl shadow-lg">
-      <div className="relative aspect-video max-w-2xl mx-auto overflow-hidden rounded-lg border-4 border-white shadow-xl">
+    <div className="fixed inset-0 z-50 bg-black">
+      <Button
+        variant="ghost"
+        className="absolute top-4 right-4 text-white z-10"
+        onClick={onClose}
+      >
+        <X className="h-6 w-6" />
+      </Button>
+      
+      <div className="relative h-full">
         <video
           ref={videoRef}
           autoPlay
           playsInline
           className="w-full h-full object-cover"
         />
+        
         {!isCameraReady && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm">
             <RefreshCw className="w-8 h-8 text-white animate-spin" />
           </div>
         )}
-      </div>
-      <div className="mt-6 flex justify-center">
-        <Button
-          onClick={takePhoto}
-          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold px-8 py-2 rounded-full shadow-lg transform transition-all hover:scale-105"
-          disabled={!isCameraReady}
-        >
-          Take Photo
-        </Button>
+
+        {isCountingDown && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-[200px] font-bold text-white animate-pulse">
+              {countdown}
+            </span>
+          </div>
+        )}
+
+        <div className="absolute bottom-8 left-0 right-0 flex justify-center">
+          <Button
+            onClick={startCountdown}
+            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold px-8 py-6 rounded-full shadow-lg transform transition-all hover:scale-105 text-lg"
+            disabled={!isCameraReady || isCountingDown}
+          >
+            <Camera className="mr-2 h-6 w-6" />
+            Photo Booth Mode
+          </Button>
+        </div>
       </div>
     </div>
   );
