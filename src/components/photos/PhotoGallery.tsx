@@ -111,7 +111,7 @@ export const PhotoGallery = () => {
                   "bg-gradient-to-r from-pink-100/50 to-purple-100/50 hover:from-pink-100/70 hover:to-purple-100/70 text-gray-700 border border-pink-200/30"}`}
               >
                 <Camera className="mr-2 h-4 w-4" />
-                {isPhotoBooth ? "Stop Camera" : "Take Photo"}
+                {isPhotoBooth ? "Stop Camera" : "Photo Booth Mode"}
               </Button>
             </div>
 
