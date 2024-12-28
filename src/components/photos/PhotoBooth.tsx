@@ -38,7 +38,7 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-black" style={{ height: '100dvh' }}>
+    <div className="fixed inset-0 z-[99999] bg-black flex flex-col">
       <Button
         variant="ghost"
         className="absolute top-4 right-4 text-white z-[100000] hover:bg-white/10"
@@ -47,7 +47,7 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
         <X className="h-6 w-6" />
       </Button>
       
-      <div className="absolute inset-0 flex items-center justify-center" onClick={startCountdown}>
+      <div className="flex-1 relative" onClick={startCountdown}>
         {!capturedPhoto ? (
           <CameraView
             videoRef={videoRef}
