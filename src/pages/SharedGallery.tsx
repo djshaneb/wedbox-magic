@@ -11,15 +11,15 @@ const SharedGallery = () => {
   React.useEffect(() => {
     const fetchOwnerId = async () => {
       const { data, error } = await supabase
-        .from("galleries")
+        .from("shared_galleries")
         .select("owner_id")
         .eq("access_code", accessCode)
         .single();
 
       if (error) {
         console.error("Error fetching owner ID:", error);
-      } else {
-        setOwnerId(data?.owner_id);
+      } else if (data) {
+        setOwnerId(data.owner_id);
       }
     };
 
