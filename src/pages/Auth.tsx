@@ -9,12 +9,23 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already logged in
-    supabase.auth.onAuthStateChange((event, session) => {
+    // Check current auth session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate("/");
       }
     });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   return (
@@ -49,6 +60,7 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
+            redirectTo={window.location.origin}
           />
         </div>
       </div>
