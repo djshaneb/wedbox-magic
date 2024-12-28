@@ -137,7 +137,7 @@ export const PhotoGallery = () => {
               } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
               onClick={() => openLightbox(index)}
             >
-              <div className={`relative ${isMobile ? 'h-[300px]' : 'h-auto'}`}>
+              <div className="relative">
                 <img
                   src={photo.url}
                   alt="Uploaded photo"
