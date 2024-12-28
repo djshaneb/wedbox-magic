@@ -22,9 +22,9 @@ export function Toaster() {
             className="backdrop-blur-sm border-wedding-pink/20 shadow-lg bg-transparent"
           >
             <div className="grid gap-1">
-              {title && <ToastTitle className="text-lg font-light tracking-wide text-wedding-pink drop-shadow-md">{title}</ToastTitle>}
+              {title && <ToastTitle className="text-2xl font-extralight tracking-wider text-wedding-pink drop-shadow-md">{title}</ToastTitle>}
               {description && (
-                <ToastDescription className="text-sm font-medium text-white/90 drop-shadow-lg">{description}</ToastDescription>
+                <ToastDescription className="text-base font-medium text-white/90 drop-shadow-lg tracking-wide">{description}</ToastDescription>
               )}
             </div>
             {action}
