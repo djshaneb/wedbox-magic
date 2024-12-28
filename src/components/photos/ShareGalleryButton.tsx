@@ -76,7 +76,7 @@ export const ShareGalleryButton = () => {
           Share Gallery
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:top-[15%] top-[10%]">
         <DialogHeader>
           <DialogTitle>Share Gallery</DialogTitle>
         </DialogHeader>
