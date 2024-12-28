@@ -34,6 +34,7 @@ export const ShareGalleryButton = () => {
       toast({
         title: "Share link generated!",
         description: "Copy and share this link with your guests.",
+        className: "top-[10%]" // Add this line to position the toast near the top
       });
     } catch (error) {
       console.error('Error generating share link:', error);
@@ -53,6 +54,7 @@ export const ShareGalleryButton = () => {
       toast({
         title: "Copied!",
         description: "Share link copied to clipboard",
+        className: "top-[10%]" // Add this line to position the toast near the top
       });
     } catch (error) {
       console.error('Error copying to clipboard:', error);
