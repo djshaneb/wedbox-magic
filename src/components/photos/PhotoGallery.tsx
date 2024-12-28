@@ -82,7 +82,7 @@ export const PhotoGallery = () => {
               placeholder="Add a caption (optional)"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              className="flex-1"
+              className="flex-1 border-wedding-pink/20 focus:border-wedding-pink/40 focus:ring-wedding-pink/20"
             />
             <div className="flex gap-2">
               <Input
@@ -96,7 +96,7 @@ export const PhotoGallery = () => {
               <Button
                 onClick={() => document.getElementById("photo-upload")?.click()}
                 variant="secondary"
-                className="flex-1 bg-wedding-pink/10 hover:bg-wedding-pink/20 text-wedding-pink"
+                className="flex-1 bg-gradient-to-r from-wedding-pink/10 to-pink-200/20 hover:from-wedding-pink/20 hover:to-pink-200/30 text-wedding-pink border border-wedding-pink/20"
               >
                 <Upload className="mr-2 h-4 w-4" /> Upload Photos
               </Button>
@@ -104,8 +104,8 @@ export const PhotoGallery = () => {
                 variant={isPhotoBooth ? "destructive" : "secondary"}
                 onClick={() => setIsPhotoBooth(!isPhotoBooth)}
                 className={`flex-1 ${isPhotoBooth ? 
-                  "bg-red-50 hover:bg-red-100 text-red-700" : 
-                  "bg-wedding-pink/10 hover:bg-wedding-pink/20 text-wedding-pink"}`}
+                  "bg-red-50 hover:bg-red-100 text-red-700 border-red-200" : 
+                  "bg-gradient-to-r from-pink-100/50 to-purple-100/50 hover:from-pink-100/70 hover:to-purple-100/70 text-gray-700 border border-pink-200/30"}`}
               >
                 <Camera className="mr-2 h-4 w-4" />
                 {isPhotoBooth ? "Stop Camera" : "Take Photo"}
@@ -123,31 +123,33 @@ export const PhotoGallery = () => {
         </div>
       </Card>
 
-      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-2`}>
+      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-4`}>
         {photos.map((photo, index) => (
           <Card 
             key={photo.id} 
-            className={`overflow-hidden ${isMobile ? 'shadow-none border-wedding-pink/20' : 'shadow-sm'} cursor-pointer transform transition-transform hover:scale-[1.02]`}
+            className={`overflow-hidden ${
+              isMobile ? 'shadow-none border-wedding-pink/20' : 'shadow-md'
+            } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
             onClick={() => openLightbox(index)}
           >
             <div className="relative aspect-square">
               <img
                 src={photo.url}
                 alt={photo.caption}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:brightness-105 transition-all duration-300"
               />
             </div>
             {photo.caption && (
-              <div className="p-2">
-                <p className="text-xs text-wedding-pink/80 truncate">{photo.caption}</p>
+              <div className="p-3 bg-gradient-to-r from-white/90 to-pink-50/90">
+                <p className="text-sm text-gray-700 truncate">{photo.caption}</p>
               </div>
             )}
           </Card>
         ))}
         {photos.length === 0 && (
-          <div className="col-span-full p-8 text-center">
-            <ImageIcon className="mx-auto h-12 w-12 text-wedding-pink opacity-50" />
-            <p className="mt-2 text-sm text-wedding-pink/80">
+          <div className="col-span-full p-12 text-center bg-gradient-to-r from-pink-50/50 to-purple-50/50 rounded-lg border border-wedding-pink/10">
+            <ImageIcon className="mx-auto h-16 w-16 text-wedding-pink/40" />
+            <p className="mt-4 text-base text-gray-600">
               No photos yet. Start by taking or uploading photos!
             </p>
           </div>
