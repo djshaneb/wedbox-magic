@@ -71,11 +71,22 @@ export const usePhotoCapture = (
     }
   };
 
-  const handleSavePhoto = () => {
+  const handleSavePhoto = async () => {
     if (capturedPhoto) {
+      // Stop current stream before saving
+      if (videoRef.current?.srcObject) {
+        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+        tracks.forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+
       onPhotoTaken(capturedPhoto);
       setCapturedPhoto(null);
       setReviewCountdown(9);
+      
+      // Restart the camera after saving
+      await startCamera();
+      
       toast({
         title: "Photo Saved!",
         description: "Looking good! 📸",
