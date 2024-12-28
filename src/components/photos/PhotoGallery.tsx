@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload, Image as ImageIcon, Camera, RefreshCw } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
@@ -24,13 +24,12 @@ export const PhotoGallery = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Cleanup function to stop camera when component unmounts or changes
     return () => {
       if (isPhotoBooth) {
         stopCamera();
       }
     };
-  }, [isPhotoBooth]); // Added isPhotoBooth as dependency
+  }, [isPhotoBooth]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -55,6 +54,8 @@ export const PhotoGallery = () => {
 
   const startCamera = async () => {
     try {
+      setIsCameraReady(false);
+      
       // Request camera permissions and access
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -73,16 +74,23 @@ export const PhotoGallery = () => {
       // Set the stream as the video source
       videoRef.current.srcObject = stream;
       
-      // Wait for video to be ready
-      await videoRef.current.play();
-      
-      setIsCameraReady(true);
-      setIsPhotoBooth(true);
-      
-      toast({
-        title: "Camera started",
-        description: "Photo booth mode is now active",
-      });
+      // Wait for the video to be loaded before playing
+      videoRef.current.onloadedmetadata = async () => {
+        try {
+          if (videoRef.current) {
+            await videoRef.current.play();
+            setIsCameraReady(true);
+            setIsPhotoBooth(true);
+            toast({
+              title: "Camera started",
+              description: "Photo booth mode is now active",
+            });
+          }
+        } catch (playError) {
+          console.error("Error playing video:", playError);
+          throw new Error("Failed to start video playback");
+        }
+      };
     } catch (error) {
       console.error("Camera error:", error);
       toast({
@@ -90,7 +98,7 @@ export const PhotoGallery = () => {
         description: error instanceof Error ? error.message : "Unable to access camera. Please ensure you have granted camera permissions.",
         variant: "destructive",
       });
-      stopCamera(); // Ensure cleanup on error
+      stopCamera();
     }
   };
 
