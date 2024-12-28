@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Image as ImageIcon, Camera } from "lucide-react";
+import { Upload, Image as ImageIcon, Camera, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -65,6 +65,15 @@ export const PhotoGallery = () => {
   const openLightbox = (index: number) => {
     setCurrentPhotoIndex(index);
     setLightboxOpen(true);
+  };
+
+  const handleDeletePhoto = (event: React.MouseEvent, photoId: number) => {
+    event.stopPropagation(); // Prevent lightbox from opening
+    setPhotos(prevPhotos => prevPhotos.filter(photo => photo.id !== photoId));
+    toast({
+      title: "Photo deleted",
+      description: "The photo has been removed from the gallery",
+    });
   };
 
   const breakpointColumns = {
@@ -143,6 +152,14 @@ export const PhotoGallery = () => {
                   alt="Uploaded photo"
                   className="w-full h-full object-cover group-hover:brightness-105 transition-all duration-300"
                 />
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  onClick={(e) => handleDeletePhoto(e, photo.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             </Card>
           ))}
