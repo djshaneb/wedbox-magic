@@ -20,15 +20,15 @@ export const PhotoGrid = ({
   const breakpointColumns = {
     default: 3,
     1100: 3,
-    768: 2,
-    500: 2
+    700: 2,
+    500: 1
   };
 
   return (
     <Masonry
       breakpointCols={breakpointColumns}
-      className="flex w-full -ml-1 -mr-1"
-      columnClassName="pl-1 pr-1"
+      className="flex w-full -ml-4 -mr-4"
+      columnClassName="pl-4 pr-4"
     >
       {photos.map((photo, index) => (
         <PhotoCard
