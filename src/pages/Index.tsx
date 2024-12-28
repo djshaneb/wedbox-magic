@@ -5,18 +5,20 @@ import { GuestList } from "@/components/guests/GuestList";
 import { BudgetTracker } from "@/components/budget/BudgetTracker";
 import { VendorList } from "@/components/vendors/VendorList";
 import { Timeline } from "@/components/timeline/Timeline";
+import { PhotoGallery } from "@/components/photos/PhotoGallery";
 
 const Index = () => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-4xl font-bold mb-6">Wedding Planning Dashboard</h1>
       <Tabs defaultValue="planning" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="planning">Planning Tools</TabsTrigger>
           <TabsTrigger value="guests">Guest List</TabsTrigger>
           <TabsTrigger value="budget">Budget</TabsTrigger>
           <TabsTrigger value="vendors">Vendors</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          <TabsTrigger value="photos">Photos</TabsTrigger>
         </TabsList>
         <TabsContent value="planning">
           <Card>
@@ -70,6 +72,17 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <Timeline />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="photos">
+          <Card>
+            <CardHeader>
+              <CardTitle>Photo Gallery</CardTitle>
+              <CardDescription>Share and view wedding photos with your guests</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PhotoGallery />
             </CardContent>
           </Card>
         </TabsContent>
