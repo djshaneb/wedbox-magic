@@ -20,7 +20,7 @@ export const PhotoUploadSection = ({
   isMobile
 }: PhotoUploadSectionProps) => {
   return (
-    <Card className={`${isMobile ? 'shadow-none rounded-none border-0 border-b' : 'shadow-sm'} bg-white`}>
+    <Card className={`${isMobile ? 'shadow-none rounded-xl border-wedding-pink/20' : 'shadow-lg'} bg-white/80 backdrop-blur-sm transition-all duration-300`}>
       <div className="p-4 space-y-4">
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
@@ -35,18 +35,19 @@ export const PhotoUploadSection = ({
             <Button
               onClick={() => document.getElementById("photo-upload")?.click()}
               variant="secondary"
-              className="flex-1 bg-gradient-to-r from-violet-500/90 to-purple-500/90 hover:from-violet-600 hover:to-purple-600 text-white border-none shadow-md hover:shadow-lg transition-all duration-300"
+              className="flex-1 bg-gradient-to-r from-wedding-pink to-pink-400 hover:from-pink-500 hover:to-pink-600 text-white border-none shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
             >
-              <Upload className="mr-2 h-4 w-4" /> Upload Photos
+              <Upload className="mr-2 h-4 w-4 animate-bounce" /> Upload Photos
             </Button>
             <Button
               variant={isPhotoBooth ? "destructive" : "secondary"}
               onClick={() => setIsPhotoBooth(!isPhotoBooth)}
               className={`flex-1 ${isPhotoBooth ? 
-                "bg-red-500 hover:bg-red-600 text-white border-none shadow-md" : 
-                "bg-gradient-to-r from-pink-500/90 to-rose-500/90 hover:from-pink-600 hover:to-rose-600 text-white border-none shadow-md hover:shadow-lg"} transition-all duration-300`}
+                "bg-red-500 hover:bg-red-600 text-white" : 
+                "bg-gradient-to-r from-violet-400 to-purple-400 hover:from-violet-500 hover:to-purple-500"} 
+                text-white border-none shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]`}
             >
-              <Camera className="mr-2 h-4 w-4" />
+              <Camera className={`mr-2 h-4 w-4 ${!isPhotoBooth && 'animate-pulse'}`} />
               {isPhotoBooth ? "Stop Camera" : "Photo Booth Mode"}
             </Button>
           </div>
