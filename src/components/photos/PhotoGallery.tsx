@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Image as ImageIcon } from "lucide-react";
+import { Upload, Image as ImageIcon, Camera } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -18,6 +18,8 @@ export const PhotoGallery = () => {
   const [caption, setCaption] = useState("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [isPhotoBooth, setIsPhotoBooth] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,6 +40,58 @@ export const PhotoGallery = () => {
         });
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setIsPhotoBooth(true);
+      toast({
+        title: "Camera started",
+        description: "Photo booth mode is now active",
+      });
+    } catch (error) {
+      toast({
+        title: "Camera error",
+        description: "Unable to access camera",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current?.srcObject) {
+      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsPhotoBooth(false);
+  };
+
+  const takePhoto = () => {
+    if (videoRef.current) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(videoRef.current, 0, 0);
+        const newPhoto = {
+          id: photos.length + 1,
+          url: canvas.toDataURL('image/jpeg'),
+          caption: caption,
+        };
+        setPhotos([...photos, newPhoto]);
+        setCaption("");
+        toast({
+          title: "Photo captured",
+          description: "Your photo has been added to the gallery",
+        });
+      }
     }
   };
 
@@ -70,7 +124,32 @@ export const PhotoGallery = () => {
             >
               <Upload className="mr-2 h-4 w-4" /> Upload Photo
             </Button>
+            <Button
+              variant={isPhotoBooth ? "destructive" : "secondary"}
+              onClick={isPhotoBooth ? stopCamera : startCamera}
+            >
+              <Camera className="mr-2 h-4 w-4" />
+              {isPhotoBooth ? "Stop Camera" : "Photo Booth"}
+            </Button>
           </div>
+
+          {isPhotoBooth && (
+            <div className="relative">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="w-full max-w-xl mx-auto rounded-lg"
+              />
+              <Button
+                onClick={takePhoto}
+                className="mt-4"
+                variant="secondary"
+              >
+                Take Photo
+              </Button>
+            </div>
+          )}
         </div>
       </Card>
 
