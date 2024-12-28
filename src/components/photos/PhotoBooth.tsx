@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Camera, X } from "lucide-react";
+import { RefreshCw, Camera, X, Check, X as XIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface PhotoBoothProps {
@@ -16,6 +16,8 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
+  const [reviewCountdown, setReviewCountdown] = useState(9);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -38,6 +40,18 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
     }
     return () => clearTimeout(timer);
   }, [isCountingDown, countdown]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (capturedPhoto && reviewCountdown > 0) {
+      timer = setTimeout(() => {
+        setReviewCountdown(prev => prev - 1);
+      }, 1000);
+    } else if (capturedPhoto && reviewCountdown === 0) {
+      handleSavePhoto();
+    }
+    return () => clearTimeout(timer);
+  }, [capturedPhoto, reviewCountdown]);
 
   const startCamera = async () => {
     try {
@@ -79,8 +93,8 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
       });
 
       toast({
-        title: "Photo Booth Ready!",
-        description: "Strike a pose and get ready for your photo!",
+        title: "Tap anywhere to take a photo",
+        description: "A 5-second countdown will begin",
       });
     } catch (error) {
       console.error("Camera error:", error);
@@ -103,11 +117,13 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
   };
 
   const startCountdown = () => {
-    setIsCountingDown(true);
-    toast({
-      title: "Get Ready!",
-      description: "Photo will be taken in 5 seconds...",
-    });
+    if (!isCountingDown && !capturedPhoto) {
+      setIsCountingDown(true);
+      toast({
+        title: "Get Ready!",
+        description: "Photo will be taken in 5 seconds...",
+      });
+    }
   };
 
   const takePhoto = () => {
@@ -127,12 +143,34 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
     
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0);
-      onPhotoTaken(canvas.toDataURL('image/jpeg'));
+      setCapturedPhoto(canvas.toDataURL('image/jpeg'));
+      setReviewCountdown(9);
       toast({
-        title: "Photo Captured!",
+        title: "Review your photo",
+        description: "Auto-saving in 9 seconds...",
+      });
+    }
+  };
+
+  const handleSavePhoto = () => {
+    if (capturedPhoto) {
+      onPhotoTaken(capturedPhoto);
+      setCapturedPhoto(null);
+      setReviewCountdown(9);
+      toast({
+        title: "Photo Saved!",
         description: "Looking good! 📸",
       });
     }
+  };
+
+  const handleDiscardPhoto = () => {
+    setCapturedPhoto(null);
+    setReviewCountdown(9);
+    toast({
+      title: "Photo Discarded",
+      description: "Let's try again!",
+    });
   };
 
   return (
@@ -145,13 +183,21 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
         <X className="h-6 w-6" />
       </Button>
       
-      <div className="relative h-full">
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          className="w-full h-full object-cover"
-        />
+      <div className="relative h-full" onClick={startCountdown}>
+        {!capturedPhoto ? (
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <img 
+            src={capturedPhoto} 
+            alt="Captured photo" 
+            className="w-full h-full object-cover"
+          />
+        )}
         
         {!isCameraReady && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm">
@@ -167,16 +213,43 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
           </div>
         )}
 
-        <div className="absolute bottom-8 left-0 right-0 flex justify-center">
-          <Button
-            onClick={startCountdown}
-            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold px-8 py-6 rounded-full shadow-lg transform transition-all hover:scale-105 text-lg"
-            disabled={!isCameraReady || isCountingDown}
-          >
-            <Camera className="mr-2 h-6 w-6" />
-            Photo Booth Mode
-          </Button>
-        </div>
+        {capturedPhoto && (
+          <div className="absolute inset-x-0 bottom-8 flex flex-col items-center gap-4">
+            <div className="text-2xl font-bold text-white bg-black/50 px-6 py-2 rounded-full">
+              Auto-saving in {reviewCountdown}s
+            </div>
+            <div className="flex gap-4">
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDiscardPhoto();
+                }}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-6 rounded-full shadow-lg"
+              >
+                <XIcon className="mr-2 h-6 w-6" />
+                Discard
+              </Button>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSavePhoto();
+                }}
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-6 rounded-full shadow-lg"
+              >
+                <Check className="mr-2 h-6 w-6" />
+                Save
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {isCameraReady && !isCountingDown && !capturedPhoto && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-2xl font-bold text-white bg-black/50 px-6 py-2 rounded-full">
+              Tap anywhere to start 5s countdown
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
