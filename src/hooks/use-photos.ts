@@ -70,15 +70,18 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
 
         if (uploadError) throw uploadError;
 
-        // Then, create the database record
+        // Then, create the database record with explicit user_id
         const { error: dbError } = await supabase
           .from('photos')
           .insert({ 
             storage_path: fileName,
-            user_id: ownerId || undefined // Let RLS handle the user_id if not provided
+            user_id: ownerId // This will be the shared gallery owner's ID
           });
 
-        if (dbError) throw dbError;
+        if (dbError) {
+          console.error('Database error:', dbError);
+          throw dbError;
+        }
 
         return fileName;
       } catch (error) {
