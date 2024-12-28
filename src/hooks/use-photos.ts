@@ -15,13 +15,20 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
   const { data: photos = [], isLoading } = useQuery({
     queryKey: ['photos', sharedGalleryOwnerId],
     queryFn: async () => {
+      // Get the current user's ID
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const query = supabase
         .from('photos')
         .select('*')
         .order('created_at', { ascending: false });
 
+      // If viewing a shared gallery, use that owner's ID
+      // Otherwise, use the current user's ID
       if (sharedGalleryOwnerId) {
         query.eq('user_id', sharedGalleryOwnerId);
+      } else if (user) {
+        query.eq('user_id', user.id);
       }
 
       const { data: photos, error } = await query;
