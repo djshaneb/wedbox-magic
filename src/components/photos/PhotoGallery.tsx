@@ -24,30 +24,38 @@ export const PhotoGallery = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const newPhoto = {
-          id: photos.length + 1,
-          url: reader.result as string,
-          caption: caption,
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const fileArray = Array.from(files);
+    const uploadPromises = fileArray.map((file) => {
+      return new Promise<Photo>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve({
+            id: Date.now() + Math.random(), // Ensure unique IDs
+            url: reader.result as string,
+            caption: caption,
+          });
         };
-        setPhotos([...photos, newPhoto]);
-        setCaption("");
-        toast({
-          title: "Photo uploaded successfully",
-          description: "Your photo has been added to the gallery",
-        });
-      };
-      reader.readAsDataURL(file);
-    }
+        reader.readAsDataURL(file);
+      });
+    });
+
+    const newPhotos = await Promise.all(uploadPromises);
+    setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
+    setCaption("");
+
+    toast({
+      title: `${newPhotos.length} ${newPhotos.length === 1 ? 'photo' : 'photos'} uploaded`,
+      description: "Your photos have been added to the gallery",
+    });
   };
 
   const handlePhotoTaken = (photoUrl: string, photoCaption: string) => {
     const newPhoto = {
-      id: photos.length + 1,
+      id: Date.now() + Math.random(),
       url: photoUrl,
       caption: photoCaption,
     };
@@ -71,7 +79,7 @@ export const PhotoGallery = () => {
           <div className="flex flex-col gap-3">
             <Input
               type="text"
-              placeholder="Add a caption"
+              placeholder="Add a caption (optional)"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
               className="flex-1"
@@ -83,13 +91,14 @@ export const PhotoGallery = () => {
                 onChange={handleFileUpload}
                 className="hidden"
                 id="photo-upload"
+                multiple // Enable multiple file selection
               />
               <Button
                 onClick={() => document.getElementById("photo-upload")?.click()}
                 variant="secondary"
                 className="flex-1 bg-purple-50 hover:bg-purple-100 text-purple-700"
               >
-                <Upload className="mr-2 h-4 w-4" /> Upload Photo
+                <Upload className="mr-2 h-4 w-4" /> Upload Photos
               </Button>
               <Button
                 variant={isPhotoBooth ? "destructive" : "secondary"}
@@ -139,7 +148,7 @@ export const PhotoGallery = () => {
           <div className="col-span-full p-8 text-center">
             <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
             <p className="mt-2 text-sm text-muted-foreground">
-              No photos yet. Start by taking or uploading a photo!
+              No photos yet. Start by taking or uploading photos!
             </p>
           </div>
         )}
