@@ -15,12 +15,12 @@ export const CameraView: React.FC<CameraViewProps> = ({
   countdown,
 }) => {
   return (
-    <div className="relative w-full h-full">
+    <div className="w-full h-full">
       <video
         ref={videoRef}
         autoPlay
         playsInline
-        className="absolute inset-0 w-full h-full object-cover"
+        className="w-full h-full object-cover"
       />
       
       {!isCameraReady && (
