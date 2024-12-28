@@ -126,13 +126,13 @@ export const PhotoGallery = () => {
       ) : (
         <Masonry
           breakpointCols={breakpointColumns}
-          className="flex w-full gap-4"
+          className="flex w-full gap-2"
           columnClassName="masonry-grid_column"
         >
           {photos.map((photo, index) => (
             <Card 
               key={photo.id} 
-              className={`mb-4 overflow-hidden ${
+              className={`mb-2 overflow-hidden ${
                 isMobile ? 'shadow-none border-wedding-pink/20 w-full' : 'shadow-md'
               } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
               onClick={() => openLightbox(index)}
