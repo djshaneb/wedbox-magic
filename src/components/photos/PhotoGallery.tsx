@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Image as ImageIcon, Camera, RefreshCw } from "lucide-react";
+import { Upload, Image as ImageIcon, Camera } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import { PhotoBooth } from "./PhotoBooth";
 
 interface Photo {
   id: number;
@@ -19,17 +20,7 @@ export const PhotoGallery = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
-  const [isCameraReady, setIsCameraReady] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
-
-  useEffect(() => {
-    return () => {
-      if (isPhotoBooth) {
-        stopCamera();
-      }
-    };
-  }, [isPhotoBooth]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -52,95 +43,18 @@ export const PhotoGallery = () => {
     }
   };
 
-  const startCamera = async () => {
-    try {
-      setIsCameraReady(false);
-      
-      // Request camera permissions and access
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "user",
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: false
-      });
-
-      // Ensure video element exists
-      if (!videoRef.current) {
-        throw new Error("Video element not found");
-      }
-
-      // Set the stream as the video source
-      videoRef.current.srcObject = stream;
-      
-      // Wait for the video to be loaded before playing
-      videoRef.current.onloadedmetadata = async () => {
-        try {
-          if (videoRef.current) {
-            await videoRef.current.play();
-            setIsCameraReady(true);
-            setIsPhotoBooth(true);
-            toast({
-              title: "Camera started",
-              description: "Photo booth mode is now active",
-            });
-          }
-        } catch (playError) {
-          console.error("Error playing video:", playError);
-          throw new Error("Failed to start video playback");
-        }
-      };
-    } catch (error) {
-      console.error("Camera error:", error);
-      toast({
-        title: "Camera error",
-        description: error instanceof Error ? error.message : "Unable to access camera. Please ensure you have granted camera permissions.",
-        variant: "destructive",
-      });
-      stopCamera();
-    }
-  };
-
-  const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-      tracks.forEach(track => track.stop());
-      videoRef.current.srcObject = null;
-    }
-    setIsPhotoBooth(false);
-    setIsCameraReady(false);
-  };
-
-  const takePhoto = () => {
-    if (!videoRef.current || !isCameraReady) {
-      toast({
-        title: "Camera not ready",
-        description: "Please wait for the camera to initialize",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const canvas = document.createElement('canvas');
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
-    const ctx = canvas.getContext('2d');
-    
-    if (ctx) {
-      ctx.drawImage(videoRef.current, 0, 0);
-      const newPhoto = {
-        id: photos.length + 1,
-        url: canvas.toDataURL('image/jpeg'),
-        caption: caption,
-      };
-      setPhotos([...photos, newPhoto]);
-      setCaption("");
-      toast({
-        title: "Photo captured",
-        description: "Your photo has been added to the gallery",
-      });
-    }
+  const handlePhotoTaken = (photoUrl: string, photoCaption: string) => {
+    const newPhoto = {
+      id: photos.length + 1,
+      url: photoUrl,
+      caption: photoCaption,
+    };
+    setPhotos([...photos, newPhoto]);
+    setCaption("");
+    toast({
+      title: "Photo captured",
+      description: "Your photo has been added to the gallery",
+    });
   };
 
   const openLightbox = (index: number) => {
@@ -176,7 +90,7 @@ export const PhotoGallery = () => {
             </Button>
             <Button
               variant={isPhotoBooth ? "destructive" : "secondary"}
-              onClick={isPhotoBooth ? stopCamera : startCamera}
+              onClick={() => setIsPhotoBooth(!isPhotoBooth)}
               className={isPhotoBooth ? 
                 "bg-red-100 hover:bg-red-200 text-red-700" : 
                 "bg-blue-100 hover:bg-blue-200 text-blue-700"}
@@ -187,30 +101,11 @@ export const PhotoGallery = () => {
           </div>
 
           {isPhotoBooth && (
-            <div className="relative bg-gradient-to-b from-purple-50 to-blue-50 p-6 rounded-xl shadow-lg">
-              <div className="relative aspect-video max-w-2xl mx-auto overflow-hidden rounded-lg border-4 border-white shadow-xl">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-                {!isCameraReady && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm">
-                    <RefreshCw className="w-8 h-8 text-white animate-spin" />
-                  </div>
-                )}
-              </div>
-              <div className="mt-6 flex justify-center">
-                <Button
-                  onClick={takePhoto}
-                  className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold px-8 py-2 rounded-full shadow-lg transform transition-all hover:scale-105"
-                  disabled={!isCameraReady}
-                >
-                  Take Photo
-                </Button>
-              </div>
-            </div>
+            <PhotoBooth
+              onPhotoTaken={handlePhotoTaken}
+              caption={caption}
+              onClose={() => setIsPhotoBooth(false)}
+            />
           )}
         </div>
       </Card>
