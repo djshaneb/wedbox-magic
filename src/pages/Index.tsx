@@ -4,17 +4,19 @@ import { PlanningTools } from "@/components/planning/PlanningTools";
 import { GuestList } from "@/components/guests/GuestList";
 import { BudgetTracker } from "@/components/budget/BudgetTracker";
 import { VendorList } from "@/components/vendors/VendorList";
+import { Timeline } from "@/components/timeline/Timeline";
 
 const Index = () => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-4xl font-bold mb-6">Wedding Planning Dashboard</h1>
       <Tabs defaultValue="planning" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="planning">Planning Tools</TabsTrigger>
           <TabsTrigger value="guests">Guest List</TabsTrigger>
           <TabsTrigger value="budget">Budget</TabsTrigger>
           <TabsTrigger value="vendors">Vendors</TabsTrigger>
+          <TabsTrigger value="timeline">Timeline</TabsTrigger>
         </TabsList>
         <TabsContent value="planning">
           <Card>
@@ -57,6 +59,17 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <VendorList />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="timeline">
+          <Card>
+            <CardHeader>
+              <CardTitle>Timeline</CardTitle>
+              <CardDescription>Track important dates and milestones for your wedding</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Timeline />
             </CardContent>
           </Card>
         </TabsContent>
