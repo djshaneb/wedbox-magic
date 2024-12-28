@@ -8,6 +8,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { PhotoBooth } from "./PhotoBooth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import Masonry from 'react-masonry-css';
 
 interface Photo {
   id: number;
@@ -66,6 +67,12 @@ export const PhotoGallery = () => {
     setLightboxOpen(true);
   };
 
+  const breakpointColumns = {
+    default: 3,
+    768: 2,
+    500: 3
+  };
+
   return (
     <div className="space-y-4">
       <Card className={`${isMobile ? 'shadow-none rounded-none border-0 border-b' : 'shadow-sm'} bg-white`}>
@@ -109,33 +116,38 @@ export const PhotoGallery = () => {
         </div>
       </Card>
 
-      <div className={`grid ${isMobile ? 'grid-cols-2' : 'grid-cols-3'} gap-4`}>
-        {photos.map((photo, index) => (
-          <Card 
-            key={photo.id} 
-            className={`overflow-hidden ${
-              isMobile ? 'shadow-none border-wedding-pink/20' : 'shadow-md'
-            } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
-            onClick={() => openLightbox(index)}
-          >
-            <div className="relative aspect-square">
-              <img
-                src={photo.url}
-                alt="Uploaded photo"
-                className="w-full h-full object-cover group-hover:brightness-105 transition-all duration-300"
-              />
-            </div>
-          </Card>
-        ))}
-        {photos.length === 0 && (
-          <div className="col-span-full p-12 text-center bg-gradient-to-r from-pink-50/50 to-purple-50/50 rounded-lg border border-wedding-pink/10">
-            <ImageIcon className="mx-auto h-16 w-16 text-wedding-pink/40" />
-            <p className="mt-4 text-base text-gray-600">
-              No photos yet. Start by taking or uploading photos!
-            </p>
-          </div>
-        )}
-      </div>
+      {photos.length === 0 ? (
+        <div className="col-span-full p-12 text-center bg-gradient-to-r from-pink-50/50 to-purple-50/50 rounded-lg border border-wedding-pink/10">
+          <ImageIcon className="mx-auto h-16 w-16 text-wedding-pink/40" />
+          <p className="mt-4 text-base text-gray-600">
+            No photos yet. Start by taking or uploading photos!
+          </p>
+        </div>
+      ) : (
+        <Masonry
+          breakpointCols={breakpointColumns}
+          className="flex w-full gap-4"
+          columnClassName="masonry-grid_column"
+        >
+          {photos.map((photo, index) => (
+            <Card 
+              key={photo.id} 
+              className={`mb-4 overflow-hidden ${
+                isMobile ? 'shadow-none border-wedding-pink/20' : 'shadow-md'
+              } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
+              onClick={() => openLightbox(index)}
+            >
+              <div className="relative">
+                <img
+                  src={photo.url}
+                  alt="Uploaded photo"
+                  className="w-full h-auto object-cover group-hover:brightness-105 transition-all duration-300"
+                />
+              </div>
+            </Card>
+          ))}
+        </Masonry>
+      )}
 
       <Lightbox
         open={lightboxOpen}
