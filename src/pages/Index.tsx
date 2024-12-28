@@ -1,9 +1,24 @@
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Camera } from "lucide-react";
+import { Camera, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Logged out successfully",
+      description: "You have been logged out of your account",
+    });
+    navigate("/auth");
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -18,6 +33,15 @@ const Index = () => {
             </h1>
             <span className="text-sm font-medium text-gray-600">PHOTO SHARE</span>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="text-gray-600 hover:text-gray-900"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
+          </Button>
         </div>
       </div>
       
