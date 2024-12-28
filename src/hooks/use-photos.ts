@@ -59,31 +59,32 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
       file: File; 
       ownerId?: string;
     }) => {
-      // For shared galleries, we use the provided ownerId
-      // For personal galleries, we use the current user's ID
-      const userId = ownerId || (await supabase.auth.getUser()).data.user?.id;
-      
-      if (!userId) throw new Error("No user ID available for upload");
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        
+        // First, upload the file to storage
+        const { error: uploadError } = await supabase.storage
+          .from('photos')
+          .upload(fileName, file);
 
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('photos')
-        .upload(fileName, file);
+        if (uploadError) throw uploadError;
 
-      if (uploadError) throw uploadError;
+        // Then, create the database record
+        const { error: dbError } = await supabase
+          .from('photos')
+          .insert({ 
+            storage_path: fileName,
+            user_id: ownerId || undefined // Let RLS handle the user_id if not provided
+          });
 
-      const { error: dbError } = await supabase
-        .from('photos')
-        .insert({ 
-          storage_path: fileName,
-          user_id: userId
-        });
+        if (dbError) throw dbError;
 
-      if (dbError) throw dbError;
-
-      return fileName;
+        return fileName;
+      } catch (error) {
+        console.error('Upload error:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['photos'] });
@@ -96,7 +97,7 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
       console.error('Upload error:', error);
       toast({
         title: "Upload failed",
-        description: "There was an error uploading your photo",
+        description: "There was an error uploading your photo. Please try again.",
         variant: "destructive",
       });
     }
