@@ -1,12 +1,40 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PlanningTools } from "@/components/planning/PlanningTools";
+import { GuestList } from "@/components/guests/GuestList";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="container mx-auto p-6">
+      <h1 className="text-4xl font-bold mb-6">Wedding Planning Dashboard</h1>
+      <Tabs defaultValue="planning" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="planning">Planning Tools</TabsTrigger>
+          <TabsTrigger value="guests">Guest List</TabsTrigger>
+        </TabsList>
+        <TabsContent value="planning">
+          <Card>
+            <CardHeader>
+              <CardTitle>Planning Tools</CardTitle>
+              <CardDescription>Organize your wedding planning tasks and track progress</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PlanningTools />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="guests">
+          <Card>
+            <CardHeader>
+              <CardTitle>Guest List Management</CardTitle>
+              <CardDescription>Manage your wedding guests and track RSVPs</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <GuestList />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
