@@ -59,11 +59,11 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
       file: File; 
       ownerId?: string;
     }) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user && !ownerId) throw new Error("User not authenticated");
+      // For shared galleries, we use the provided ownerId
+      // For personal galleries, we use the current user's ID
+      const userId = ownerId || (await supabase.auth.getUser()).data.user?.id;
+      
+      if (!userId) throw new Error("No user ID available for upload");
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${crypto.randomUUID()}.${fileExt}`;
@@ -78,7 +78,7 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
         .from('photos')
         .insert({ 
           storage_path: fileName,
-          user_id: ownerId || user!.id
+          user_id: userId
         });
 
       if (dbError) throw dbError;
