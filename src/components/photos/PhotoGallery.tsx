@@ -133,15 +133,15 @@ export const PhotoGallery = () => {
             <Card 
               key={photo.id} 
               className={`mb-4 overflow-hidden ${
-                isMobile ? 'shadow-none border-wedding-pink/20' : 'shadow-md'
+                isMobile ? 'shadow-none border-wedding-pink/20 w-full' : 'shadow-md'
               } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
               onClick={() => openLightbox(index)}
             >
-              <div className="relative">
+              <div className={`relative ${isMobile ? 'h-[250px]' : 'h-auto'}`}>
                 <img
                   src={photo.url}
                   alt="Uploaded photo"
-                  className="w-full h-auto object-cover group-hover:brightness-105 transition-all duration-300"
+                  className="w-full h-full object-cover group-hover:brightness-105 transition-all duration-300"
                 />
               </div>
             </Card>
