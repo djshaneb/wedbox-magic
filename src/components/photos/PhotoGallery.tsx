@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload, Image as ImageIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 interface Photo {
   id: number;
@@ -14,6 +16,8 @@ interface Photo {
 export const PhotoGallery = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [caption, setCaption] = useState("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const { toast } = useToast();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +39,11 @@ export const PhotoGallery = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const openLightbox = (index: number) => {
+    setCurrentPhotoIndex(index);
+    setLightboxOpen(true);
   };
 
   return (
@@ -65,14 +74,18 @@ export const PhotoGallery = () => {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {photos.map((photo) => (
-          <Card key={photo.id} className="overflow-hidden">
-            <div className="aspect-square relative">
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+        {photos.map((photo, index) => (
+          <Card 
+            key={photo.id} 
+            className="break-inside-avoid mb-4 cursor-pointer transform transition-transform hover:scale-[1.02]"
+            onClick={() => openLightbox(index)}
+          >
+            <div className="relative">
               <img
                 src={photo.url}
                 alt={photo.caption}
-                className="object-cover w-full h-full"
+                className="w-full h-auto"
               />
             </div>
             {photo.caption && (
@@ -91,6 +104,13 @@ export const PhotoGallery = () => {
           </Card>
         )}
       </div>
+
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        index={currentPhotoIndex}
+        slides={photos.map(photo => ({ src: photo.url, alt: photo.caption }))}
+      />
     </div>
   );
 };
