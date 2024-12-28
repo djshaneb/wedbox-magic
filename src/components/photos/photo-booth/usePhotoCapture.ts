@@ -78,7 +78,7 @@ export const usePhotoCapture = (
       toast({
         title: "Photo Saved!",
         description: "Looking good! 📸",
-        duration: 2000, // Set duration to 2 seconds
+        duration: 2000,
       });
     }
   };
@@ -86,10 +86,13 @@ export const usePhotoCapture = (
   const handleDiscardPhoto = () => {
     setCapturedPhoto(null);
     setReviewCountdown(9);
+    // Reset countdown to ensure it's ready for the next photo
+    setCountdown(5);
+    setIsCountingDown(false);
     toast({
       title: "Photo Discarded",
       description: "Let's try again!",
-      duration: 2000, // Set duration to 2 seconds
+      duration: 2000,
     });
   };
 

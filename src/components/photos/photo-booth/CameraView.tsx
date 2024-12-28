@@ -30,8 +30,8 @@ export const CameraView: React.FC<CameraViewProps> = ({
       )}
 
       {isCountingDown && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <span className="text-[200px] font-bold text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)] animate-pulse">
+        <div className="absolute top-8 left-8">
+          <span className="text-[100px] font-bold text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)] animate-pulse">
             {countdown}
           </span>
         </div>
