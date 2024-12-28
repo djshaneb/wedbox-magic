@@ -24,13 +24,13 @@ export const PhotoGallery = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Cleanup function to stop camera when component unmounts
+    // Cleanup function to stop camera when component unmounts or changes
     return () => {
       if (isPhotoBooth) {
         stopCamera();
       }
     };
-  }, []);
+  }, [isPhotoBooth]); // Added isPhotoBooth as dependency
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -55,31 +55,42 @@ export const PhotoGallery = () => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
+      // Request camera permissions and access
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
           facingMode: "user",
           width: { ideal: 1280 },
           height: { ideal: 720 }
-        } 
+        },
+        audio: false
       });
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = () => {
-          setIsCameraReady(true);
-        };
+
+      // Ensure video element exists
+      if (!videoRef.current) {
+        throw new Error("Video element not found");
       }
+
+      // Set the stream as the video source
+      videoRef.current.srcObject = stream;
+      
+      // Wait for video to be ready
+      await videoRef.current.play();
+      
+      setIsCameraReady(true);
       setIsPhotoBooth(true);
+      
       toast({
         title: "Camera started",
         description: "Photo booth mode is now active",
       });
     } catch (error) {
+      console.error("Camera error:", error);
       toast({
         title: "Camera error",
-        description: "Unable to access camera",
+        description: error instanceof Error ? error.message : "Unable to access camera. Please ensure you have granted camera permissions.",
         variant: "destructive",
       });
+      stopCamera(); // Ensure cleanup on error
     }
   };
 
@@ -94,25 +105,33 @@ export const PhotoGallery = () => {
   };
 
   const takePhoto = () => {
-    if (videoRef.current) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0);
-        const newPhoto = {
-          id: photos.length + 1,
-          url: canvas.toDataURL('image/jpeg'),
-          caption: caption,
-        };
-        setPhotos([...photos, newPhoto]);
-        setCaption("");
-        toast({
-          title: "Photo captured",
-          description: "Your photo has been added to the gallery",
-        });
-      }
+    if (!videoRef.current || !isCameraReady) {
+      toast({
+        title: "Camera not ready",
+        description: "Please wait for the camera to initialize",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const ctx = canvas.getContext('2d');
+    
+    if (ctx) {
+      ctx.drawImage(videoRef.current, 0, 0);
+      const newPhoto = {
+        id: photos.length + 1,
+        url: canvas.toDataURL('image/jpeg'),
+        caption: caption,
+      };
+      setPhotos([...photos, newPhoto]);
+      setCaption("");
+      toast({
+        title: "Photo captured",
+        description: "Your photo has been added to the gallery",
+      });
     }
   };
 
