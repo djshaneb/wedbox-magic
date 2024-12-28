@@ -4,14 +4,12 @@ import { RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface PhotoBoothProps {
-  onPhotoTaken: (photoUrl: string, caption: string) => void;
-  caption: string;
+  onPhotoTaken: (photoUrl: string) => void;
   onClose: () => void;
 }
 
 export const PhotoBooth: React.FC<PhotoBoothProps> = ({
   onPhotoTaken,
-  caption,
   onClose,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -106,7 +104,7 @@ export const PhotoBooth: React.FC<PhotoBoothProps> = ({
     
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0);
-      onPhotoTaken(canvas.toDataURL('image/jpeg'), caption);
+      onPhotoTaken(canvas.toDataURL('image/jpeg'));
     }
   };
 
