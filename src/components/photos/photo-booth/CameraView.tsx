@@ -38,10 +38,10 @@ export const CameraView: React.FC<CameraViewProps> = ({
       )}
 
       {isCameraReady && !isCountingDown && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center" style={{ marginTop: '-30vh' }}>
           <Hand 
-            className="text-white/80 animate-bounce" 
-            size={120} 
+            className="text-white/80 animate-bounce transform rotate-45" 
+            size={80} 
             strokeWidth={1.5} 
           />
         </div>
