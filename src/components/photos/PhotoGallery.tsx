@@ -12,12 +12,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface Photo {
   id: number;
   url: string;
-  caption: string;
 }
 
 export const PhotoGallery = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [caption, setCaption] = useState("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
@@ -36,7 +34,6 @@ export const PhotoGallery = () => {
           resolve({
             id: Date.now() + Math.random(),
             url: reader.result as string,
-            caption: caption,
           });
         };
         reader.readAsDataURL(file);
@@ -45,7 +42,6 @@ export const PhotoGallery = () => {
 
     const newPhotos = await Promise.all(uploadPromises);
     setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
-    setCaption("");
 
     toast({
       title: `${newPhotos.length} ${newPhotos.length === 1 ? 'photo' : 'photos'} uploaded`,
@@ -53,14 +49,12 @@ export const PhotoGallery = () => {
     });
   };
 
-  const handlePhotoTaken = (photoUrl: string, photoCaption: string) => {
+  const handlePhotoTaken = (photoUrl: string) => {
     const newPhoto = {
       id: Date.now() + Math.random(),
       url: photoUrl,
-      caption: photoCaption,
     };
     setPhotos([...photos, newPhoto]);
-    setCaption("");
     toast({
       title: "Photo captured",
       description: "Your photo has been added to the gallery",
@@ -77,13 +71,6 @@ export const PhotoGallery = () => {
       <Card className={`${isMobile ? 'shadow-none rounded-none border-0 border-b' : 'shadow-sm'} bg-white`}>
         <div className="p-4 space-y-4">
           <div className="flex flex-col gap-3">
-            <Input
-              type="text"
-              placeholder="Add a caption (optional)"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              className="flex-1 border-wedding-pink/20 focus:border-wedding-pink/40 focus:ring-wedding-pink/20"
-            />
             <div className="flex gap-2">
               <Input
                 type="file"
@@ -111,15 +98,14 @@ export const PhotoGallery = () => {
                 {isPhotoBooth ? "Stop Camera" : "Take Photo"}
               </Button>
             </div>
-          </div>
 
-          {isPhotoBooth && (
-            <PhotoBooth
-              onPhotoTaken={handlePhotoTaken}
-              caption={caption}
-              onClose={() => setIsPhotoBooth(false)}
-            />
-          )}
+            {isPhotoBooth && (
+              <PhotoBooth
+                onPhotoTaken={handlePhotoTaken}
+                onClose={() => setIsPhotoBooth(false)}
+              />
+            )}
+          </div>
         </div>
       </Card>
 
@@ -135,15 +121,10 @@ export const PhotoGallery = () => {
             <div className="relative aspect-square">
               <img
                 src={photo.url}
-                alt={photo.caption}
+                alt="Uploaded photo"
                 className="w-full h-full object-cover group-hover:brightness-105 transition-all duration-300"
               />
             </div>
-            {photo.caption && (
-              <div className="p-3 bg-gradient-to-r from-white/90 to-pink-50/90">
-                <p className="text-sm text-gray-700 truncate">{photo.caption}</p>
-              </div>
-            )}
           </Card>
         ))}
         {photos.length === 0 && (
@@ -160,7 +141,7 @@ export const PhotoGallery = () => {
         open={lightboxOpen}
         close={() => setLightboxOpen(false)}
         index={currentPhotoIndex}
-        slides={photos.map(photo => ({ src: photo.url, alt: photo.caption }))}
+        slides={photos.map(photo => ({ src: photo.url }))}
       />
     </div>
   );
