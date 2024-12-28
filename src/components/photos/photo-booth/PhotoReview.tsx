@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Check, X as XIcon } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 interface PhotoReviewProps {
   photoUrl: string;
@@ -32,9 +32,9 @@ export const PhotoReview: React.FC<PhotoReviewProps> = ({
               e.stopPropagation();
               onDiscard();
             }}
-            className="bg-red-500/90 hover:bg-red-600 text-white font-light px-8 py-6 rounded-full shadow-lg backdrop-blur-sm border border-white/10 transition-all duration-300"
+            className="bg-red-500/90 hover:bg-red-600 text-white font-light px-8 py-6 rounded-full shadow-lg backdrop-blur-sm border border-white/10 transition-all duration-300 hover:scale-105"
           >
-            <XIcon className="mr-2 h-6 w-6" />
+            <X className="mr-2 h-6 w-6" />
             Discard
           </Button>
           <Button
@@ -42,7 +42,7 @@ export const PhotoReview: React.FC<PhotoReviewProps> = ({
               e.stopPropagation();
               onSave();
             }}
-            className="bg-green-500/90 hover:bg-green-600 text-white font-light px-8 py-6 rounded-full shadow-lg backdrop-blur-sm border border-white/10 transition-all duration-300"
+            className="bg-green-500/90 hover:bg-green-600 text-white font-light px-8 py-6 rounded-full shadow-lg backdrop-blur-sm border border-white/10 transition-all duration-300 hover:scale-105"
           >
             <Check className="mr-2 h-6 w-6" />
             Save
