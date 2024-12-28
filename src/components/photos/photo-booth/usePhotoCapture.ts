@@ -41,10 +41,6 @@ export const usePhotoCapture = (
   const startCountdown = () => {
     if (!isCountingDown && !capturedPhoto) {
       setIsCountingDown(true);
-      toast({
-        title: "Get Ready!",
-        description: "Photo will be taken in 5 seconds...",
-      });
     }
   };
 
@@ -82,6 +78,7 @@ export const usePhotoCapture = (
       toast({
         title: "Photo Saved!",
         description: "Looking good! 📸",
+        duration: 2000, // Set duration to 2 seconds
       });
     }
   };
@@ -92,6 +89,7 @@ export const usePhotoCapture = (
     toast({
       title: "Photo Discarded",
       description: "Let's try again!",
+      duration: 2000, // Set duration to 2 seconds
     });
   };
 
