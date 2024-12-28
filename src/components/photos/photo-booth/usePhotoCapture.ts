@@ -5,7 +5,7 @@ export const usePhotoCapture = (
   videoRef: RefObject<HTMLVideoElement>,
   isCameraReady: boolean,
   onPhotoTaken: (photoUrl: string) => void,
-  startCamera: () => void
+  startCamera: () => Promise<boolean>
 ) => {
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [countdown, setCountdown] = useState(5);
@@ -89,6 +89,13 @@ export const usePhotoCapture = (
     setReviewCountdown(9);
     setCountdown(5);
     setIsCountingDown(false);
+    
+    // Stop any existing streams
+    if (videoRef.current?.srcObject) {
+      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
     
     // Restart the camera stream
     await startCamera();
