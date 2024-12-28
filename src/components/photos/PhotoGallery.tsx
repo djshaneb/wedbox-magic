@@ -41,7 +41,7 @@ export const PhotoGallery = () => {
     });
 
     const newPhotos = await Promise.all(uploadPromises);
-    setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
+    setPhotos((prevPhotos) => [...newPhotos, ...prevPhotos]);
 
     toast({
       title: `${newPhotos.length} ${newPhotos.length === 1 ? 'photo' : 'photos'} uploaded`,
@@ -54,7 +54,7 @@ export const PhotoGallery = () => {
       id: Date.now() + Math.random(),
       url: photoUrl,
     };
-    setPhotos([...photos, newPhoto]);
+    setPhotos((prevPhotos) => [newPhoto, ...prevPhotos]);
     toast({
       title: "Photo captured",
       description: "Your photo has been added to the gallery",
