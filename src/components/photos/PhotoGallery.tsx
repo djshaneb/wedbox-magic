@@ -68,7 +68,7 @@ export const PhotoGallery = () => {
   };
 
   const handleDeletePhoto = (event: React.MouseEvent, photoId: number) => {
-    event.stopPropagation(); // Prevent lightbox from opening
+    event.stopPropagation();
     setPhotos(prevPhotos => prevPhotos.filter(photo => photo.id !== photoId));
     toast({
       title: "Photo deleted",
@@ -99,7 +99,7 @@ export const PhotoGallery = () => {
               <Button
                 onClick={() => document.getElementById("photo-upload")?.click()}
                 variant="secondary"
-                className="flex-1 bg-gradient-to-r from-wedding-pink/10 to-pink-200/20 hover:from-wedding-pink/20 hover:to-pink-200/30 text-wedding-pink border border-wedding-pink/20"
+                className="flex-1 bg-gradient-to-r from-violet-500/90 to-purple-500/90 hover:from-violet-600 hover:to-purple-600 text-white border-none shadow-md hover:shadow-lg transition-all duration-300"
               >
                 <Upload className="mr-2 h-4 w-4" /> Upload Photos
               </Button>
@@ -107,8 +107,8 @@ export const PhotoGallery = () => {
                 variant={isPhotoBooth ? "destructive" : "secondary"}
                 onClick={() => setIsPhotoBooth(!isPhotoBooth)}
                 className={`flex-1 ${isPhotoBooth ? 
-                  "bg-red-50 hover:bg-red-100 text-red-700 border-red-200" : 
-                  "bg-gradient-to-r from-pink-100/50 to-purple-100/50 hover:from-pink-100/70 hover:to-purple-100/70 text-gray-700 border border-pink-200/30"}`}
+                  "bg-red-500 hover:bg-red-600 text-white border-none shadow-md" : 
+                  "bg-gradient-to-r from-pink-500/90 to-rose-500/90 hover:from-pink-600 hover:to-rose-600 text-white border-none shadow-md hover:shadow-lg"} transition-all duration-300`}
               >
                 <Camera className="mr-2 h-4 w-4" />
                 {isPhotoBooth ? "Stop Camera" : "Photo Booth Mode"}
@@ -126,8 +126,8 @@ export const PhotoGallery = () => {
       </Card>
 
       {photos.length === 0 ? (
-        <div className="col-span-full p-12 text-center bg-gradient-to-r from-pink-50/50 to-purple-50/50 rounded-lg border border-wedding-pink/10">
-          <ImageIcon className="mx-auto h-16 w-16 text-wedding-pink/40" />
+        <div className="col-span-full p-12 text-center bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-100">
+          <ImageIcon className="mx-auto h-16 w-16 text-violet-300" />
           <p className="mt-4 text-base text-gray-600">
             No photos yet. Start by taking or uploading photos!
           </p>
@@ -142,7 +142,7 @@ export const PhotoGallery = () => {
             <Card 
               key={photo.id} 
               className={`mb-2 overflow-hidden ${
-                isMobile ? 'shadow-none border-wedding-pink/20 w-full' : 'shadow-md'
+                isMobile ? 'shadow-none border-violet-200/20 w-full' : 'shadow-md'
               } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
               onClick={() => openLightbox(index)}
             >
@@ -155,7 +155,7 @@ export const PhotoGallery = () => {
                 <Button
                   variant="destructive"
                   size="icon"
-                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-500 hover:bg-red-600 text-white shadow-lg"
                   onClick={(e) => handleDeletePhoto(e, photo.id)}
                 >
                   <Trash2 className="h-4 w-4" />
