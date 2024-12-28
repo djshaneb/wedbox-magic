@@ -20,7 +20,9 @@ export const PhotoCard = ({
 }: PhotoCardProps) => {
   return (
     <Card 
-      className="mb-4 overflow-hidden shadow-md cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group"
+      className={`mb-2 overflow-hidden ${
+        isMobile ? 'shadow-none border-violet-200/20' : 'shadow-md'
+      } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group`}
       onClick={onClick}
     >
       <div className="relative">
