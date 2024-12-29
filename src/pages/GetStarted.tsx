@@ -4,14 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import { X, ArrowRight, ArrowLeft, Calendar as CalendarIcon, Pencil } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { WeddingImageSelector } from "@/components/onboarding/WeddingImageSelector";
-import { format } from "date-fns";
+import { DateSelection } from "@/components/onboarding/DateSelection";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
@@ -23,7 +22,7 @@ const GetStarted = () => {
   const [role, setRole] = useState<"bride" | "groom" | null>(null);
   const [firstName, setFirstName] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [date, setDate] = useState<Date | undefined>(new Date("2024-12-29"));
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -162,27 +161,7 @@ const GetStarted = () => {
             </form>
           </Form>
         ) : (
-          <div className="flex flex-col items-center">
-            <h2 className="text-2xl font-light text-center mb-6">Our wedding date</h2>
-            
-            <div className="relative mb-4">
-              <CalendarIcon className="w-32 h-32 text-wedding-pink mb-4" />
-              <div className="text-3xl font-light text-center">
-                {format(date || new Date(), "yyyy-MM-dd")}
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="ml-2 inline-flex items-center justify-center rounded-full bg-wedding-pink text-white hover:bg-wedding-pink/90"
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <p className="text-gray-500 text-center mb-8">
-              The wedding date can be changed later!
-            </p>
-          </div>
+          <DateSelection date={date} onDateChange={setDate} />
         )}
 
         <div className="fixed bottom-0 left-0 right-0 grid grid-cols-2 divide-x">
