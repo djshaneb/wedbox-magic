@@ -14,15 +14,15 @@ export const WeddingImageSelector = ({
   return (
     <div className={cn("grid grid-cols-2 gap-4", className)}>
       <div
-        onClick={() => onImageSelect("/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png")}
+        onClick={() => onImageSelect("/placeholder.svg")}
         className={`
           relative rounded-lg overflow-hidden cursor-pointer
           transition-all duration-200 transform hover:scale-105
-          ${selectedImage === "/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png" ? 'ring-4 ring-wedding-pink' : 'ring-2 ring-gray-200'}
+          ${selectedImage === "/placeholder.svg" ? 'ring-4 ring-wedding-pink' : 'ring-2 ring-gray-200'}
         `}
       >
-        <div className="h-48 w-full bg-[url('/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png')] bg-[length:200%] bg-left bg-no-repeat" />
-        {selectedImage === "/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png" && (
+        <div className="h-48 w-full bg-[url('/placeholder.svg')] bg-cover bg-center" />
+        {selectedImage === "/placeholder.svg" && (
           <div className="absolute inset-0 bg-wedding-pink/20 flex items-center justify-center">
             <div className="bg-white rounded-full p-2">
               <svg
@@ -44,15 +44,15 @@ export const WeddingImageSelector = ({
       </div>
 
       <div
-        onClick={() => onImageSelect("/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png")}
+        onClick={() => onImageSelect("/placeholder.svg")}
         className={`
           relative rounded-lg overflow-hidden cursor-pointer
           transition-all duration-200 transform hover:scale-105
-          ${selectedImage === "/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png" ? 'ring-4 ring-wedding-pink' : 'ring-2 ring-gray-200'}
+          ${selectedImage === "/placeholder.svg" ? 'ring-4 ring-wedding-pink' : 'ring-2 ring-gray-200'}
         `}
       >
-        <div className="h-48 w-full bg-[url('/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png')] bg-[length:200%] bg-right bg-no-repeat" />
-        {selectedImage === "/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png" && (
+        <div className="h-48 w-full bg-[url('/placeholder.svg')] bg-cover bg-center" />
+        {selectedImage === "/placeholder.svg" && (
           <div className="absolute inset-0 bg-wedding-pink/20 flex items-center justify-center">
             <div className="bg-white rounded-full p-2">
               <svg
