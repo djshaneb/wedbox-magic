@@ -26,12 +26,14 @@ export const WeddingHeader = () => {
 
   return (
     <div className="flex items-center gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm border border-wedding-pink/10">
-      {weddingDetails.photo_url && weddingDetails.photo_url.trim() !== '' && (
-        <img
-          src={weddingDetails.photo_url.startsWith('http') ? weddingDetails.photo_url : `${window.location.origin}${weddingDetails.photo_url}`}
-          alt="Wedding couple"
-          className="w-12 h-12 rounded-full object-cover border-2 border-wedding-pink"
-        />
+      {weddingDetails.photo_url && (
+        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-wedding-pink">
+          <img
+            src={weddingDetails.photo_url}
+            alt="Wedding couple"
+            className="w-full h-full object-cover"
+          />
+        </div>
       )}
       <div className="flex flex-col">
         <h2 className="text-lg font-semibold text-gray-800">
