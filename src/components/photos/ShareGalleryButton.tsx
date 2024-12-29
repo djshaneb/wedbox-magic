@@ -5,12 +5,14 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const ShareGalleryButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [shareLink, setShareLink] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const generateShareLink = async () => {
     try {
@@ -34,7 +36,7 @@ export const ShareGalleryButton = () => {
       toast({
         title: "Share link generated!",
         description: "Copy and share this link with your guests.",
-        className: "top-[10%]"
+        className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
       });
     } catch (error) {
       console.error('Error generating share link:', error);
@@ -42,6 +44,7 @@ export const ShareGalleryButton = () => {
         title: "Error",
         description: "Failed to generate share link. Please try again.",
         variant: "destructive",
+        className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
       });
     }
   };
@@ -56,7 +59,7 @@ export const ShareGalleryButton = () => {
       toast({
         title: "Copied!",
         description: "Share link copied to clipboard",
-        className: "top-[10%]"
+        className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
       });
     } catch (error) {
       console.error('Error copying to clipboard:', error);
@@ -64,6 +67,7 @@ export const ShareGalleryButton = () => {
         title: "Error",
         description: "Failed to copy link. Please try manually.",
         variant: "destructive",
+        className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
       });
     }
   };
