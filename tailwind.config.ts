@@ -83,41 +83,33 @@ export default {
 						transform: 'scale(0.95)',
 						boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)'
 					},
-					'10%': {
+					'20%': {
 						transform: 'scale(0.96)',
 						boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.6)'
 					},
-					'20%': {
+					'40%': {
 						transform: 'scale(0.97)',
 						boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.5)'
 					},
-					'30%': {
+					'60%': {
 						transform: 'scale(0.98)',
 						boxShadow: '0 0 0 6px rgba(59, 130, 246, 0.4)'
 					},
-					'40%': {
+					'80%': {
 						transform: 'scale(0.99)',
 						boxShadow: '0 0 0 8px rgba(59, 130, 246, 0.3)'
 					},
-					'50%': {
+					'85%': {
 						transform: 'scale(1)',
 						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0.2)'
 					},
-					'60%': {
-						transform: 'scale(1)',
-						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0.15)'
-					},
-					'70%': {
-						transform: 'scale(0.99)',
-						boxShadow: '0 0 0 8px rgba(59, 130, 246, 0.1)'
-					},
-					'80%': {
-						transform: 'scale(0.98)',
-						boxShadow: '0 0 0 6px rgba(59, 130, 246, 0.05)'
-					},
 					'90%': {
-						transform: 'scale(0.96)',
-						boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.02)'
+						transform: 'scale(0.99)',
+						boxShadow: '0 0 0 8px rgba(59, 130, 246, 0.15)'
+					},
+					'95%': {
+						transform: 'scale(0.97)',
+						boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.1)'
 					},
 					'100%': {
 						transform: 'scale(0.95)',
@@ -128,7 +120,7 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 1.2s ease-out',
 				'accordion-up': 'accordion-up 1.2s ease-out',
-				'pulse-ring': 'pulse-ring 60s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+				'pulse-ring': 'pulse-ring 60s ease-in-out infinite'
 			}
 		}
 	},
