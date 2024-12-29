@@ -20,7 +20,7 @@ export const EditableText = ({ text, onTextChange, multiline = false }: Editable
   };
 
   return (
-    <div className="relative">
+    <div className="relative group">
       {isEditing ? (
         multiline ? (
           <Textarea
@@ -40,22 +40,22 @@ export const EditableText = ({ text, onTextChange, multiline = false }: Editable
           />
         )
       ) : (
-        <>
-          <p 
-            className={multiline ? "" : "text-lg"} 
-            onClick={() => setIsEditing(true)}
-          >
+        <div className="flex items-center justify-center gap-2 cursor-pointer" onClick={() => setIsEditing(true)}>
+          <p className={`${multiline ? "" : "text-lg"}`}>
             {text}
           </p>
           <Button
-            variant="outline"
+            variant="ghost"
             size="icon"
-            className="absolute -right-8 top-1/2 -translate-y-1/2 rounded-full bg-coral text-white hover:bg-coral/90 border-none"
-            onClick={() => setIsEditing(true)}
+            className="h-8 w-8 rounded-full bg-wedding-pink/10 text-wedding-pink hover:bg-wedding-pink/20 hover:text-wedding-pink md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(true);
+            }}
           >
             <Pencil className="h-4 w-4" />
           </Button>
-        </>
+        </div>
       )}
     </div>
   );
