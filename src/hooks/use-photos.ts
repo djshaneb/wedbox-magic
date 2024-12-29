@@ -60,6 +60,11 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
       ownerId?: string;
     }) => {
       try {
+        // Get the current user's ID if no ownerId is provided
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user && !ownerId) throw new Error('No user authenticated');
+
+        const userId = ownerId || user?.id;
         const fileExt = file.name.split('.').pop();
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
         
@@ -70,12 +75,12 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
 
         if (uploadError) throw uploadError;
 
-        // Then, create the database record
+        // Then, create the database record with the user_id
         const { error: dbError } = await supabase
           .from('photos')
           .insert({ 
             storage_path: fileName,
-            user_id: ownerId || undefined // Let RLS handle the user_id if not provided
+            user_id: userId
           });
 
         if (dbError) throw dbError;
