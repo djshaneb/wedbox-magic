@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Upload, Camera, CameraIcon } from "lucide-react";
+import { Upload, Camera } from "lucide-react";
 import { PhotoBooth } from "./PhotoBooth";
-import { CameraCapture } from "./CameraCapture";
-import { useState } from "react";
 
 interface PhotoUploadSectionProps {
   onFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -21,7 +19,18 @@ export const PhotoUploadSection = ({
   setIsPhotoBooth,
   isMobile
 }: PhotoUploadSectionProps) => {
-  const [isCameraMode, setIsCameraMode] = useState(false);
+  const handleCameraCapture = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          onPhotoTaken(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <Card className={`${isMobile ? 'shadow-none rounded-none border-0 border-b' : 'shadow-sm'} bg-white`}>
@@ -44,17 +53,29 @@ export const PhotoUploadSection = ({
             >
               <Upload className="mr-2 h-4 w-4" /> Upload Photos
             </Button>
-            <Button
-              variant={isCameraMode ? "destructive" : "secondary"}
-              size={isMobile ? "sm" : "default"}
-              onClick={() => setIsCameraMode(!isCameraMode)}
-              className={`${isMobile ? 'w-full' : 'flex-1'} ${isCameraMode ? 
-                "bg-red-500 hover:bg-red-600 text-white border-none shadow-md" : 
-                "bg-gradient-to-r from-pink-500/90 to-rose-500/90 hover:from-pink-600 hover:to-rose-600 text-white border-none shadow-md hover:shadow-lg"} transition-all duration-300`}
-            >
-              <CameraIcon className="mr-2 h-4 w-4" />
-              {isCameraMode ? "Stop Camera" : "Take Photo"}
-            </Button>
+            
+            {isMobile && (
+              <>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCameraCapture}
+                  className="hidden"
+                  id="camera-capture"
+                />
+                <Button
+                  onClick={() => document.getElementById("camera-capture")?.click()}
+                  variant="secondary"
+                  size="sm"
+                  className="w-full bg-gradient-to-r from-pink-500/90 to-rose-500/90 hover:from-pink-600 hover:to-rose-600 text-white border-none shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  <Camera className="mr-2 h-4 w-4" />
+                  Take Photo
+                </Button>
+              </>
+            )}
+            
             <Button
               variant={isPhotoBooth ? "destructive" : "secondary"}
               size={isMobile ? "sm" : "default"}
@@ -67,13 +88,6 @@ export const PhotoUploadSection = ({
               {isPhotoBooth ? "Stop Camera" : "Photo Booth Mode"}
             </Button>
           </div>
-
-          {isCameraMode && (
-            <CameraCapture
-              onPhotoTaken={onPhotoTaken}
-              onClose={() => setIsCameraMode(false)}
-            />
-          )}
 
           {isPhotoBooth && (
             <PhotoBooth
