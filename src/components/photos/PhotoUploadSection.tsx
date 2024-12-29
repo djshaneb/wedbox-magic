@@ -112,17 +112,12 @@ export const PhotoUploadSection = ({
           </Button>
         </div>
 
-        {/* Main FAB Button with Rays */}
+        {/* Main FAB Button */}
         <div className="relative">
-          {/* Rays of sunshine */}
-          <div className="absolute inset-[-100%] -z-10">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FEF7CD] via-[#FEC6A1] to-[#F97316] rounded-full blur-2xl animate-rays"></div>
-          </div>
-          {/* Main button */}
           <Button
             onClick={toggleMenu}
             size="icon"
-            className={`relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 ${isMenuOpen ? 'rotate-45' : ''}`}
+            className={`relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-xl hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 ring-4 ring-blue-200 hover:ring-blue-300 ${isMenuOpen ? 'rotate-45' : ''}`}
           >
             <Plus className="h-6 w-6" />
           </Button>
