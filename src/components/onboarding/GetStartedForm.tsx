@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NavigationButtons } from "./NavigationButtons";
 import { GetStartedSteps } from "./GetStartedSteps";
+import { useGetStartedSubmit } from "./form-handlers/useGetStartedSubmit";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
@@ -21,6 +21,7 @@ export const GetStartedForm = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { handleSubmit: handleFormSubmit } = useGetStartedSubmit();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,90 +43,12 @@ export const GetStartedForm = () => {
     } else if (step === 3) {
       setStep(4);
     } else {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('No user found');
-
-        const coupleNames = `${firstName} & ${form.getValues().partnerName}`;
-        
-        let photoUrl = null;
-        if (selectedImage) {
-          try {
-            const response = await fetch(selectedImage);
-            const blob = await response.blob();
-            const file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
-
-            const fileName = `wedding-photos/${crypto.randomUUID()}.jpg`;
-            
-            const { error: uploadError } = await supabase.storage
-              .from('photos')
-              .upload(fileName, file);
-
-            if (uploadError) {
-              console.error('Upload error:', uploadError);
-              throw uploadError;
-            }
-
-            const { data: { publicUrl } } = supabase.storage
-              .from('photos')
-              .getPublicUrl(fileName);
-
-            photoUrl = publicUrl;
-          } catch (error) {
-            console.error('Error processing image:', error);
-            toast({
-              title: "Error uploading image",
-              description: "There was a problem uploading your wedding photo.",
-              variant: "destructive",
-            });
-            return;
-          }
-        }
-
-        const { data: existingDetails } = await supabase
-          .from('wedding_details')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        let result;
-        
-        if (existingDetails) {
-          result = await supabase
-            .from('wedding_details')
-            .update({
-              couple_names: coupleNames,
-              wedding_date: date?.toISOString(),
-              photo_url: photoUrl
-            })
-            .eq('user_id', user.id);
-        } else {
-          result = await supabase
-            .from('wedding_details')
-            .insert({
-              user_id: user.id,
-              couple_names: coupleNames,
-              wedding_date: date?.toISOString(),
-              photo_url: photoUrl
-            });
-        }
-
-        if (result.error) throw result.error;
-
-        toast({
-          title: "Wedding details saved!",
-          description: "Your wedding information has been saved successfully.",
-        });
-
-        navigate("/");
-      } catch (error) {
-        console.error('Error saving wedding details:', error);
-        toast({
-          title: "Error saving details",
-          description: "There was a problem saving your wedding details. Please try again.",
-          variant: "destructive",
-        });
-      }
+      await handleFormSubmit({
+        firstName,
+        partnerName: form.getValues().partnerName,
+        date,
+        selectedImage,
+      });
     }
   };
 
