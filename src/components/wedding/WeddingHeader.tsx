@@ -24,12 +24,17 @@ export const WeddingHeader = () => {
 
   if (isLoading || !weddingDetails) return null;
 
+  // Construct the full URL for the photo
+  const photoUrl = weddingDetails.photo_url?.startsWith('/')
+    ? `${window.location.origin}${weddingDetails.photo_url}`
+    : weddingDetails.photo_url;
+
   return (
     <div className="flex items-center gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm border border-wedding-pink/10">
-      {weddingDetails.photo_url && (
-        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-wedding-pink">
+      {photoUrl && (
+        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-wedding-pink flex-shrink-0">
           <img
-            src={weddingDetails.photo_url}
+            src={photoUrl}
             alt="Wedding couple"
             className="w-full h-full object-cover"
           />
