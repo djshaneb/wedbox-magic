@@ -24,7 +24,7 @@ export const WeddingSummary = ({
 }: WeddingSummaryProps) => {
   const [welcomeText, setWelcomeText] = useState("Welcome to our special day,");
   const [descriptionText, setDescriptionText] = useState(
-    "we're so excited to celebrate with you! Please use the Wedbox app to share your photos and videos with us, so that we get all the best memories from our special day."
+    "we're so excited to celebrate with you! Please use the WeddingWin Photo App to share your photos and videos with us, so that we get all the best memories from our special day."
   );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
