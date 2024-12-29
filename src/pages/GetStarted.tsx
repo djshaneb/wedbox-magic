@@ -87,9 +87,11 @@ const GetStarted = () => {
             firstName={firstName}
             partnerName={form.getValues().partnerName}
             date={date}
-            onEditDate={() => setStep(3)}
-            onEditNames={() => setStep(1)}
-            onEditPhoto={() => setStep(2)}
+            onEditDate={setDate}
+            onEditNames={(first, partner) => {
+              setFirstName(first);
+              form.setValue("partnerName", partner);
+            }}
           />
         )}
 
