@@ -74,7 +74,10 @@ export default {
         ...accordionKeyframes,
         'pulse-ring': pulseRingKeyframes
       },
-      animation: animations
+      animation: {
+        ...animations,
+        'pulse-ring': 'pulse-ring 15s linear infinite' // Changed from 60s to 15s (1/4 of original speed)
+      }
     }
   },
   plugins: [require("tailwindcss-animate")],
