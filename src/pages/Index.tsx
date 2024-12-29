@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { OnboardingGuide } from "@/components/photos/OnboardingGuide";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -49,6 +50,7 @@ const Index = () => {
       
       <main className={`container mx-auto ${isMobile ? 'px-2 pt-20' : 'p-6 pt-24'}`}>
         <PhotoGallery />
+        <OnboardingGuide />
       </main>
     </div>
   );
