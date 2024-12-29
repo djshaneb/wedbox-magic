@@ -85,11 +85,26 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'rays': {
+					'0%': {
+						transform: 'scale(1)',
+						opacity: '0'
+					},
+					'50%': {
+						transform: 'scale(1.5)',
+						opacity: '0.15'
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 1.2s ease-out',
-				'accordion-up': 'accordion-up 1.2s ease-out'
+				'accordion-up': 'accordion-up 1.2s ease-out',
+				'rays': 'rays 8s ease-in-out infinite'
 			}
 		}
 	},

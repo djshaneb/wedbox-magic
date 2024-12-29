@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Plus, Upload, Camera, Image } from "lucide-react";
 import { PhotoBooth } from "./PhotoBooth";
 import { useState } from "react";
@@ -113,14 +112,21 @@ export const PhotoUploadSection = ({
           </Button>
         </div>
 
-        {/* Main FAB Button */}
-        <Button
-          onClick={toggleMenu}
-          size="icon"
-          className={`h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 ${isMenuOpen ? 'rotate-45' : ''}`}
-        >
-          <Plus className="h-6 w-6" />
-        </Button>
+        {/* Main FAB Button with Rays */}
+        <div className="relative">
+          {/* Rays of sunshine */}
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FEF7CD] via-[#FEC6A1] to-[#F97316] rounded-full blur-xl animate-rays"></div>
+          </div>
+          {/* Main button */}
+          <Button
+            onClick={toggleMenu}
+            size="icon"
+            className={`relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 ${isMenuOpen ? 'rotate-45' : ''}`}
+          >
+            <Plus className="h-6 w-6" />
+          </Button>
+        </div>
       </div>
     </>
   );
