@@ -85,23 +85,11 @@ export default {
 					to: {
 						height: '0'
 					}
-				},
-				'glow': {
-					'0%': {
-						boxShadow: '0 0 15px rgba(59, 130, 246, 0.2)'
-					},
-					'50%': {
-						boxShadow: '0 0 30px rgba(99, 102, 241, 0.4)'
-					},
-					'100%': {
-						boxShadow: '0 0 15px rgba(59, 130, 246, 0.2)'
-					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 1.2s ease-out',
-				'accordion-up': 'accordion-up 1.2s ease-out',
-				'glow': 'glow 16s ease-in-out infinite'
+				'accordion-up': 'accordion-up 1.2s ease-out'
 			}
 		}
 	},
