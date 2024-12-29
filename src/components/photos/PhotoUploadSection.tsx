@@ -117,9 +117,9 @@ export const PhotoUploadSection = ({
           <Button
             onClick={toggleMenu}
             size="icon"
-            className={`relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-xl hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 ring-4 ring-blue-200 hover:ring-blue-300 ${isMenuOpen ? 'rotate-45' : ''}`}
+            className={`relative h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-xl hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 ring-4 ring-blue-200 hover:ring-blue-300 animate-pulse-ring ${isMenuOpen ? 'rotate-45' : ''}`}
           >
-            <Plus className="h-6 w-6" />
+            <Plus className={`h-6 w-6 transition-transform duration-500 ${isMenuOpen ? 'rotate-180' : 'animate-bounce'}`} />
           </Button>
         </div>
       </div>

@@ -85,11 +85,26 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-ring': {
+					'0%': {
+						transform: 'scale(0.95)',
+						boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)'
+					},
+					'70%': {
+						transform: 'scale(1)',
+						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0)'
+					},
+					'100%': {
+						transform: 'scale(0.95)',
+						boxShadow: '0 0 0 0 rgba(59, 130, 246, 0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 1.2s ease-out',
-				'accordion-up': 'accordion-up 1.2s ease-out'
+				'accordion-up': 'accordion-up 1.2s ease-out',
+				'pulse-ring': 'pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
 			}
 		}
 	},
