@@ -2,7 +2,6 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { WeddingImageSelector } from "./WeddingImageSelector";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
@@ -11,26 +10,16 @@ const formSchema = z.object({
 
 interface PartnerInformationProps {
   form: UseFormReturn<z.infer<typeof formSchema>>;
-  selectedImage: string | null;
-  onImageSelect: (url: string) => void;
   onSubmit: () => void;
 }
 
 export const PartnerInformation = ({
   form,
-  selectedImage,
-  onImageSelect,
   onSubmit,
 }: PartnerInformationProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <WeddingImageSelector
-          selectedImage={selectedImage}
-          onImageSelect={onImageSelect}
-          className="mb-8"
-        />
-        
         <h2 className="text-2xl text-center mb-6">My partner is...</h2>
         
         <FormField

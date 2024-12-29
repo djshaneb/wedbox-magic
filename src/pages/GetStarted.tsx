@@ -169,8 +169,6 @@ const GetStarted = () => {
         ) : step === 2 ? (
           <PartnerInformation
             form={form}
-            selectedImage={selectedImage}
-            onImageSelect={setSelectedImage}
             onSubmit={handleNext}
           />
         ) : step === 3 ? (
@@ -185,6 +183,8 @@ const GetStarted = () => {
               setFirstName(first);
               form.setValue("partnerName", partner);
             }}
+            selectedImage={selectedImage}
+            onImageSelect={setSelectedImage}
           />
         )}
 

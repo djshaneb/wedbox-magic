@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns";
 import { useState } from "react";
 import { EditableText } from "./wedding-summary/EditableText";
-import { ImageUpload } from "./wedding-summary/ImageUpload";
+import { WeddingImageSelector } from "./WeddingImageSelector";
 
 interface WeddingSummaryProps {
   firstName: string;
@@ -13,6 +13,8 @@ interface WeddingSummaryProps {
   date: Date | undefined;
   onEditDate: (date: Date | undefined) => void;
   onEditNames: (firstName: string, partnerName: string) => void;
+  selectedImage: string | null;
+  onImageSelect: (url: string) => void;
 }
 
 export const WeddingSummary = ({
@@ -21,24 +23,20 @@ export const WeddingSummary = ({
   date,
   onEditDate,
   onEditNames,
+  selectedImage,
+  onImageSelect,
 }: WeddingSummaryProps) => {
   const [welcomeText, setWelcomeText] = useState("Welcome to our special day,");
   const [descriptionText, setDescriptionText] = useState(
     "we're so excited to celebrate with you! Please use the WeddingWin Photo App to share your photos and videos with us, so that we get all the best memories from our special day."
   );
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const handleImageChange = (file: File) => {
-    setSelectedImage(file);
-    setImagePreview(URL.createObjectURL(file));
-  };
 
   return (
     <div className="flex flex-col items-center space-y-8 max-w-md mx-auto">
-      <ImageUpload
-        imagePreview={imagePreview}
-        onImageChange={handleImageChange}
+      <WeddingImageSelector
+        selectedImage={selectedImage}
+        onImageSelect={onImageSelect}
+        className="mb-8"
       />
 
       <div className="w-full text-center relative">
