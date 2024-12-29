@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { WeddingImageSelector } from "@/components/onboarding/WeddingImageSelector";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
@@ -29,19 +30,6 @@ const GetStarted = () => {
       partnerEmail: "",
     },
   });
-
-  const images = [
-    {
-      id: 1,
-      url: "/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png",
-      alt: "Wedding Image 1"
-    },
-    {
-      id: 2,
-      url: "/lovable-uploads/d8ee984e-6ea9-4f57-8398-08173c4bb4b4.png",
-      alt: "Wedding Image 2"
-    }
-  ];
 
   const handleNext = () => {
     if (step === 1) {
@@ -161,44 +149,10 @@ const GetStarted = () => {
 
               <div className="space-y-4 mt-8">
                 <h3 className="text-lg font-medium text-center">Choose your wedding style</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {images.map((image) => (
-                    <div
-                      key={image.id}
-                      onClick={() => setSelectedImage(image.url)}
-                      className={`
-                        relative rounded-lg overflow-hidden cursor-pointer
-                        transition-all duration-200 transform hover:scale-105
-                        ${selectedImage === image.url ? 'ring-4 ring-wedding-pink' : 'ring-2 ring-gray-200'}
-                      `}
-                    >
-                      <img
-                        src={image.url}
-                        alt={image.alt}
-                        className="w-full h-40 object-cover"
-                      />
-                      {selectedImage === image.url && (
-                        <div className="absolute inset-0 bg-wedding-pink/20 flex items-center justify-center">
-                          <div className="bg-white rounded-full p-2">
-                            <svg
-                              className="w-6 h-6 text-wedding-pink"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                <WeddingImageSelector
+                  selectedImage={selectedImage}
+                  onImageSelect={setSelectedImage}
+                />
               </div>
             </form>
           </Form>
