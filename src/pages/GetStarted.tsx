@@ -51,16 +51,38 @@ const GetStarted = () => {
 
         const coupleNames = `${firstName} & ${form.getValues().partnerName}`;
         
-        const { error } = await supabase
+        // First check if wedding details already exist for this user
+        const { data: existingDetails } = await supabase
           .from('wedding_details')
-          .insert({
-            user_id: user.id,
-            couple_names: coupleNames,
-            wedding_date: date?.toISOString(),
-            photo_url: selectedImage
-          });
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-        if (error) throw error;
+        let result;
+        
+        if (existingDetails) {
+          // Update existing record
+          result = await supabase
+            .from('wedding_details')
+            .update({
+              couple_names: coupleNames,
+              wedding_date: date?.toISOString(),
+              photo_url: selectedImage
+            })
+            .eq('user_id', user.id);
+        } else {
+          // Insert new record
+          result = await supabase
+            .from('wedding_details')
+            .insert({
+              user_id: user.id,
+              couple_names: coupleNames,
+              wedding_date: date?.toISOString(),
+              photo_url: selectedImage
+            });
+        }
+
+        if (result.error) throw result.error;
 
         toast({
           title: "Wedding details saved!",
