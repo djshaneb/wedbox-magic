@@ -34,17 +34,6 @@ export const WeddingSummary = ({
     setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleNamesChange = (newText: string) => {
-    // Split the text on "&" and trim spaces
-    const parts = newText.split("&").map(part => part.trim());
-    if (parts.length === 2) {
-      onEditNames(parts[0], parts[1]);
-    } else {
-      // If there's no "&", use the entire text as the first name
-      onEditNames(newText, "");
-    }
-  };
-
   return (
     <div className="flex flex-col items-center space-y-8 max-w-md mx-auto">
       <ImageUpload
@@ -54,8 +43,8 @@ export const WeddingSummary = ({
 
       <div className="w-full text-center relative">
         <EditableText
-          text={`${firstName} & ${partnerName}`}
-          onTextChange={handleNamesChange}
+          text={firstName && partnerName ? `${firstName} & ${partnerName}` : firstName || ""}
+          onTextChange={(text) => onEditNames(text, "")}
         />
       </div>
 
