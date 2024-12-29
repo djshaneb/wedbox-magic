@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import AuthPage from "./pages/Auth";
 import SharedGallery from "./pages/SharedGallery";
+import GetStarted from "./pages/GetStarted";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
+  return isAuthenticated ? <>{children}</> : <Navigate to="/get-started" />;
 };
 
 const App = () => (
@@ -34,6 +35,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/get-started" element={<GetStarted />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/shared/:accessCode" element={<SharedGallery />} />
           <Route
