@@ -91,7 +91,7 @@ export default {
 						transform: 'scale(0.95)',
 						boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)'
 					},
-					'70%': {
+					'35%': {
 						transform: 'scale(1)',
 						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0)'
 					},
