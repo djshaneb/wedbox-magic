@@ -24,7 +24,7 @@ export const WeddingHeader = () => {
 
   if (isLoading || !weddingDetails) return null;
 
-  // Only show the photo section if there's a photo URL and it's not null
+  // Only show the photo section if there's a photo URL
   const showPhoto = weddingDetails.photo_url !== null;
 
   return (

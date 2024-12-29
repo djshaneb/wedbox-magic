@@ -54,18 +54,14 @@ const GetStarted = () => {
         // Handle image upload if there's a selected image
         let photoUrl = null;
         if (selectedImage) {
-          // Convert base64 to blob if it's a data URL
-          let file;
-          if (selectedImage.startsWith('data:')) {
+          try {
+            // Convert base64 to blob if it's a data URL
             const response = await fetch(selectedImage);
             const blob = await response.blob();
-            file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
-          }
+            const file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
 
-          if (file) {
             // Upload to Supabase Storage
-            const fileExt = file.name.split('.').pop();
-            const fileName = `wedding-photos/${crypto.randomUUID()}.${fileExt}`;
+            const fileName = `wedding-photos/${crypto.randomUUID()}.jpg`;
             
             const { error: uploadError } = await supabase.storage
               .from('photos')
@@ -83,6 +79,14 @@ const GetStarted = () => {
 
             photoUrl = publicUrl;
             console.log('Uploaded photo URL:', photoUrl);
+          } catch (error) {
+            console.error('Error processing image:', error);
+            toast({
+              title: "Error uploading image",
+              description: "There was a problem uploading your wedding photo.",
+              variant: "destructive",
+            });
+            return;
           }
         }
 
