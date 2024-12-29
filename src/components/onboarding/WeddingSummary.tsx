@@ -22,9 +22,6 @@ export const WeddingSummary = ({
   onEditDate,
   onEditNames,
 }: WeddingSummaryProps) => {
-  const [isEditingNames, setIsEditingNames] = useState(false);
-  const [editedFirstName, setEditedFirstName] = useState(firstName);
-  const [editedPartnerName, setEditedPartnerName] = useState(partnerName);
   const [welcomeText, setWelcomeText] = useState("Welcome to our special day,");
   const [descriptionText, setDescriptionText] = useState(
     "we're so excited to celebrate with you! Please use the Wedbox app to share your photos and videos with us, so that we get all the best memories from our special day."
@@ -37,9 +34,15 @@ export const WeddingSummary = ({
     setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleNamesSubmit = () => {
-    onEditNames(editedFirstName, editedPartnerName);
-    setIsEditingNames(false);
+  const handleNamesChange = (newText: string) => {
+    // Split the text on "&" and trim spaces
+    const parts = newText.split("&").map(part => part.trim());
+    if (parts.length === 2) {
+      onEditNames(parts[0], parts[1]);
+    } else {
+      // If there's no "&", use the entire text as the first name
+      onEditNames(newText, "");
+    }
   };
 
   return (
@@ -50,30 +53,10 @@ export const WeddingSummary = ({
       />
 
       <div className="w-full text-center relative">
-        {isEditingNames ? (
-          <div className="space-y-2">
-            <Input
-              value={editedFirstName}
-              onChange={(e) => setEditedFirstName(e.target.value)}
-              className="text-center"
-              placeholder="Your name"
-            />
-            <Input
-              value={editedPartnerName}
-              onChange={(e) => setEditedPartnerName(e.target.value)}
-              className="text-center"
-              placeholder="Partner's name"
-            />
-            <Button onClick={handleNamesSubmit} className="mt-2">
-              Save Names
-            </Button>
-          </div>
-        ) : (
-          <EditableText
-            text={`${firstName} & ${partnerName}`}
-            onTextChange={() => setIsEditingNames(true)}
-          />
-        )}
+        <EditableText
+          text={`${firstName} & ${partnerName}`}
+          onTextChange={handleNamesChange}
+        />
       </div>
 
       <div className="w-full text-center relative">
