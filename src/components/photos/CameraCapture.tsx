@@ -16,8 +16,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const {
-    isFlashOn,
-    toggleFlash,
     switchCamera,
   } = useCameraControls();
 
@@ -66,8 +64,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({
           />
           
           <CameraControls
-            isFlashOn={isFlashOn}
-            onToggleFlash={toggleFlash}
             onTakePhoto={takePhoto}
             onSwitchCamera={switchCamera}
           />
