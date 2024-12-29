@@ -115,8 +115,8 @@ export const PhotoUploadSection = ({
         {/* Main FAB Button with Rays */}
         <div className="relative">
           {/* Rays of sunshine */}
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FEF7CD] via-[#FEC6A1] to-[#F97316] rounded-full blur-xl animate-rays"></div>
+          <div className="absolute inset-[-100%] -z-10">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FEF7CD] via-[#FEC6A1] to-[#F97316] rounded-full blur-2xl animate-rays"></div>
           </div>
           {/* Main button */}
           <Button

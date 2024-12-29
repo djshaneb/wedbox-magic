@@ -92,8 +92,8 @@ export default {
 						opacity: '0'
 					},
 					'50%': {
-						transform: 'scale(1.5)',
-						opacity: '0.15'
+						transform: 'scale(2.5)',
+						opacity: '0.3'
 					},
 					'100%': {
 						transform: 'scale(1)',
@@ -104,7 +104,7 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 1.2s ease-out',
 				'accordion-up': 'accordion-up 1.2s ease-out',
-				'rays': 'rays 8s ease-in-out infinite'
+				'rays': 'rays 16s ease-in-out infinite'
 			}
 		}
 	},
