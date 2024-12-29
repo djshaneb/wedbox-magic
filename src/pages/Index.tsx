@@ -38,28 +38,52 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-4">
               <WeddingHeader />
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size={isMobile ? "sm" : "default"}
-                  onClick={() => navigate("/get-started")}
-                  className="text-wedding-pink hover:text-wedding-pink/80"
-                >
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size={isMobile ? "sm" : "default"}
-                  onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-900"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </Button>
-              </div>
+              {!isMobile && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    onClick={() => navigate("/get-started")}
+                    className="text-wedding-pink hover:text-wedding-pink/80"
+                  >
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    onClick={handleLogout}
+                    className="text-gray-600 hover:text-gray-900"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
+          {isMobile && (
+            <div className="mt-2 flex items-center gap-2 justify-end">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/get-started")}
+                className="text-wedding-pink hover:text-wedding-pink/80"
+              >
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       
