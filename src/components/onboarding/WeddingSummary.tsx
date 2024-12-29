@@ -2,6 +2,10 @@ import { Card } from "@/components/ui/card";
 import { Pencil, Camera } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { WeddingImageSelector } from "./WeddingImageSelector";
 
 interface WeddingSummaryProps {
   firstName: string;
@@ -20,16 +24,22 @@ export const WeddingSummary = ({
   onEditNames,
   onEditPhoto,
 }: WeddingSummaryProps) => {
+  const [isEditingWelcome, setIsEditingWelcome] = useState(false);
+  const [welcomeText, setWelcomeText] = useState("Welcome to our special day,");
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [descriptionText, setDescriptionText] = useState(
+    "we're so excited to celebrate with you! Please use the Wedbox app to share your photos and videos with us, so that we get all the best memories from our special day."
+  );
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   return (
     <div className="flex flex-col items-center space-y-8 max-w-md mx-auto">
       <div className="relative w-full">
-        <div className="w-64 h-64 mx-auto bg-[#A5C9C5] rounded-full flex items-center justify-center">
-          <img
-            src="/lovable-uploads/03c9a88a-9677-4417-9f21-2b802f9c7d78.png"
-            alt="Wedding illustration"
-            className="w-48 h-48 object-contain"
-          />
-        </div>
+        <WeddingImageSelector
+          selectedImage={selectedImage}
+          onImageSelect={setSelectedImage}
+          className="w-64 h-64 mx-auto"
+        />
         <Button
           variant="outline"
           size="icon"
@@ -70,13 +80,58 @@ export const WeddingSummary = ({
 
       <div className="w-full h-px bg-gray-200 my-8" />
 
-      <div className="text-center space-y-4 text-gray-600">
-        <p className="text-lg">Welcome to our special day,</p>
-        <p>
-          we're so excited to celebrate with you! Please use the Wedbox app to
-          share your photos and videos with us, so that we get all the best
-          memories from our special day.
-        </p>
+      <div className="text-center space-y-4 text-gray-600 w-full">
+        <div className="relative">
+          {isEditingWelcome ? (
+            <Input
+              value={welcomeText}
+              onChange={(e) => setWelcomeText(e.target.value)}
+              onBlur={() => setIsEditingWelcome(false)}
+              className="text-lg text-center"
+              autoFocus
+            />
+          ) : (
+            <>
+              <p className="text-lg" onClick={() => setIsEditingWelcome(true)}>
+                {welcomeText}
+              </p>
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute -right-8 top-1/2 -translate-y-1/2 rounded-full bg-coral text-white hover:bg-coral/90 border-none"
+                onClick={() => setIsEditingWelcome(true)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
+
+        <div className="relative">
+          {isEditingDescription ? (
+            <Textarea
+              value={descriptionText}
+              onChange={(e) => setDescriptionText(e.target.value)}
+              onBlur={() => setIsEditingDescription(false)}
+              className="text-center min-h-[100px]"
+              autoFocus
+            />
+          ) : (
+            <>
+              <p onClick={() => setIsEditingDescription(true)}>
+                {descriptionText}
+              </p>
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute -right-8 top-1/2 -translate-y-1/2 rounded-full bg-coral text-white hover:bg-coral/90 border-none"
+                onClick={() => setIsEditingDescription(true)}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
