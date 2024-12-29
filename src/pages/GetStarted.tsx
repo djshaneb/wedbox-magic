@@ -51,6 +51,32 @@ const GetStarted = () => {
 
         const coupleNames = `${firstName} & ${form.getValues().partnerName}`;
         
+        // Handle image upload if there's a selected image
+        let photoUrl = selectedImage;
+        if (selectedImage && selectedImage.startsWith('data:')) {
+          // Convert base64 to blob
+          const response = await fetch(selectedImage);
+          const blob = await response.blob();
+          const file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
+          
+          // Upload to Supabase Storage
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${crypto.randomUUID()}.${fileExt}`;
+          
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('photos')
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+
+          // Get the public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('photos')
+            .getPublicUrl(fileName);
+
+          photoUrl = publicUrl;
+        }
+
         // First check if wedding details already exist for this user
         const { data: existingDetails } = await supabase
           .from('wedding_details')
@@ -67,7 +93,7 @@ const GetStarted = () => {
             .update({
               couple_names: coupleNames,
               wedding_date: date?.toISOString(),
-              photo_url: selectedImage
+              photo_url: photoUrl
             })
             .eq('user_id', user.id);
         } else {
@@ -78,7 +104,7 @@ const GetStarted = () => {
               user_id: user.id,
               couple_names: coupleNames,
               wedding_date: date?.toISOString(),
-              photo_url: selectedImage
+              photo_url: photoUrl
             });
         }
 
