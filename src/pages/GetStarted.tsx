@@ -110,6 +110,12 @@ const GetStarted = () => {
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleNext)} className="space-y-6">
+              <WeddingImageSelector
+                selectedImage={selectedImage}
+                onImageSelect={setSelectedImage}
+                className="mb-8"
+              />
+              
               <h2 className="text-2xl text-center mb-6">My partner is...</h2>
               
               <FormField
@@ -146,14 +152,6 @@ const GetStarted = () => {
                   </FormItem>
                 )}
               />
-
-              <div className="space-y-4 mt-8">
-                <h3 className="text-lg font-medium text-center">Choose your wedding style</h3>
-                <WeddingImageSelector
-                  selectedImage={selectedImage}
-                  onImageSelect={setSelectedImage}
-                />
-              </div>
             </form>
           </Form>
         )}
