@@ -28,13 +28,15 @@ const Index = () => {
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-start">
-              <h1 className="font-semibold text-lg md:text-xl flex items-center gap-2">
-                <Camera className="h-5 w-5 text-wedding-pink" />
-                <span className="bg-gradient-to-r from-wedding-pink to-pink-400 bg-clip-text text-transparent font-bold">
+              <h1 className="font-semibold text-lg md:text-xl flex items-center gap-2 group">
+                <Camera className="h-5 w-5 text-wedding-pink transition-transform group-hover:scale-110" />
+                <span className="bg-gradient-to-r from-wedding-pink to-pink-400 bg-clip-text text-transparent font-bold tracking-tight">
                   Wedding Win
                 </span>
               </h1>
-              <span className="text-xs md:text-sm font-medium text-gray-600">PHOTO SHARE</span>
+              <span className="text-[10px] md:text-sm uppercase font-medium tracking-wider text-gray-600 ml-7 md:ml-8">
+                Photo Share
+              </span>
             </div>
             <div className="flex items-center gap-4">
               <WeddingHeader />
