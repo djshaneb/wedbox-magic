@@ -71,45 +71,53 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
 				},
 				'pulse-ring': {
 					'0%': {
 						transform: 'scale(0.95)',
 						boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)'
 					},
-					'15%': {
+					'10%': {
+						transform: 'scale(0.96)',
+						boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.6)'
+					},
+					'20%': {
 						transform: 'scale(0.97)',
 						boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.5)'
 					},
-					'25%': {
+					'30%': {
 						transform: 'scale(0.98)',
 						boxShadow: '0 0 0 6px rgba(59, 130, 246, 0.4)'
 					},
-					'35%': {
+					'40%': {
 						transform: 'scale(0.99)',
 						boxShadow: '0 0 0 8px rgba(59, 130, 246, 0.3)'
 					},
-					'45%': {
+					'50%': {
 						transform: 'scale(1)',
 						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0.2)'
 					},
-					'55%': {
+					'60%': {
 						transform: 'scale(1)',
-						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0.1)'
+						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0.15)'
+					},
+					'70%': {
+						transform: 'scale(0.99)',
+						boxShadow: '0 0 0 8px rgba(59, 130, 246, 0.1)'
+					},
+					'80%': {
+						transform: 'scale(0.98)',
+						boxShadow: '0 0 0 6px rgba(59, 130, 246, 0.05)'
+					},
+					'90%': {
+						transform: 'scale(0.96)',
+						boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.02)'
 					},
 					'100%': {
 						transform: 'scale(0.95)',
@@ -120,7 +128,7 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 1.2s ease-out',
 				'accordion-up': 'accordion-up 1.2s ease-out',
-				'pulse-ring': 'pulse-ring 20s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+				'pulse-ring': 'pulse-ring 60s cubic-bezier(0.4, 0, 0.6, 1) infinite'
 			}
 		}
 	},
