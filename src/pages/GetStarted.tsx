@@ -39,16 +39,20 @@ const GetStarted = () => {
       if (role && firstName.trim()) {
         setStep(2);
       }
-    } else {
-      form.handleSubmit((data) => {
-        console.log({ role, firstName, selectedImage, date, ...data });
-        navigate("/");
+    } else if (step === 2) {
+      form.handleSubmit(() => {
+        setStep(3);
       })();
+    } else {
+      console.log({ role, firstName, selectedImage, date, ...form.getValues() });
+      navigate("/");
     }
   };
 
   const handlePrevious = () => {
-    if (step === 2) {
+    if (step === 3) {
+      setStep(2);
+    } else if (step === 2) {
       setStep(1);
     } else {
       navigate("/auth");
@@ -110,6 +114,53 @@ const GetStarted = () => {
               className="mb-8 h-14 text-lg"
             />
           </>
+        ) : step === 2 ? (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleNext)} className="space-y-6">
+              <WeddingImageSelector
+                selectedImage={selectedImage}
+                onImageSelect={setSelectedImage}
+                className="mb-8"
+              />
+              
+              <h2 className="text-2xl text-center mb-6">My partner is...</h2>
+              
+              <FormField
+                control={form.control}
+                name="partnerName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Your partner's first name"
+                        className="h-14 text-lg"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="partnerEmail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        placeholder="Your partner's email"
+                        type="email"
+                        className="h-14 text-lg"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
         ) : (
           <div className="flex flex-col items-center">
             <h2 className="text-2xl font-light text-center mb-6">Our wedding date</h2>
