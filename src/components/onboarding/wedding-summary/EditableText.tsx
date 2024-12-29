@@ -40,7 +40,7 @@ export const EditableText = ({ text, onTextChange, multiline = false }: Editable
           />
         )
       ) : (
-        <div className="flex items-center justify-center gap-2 cursor-pointer" onClick={() => setIsEditing(true)}>
+        <div className="flex items-center justify-center gap-2">
           <p className={`${multiline ? "" : "text-lg"}`}>
             {text}
           </p>
@@ -48,10 +48,7 @@ export const EditableText = ({ text, onTextChange, multiline = false }: Editable
             variant="ghost"
             size="icon"
             className="h-8 w-8 rounded-full bg-wedding-pink/10 text-wedding-pink hover:bg-wedding-pink/20 hover:text-wedding-pink md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(true);
-            }}
+            onClick={() => setIsEditing(true)}
           >
             <Pencil className="h-4 w-4" />
           </Button>
