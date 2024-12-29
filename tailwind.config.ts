@@ -91,9 +91,25 @@ export default {
 						transform: 'scale(0.95)',
 						boxShadow: '0 0 0 0 rgba(59, 130, 246, 0.7)'
 					},
+					'15%': {
+						transform: 'scale(0.97)',
+						boxShadow: '0 0 0 4px rgba(59, 130, 246, 0.5)'
+					},
+					'25%': {
+						transform: 'scale(0.98)',
+						boxShadow: '0 0 0 6px rgba(59, 130, 246, 0.4)'
+					},
 					'35%': {
+						transform: 'scale(0.99)',
+						boxShadow: '0 0 0 8px rgba(59, 130, 246, 0.3)'
+					},
+					'45%': {
 						transform: 'scale(1)',
-						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0)'
+						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0.2)'
+					},
+					'55%': {
+						transform: 'scale(1)',
+						boxShadow: '0 0 0 10px rgba(59, 130, 246, 0.1)'
 					},
 					'100%': {
 						transform: 'scale(0.95)',
