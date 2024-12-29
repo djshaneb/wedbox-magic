@@ -1,6 +1,6 @@
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Camera, LogOut } from "lucide-react";
+import { Camera, LogOut, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -35,15 +35,26 @@ const Index = () => {
               </h1>
               <span className="text-xs md:text-sm font-medium text-gray-600">PHOTO SHARE</span>
             </div>
-            <Button
-              variant="ghost"
-              size={isMobile ? "sm" : "default"}
-              onClick={handleLogout}
-              className="text-gray-600 hover:text-gray-900"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size={isMobile ? "sm" : "default"}
+                onClick={() => navigate("/get-started")}
+                className="text-wedding-pink hover:text-wedding-pink/80"
+              >
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size={isMobile ? "sm" : "default"}
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-gray-900"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
