@@ -12,7 +12,12 @@ export const WeddingHeader = () => {
         .select('*')
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching wedding details:', error);
+        throw error;
+      }
+      
+      console.log('Wedding details:', data); // Add this to debug
       return data;
     },
   });
@@ -21,7 +26,7 @@ export const WeddingHeader = () => {
 
   return (
     <div className="flex items-center gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm border border-wedding-pink/10">
-      {weddingDetails.photo_url && (
+      {weddingDetails.photo_url && weddingDetails.photo_url.trim() !== '' && (
         <img
           src={weddingDetails.photo_url}
           alt="Wedding couple"
