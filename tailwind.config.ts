@@ -104,7 +104,7 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 1.2s ease-out',
 				'accordion-up': 'accordion-up 1.2s ease-out',
-				'pulse-ring': 'pulse-ring 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+				'pulse-ring': 'pulse-ring 20s cubic-bezier(0.4, 0, 0.6, 1) infinite'
 			}
 		}
 	},
