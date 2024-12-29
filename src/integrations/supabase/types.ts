@@ -75,6 +75,33 @@ export type Database = {
         }
         Relationships: []
       }
+      wedding_details: {
+        Row: {
+          couple_names: string
+          created_at: string
+          id: string
+          photo_url: string | null
+          user_id: string
+          wedding_date: string
+        }
+        Insert: {
+          couple_names: string
+          created_at?: string
+          id?: string
+          photo_url?: string | null
+          user_id: string
+          wedding_date: string
+        }
+        Update: {
+          couple_names?: string
+          created_at?: string
+          id?: string
+          photo_url?: string | null
+          user_id?: string
+          wedding_date?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

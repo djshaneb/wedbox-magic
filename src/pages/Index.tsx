@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { OnboardingGuide } from "@/components/photos/OnboardingGuide";
+import { WeddingHeader } from "@/components/wedding/WeddingHeader";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -35,25 +36,28 @@ const Index = () => {
               </h1>
               <span className="text-xs md:text-sm font-medium text-gray-600">PHOTO SHARE</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size={isMobile ? "sm" : "default"}
-                onClick={() => navigate("/get-started")}
-                className="text-wedding-pink hover:text-wedding-pink/80"
-              >
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size={isMobile ? "sm" : "default"}
-                onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+            <div className="flex items-center gap-4">
+              <WeddingHeader />
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size={isMobile ? "sm" : "default"}
+                  onClick={() => navigate("/get-started")}
+                  className="text-wedding-pink hover:text-wedding-pink/80"
+                >
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size={isMobile ? "sm" : "default"}
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-gray-900"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
             </div>
           </div>
         </div>

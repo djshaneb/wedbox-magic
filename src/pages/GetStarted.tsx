@@ -8,6 +8,8 @@ import { PartnerInformation } from "@/components/onboarding/PartnerInformation";
 import { DateSelection } from "@/components/onboarding/DateSelection";
 import { WeddingSummary } from "@/components/onboarding/WeddingSummary";
 import { NavigationButtons } from "@/components/onboarding/NavigationButtons";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
@@ -21,6 +23,7 @@ const GetStarted = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -30,7 +33,7 @@ const GetStarted = () => {
     },
   });
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step === 1) {
       if (role && firstName.trim()) {
         setStep(2);
@@ -42,8 +45,37 @@ const GetStarted = () => {
     } else if (step === 3) {
       setStep(4);
     } else {
-      console.log({ role, firstName, selectedImage, date, ...form.getValues() });
-      navigate("/");
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('No user found');
+
+        const coupleNames = `${firstName} & ${form.getValues().partnerName}`;
+        
+        const { error } = await supabase
+          .from('wedding_details')
+          .insert({
+            user_id: user.id,
+            couple_names: coupleNames,
+            wedding_date: date?.toISOString(),
+            photo_url: selectedImage
+          });
+
+        if (error) throw error;
+
+        toast({
+          title: "Wedding details saved!",
+          description: "Your wedding information has been saved successfully.",
+        });
+
+        navigate("/");
+      } catch (error) {
+        console.error('Error saving wedding details:', error);
+        toast({
+          title: "Error saving details",
+          description: "There was a problem saving your wedding details. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
