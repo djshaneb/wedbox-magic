@@ -52,7 +52,7 @@ const GetStarted = () => {
         const coupleNames = `${firstName} & ${form.getValues().partnerName}`;
         
         // Handle image upload if there's a selected image
-        let photoUrl = selectedImage;
+        let photoUrl = null;
         if (selectedImage && selectedImage.startsWith('data:')) {
           // Convert base64 to blob
           const response = await fetch(selectedImage);
@@ -67,7 +67,10 @@ const GetStarted = () => {
             .from('photos')
             .upload(fileName, file);
 
-          if (uploadError) throw uploadError;
+          if (uploadError) {
+            console.error('Upload error:', uploadError);
+            throw uploadError;
+          }
 
           // Get the public URL
           const { data: { publicUrl } } = supabase.storage
@@ -75,6 +78,7 @@ const GetStarted = () => {
             .getPublicUrl(fileName);
 
           photoUrl = publicUrl;
+          console.log('Uploaded photo URL:', photoUrl);
         }
 
         // First check if wedding details already exist for this user
