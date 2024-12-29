@@ -2,16 +2,18 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { usePhotos } from "@/hooks/use-photos";
+import { getDeviceFingerprint } from "@/utils/deviceFingerprint";
 
 export const OnboardingGuide = () => {
   const [isVisible, setIsVisible] = useState(false);
   const { photos } = usePhotos();
 
   useEffect(() => {
-    const hasSeenGuide = localStorage.getItem("hasSeenPhotoGuide");
+    const deviceFingerprint = getDeviceFingerprint();
+    const hasSeenGuide = localStorage.getItem(`hasSeenPhotoGuide-${deviceFingerprint}`);
     if (!hasSeenGuide) {
       setIsVisible(true);
-      localStorage.setItem("hasSeenPhotoGuide", "true");
+      localStorage.setItem(`hasSeenPhotoGuide-${deviceFingerprint}`, "true");
     }
   }, []);
 
