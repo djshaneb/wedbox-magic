@@ -86,19 +86,19 @@ export default {
 						height: '0'
 					}
 				},
-				breathing: {
+				'glow': {
 					'0%, 100%': {
-						transform: 'scale(1)'
+						boxShadow: '0 0 15px rgba(59, 130, 246, 0.5)'
 					},
 					'50%': {
-						transform: 'scale(1.1)' 
+						boxShadow: '0 0 30px rgba(99, 102, 241, 0.8)'
 					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 1.2s ease-out',
 				'accordion-up': 'accordion-up 1.2s ease-out',
-				'breathing': 'breathing 120s ease-in-out infinite' 
+				'glow': 'glow 8s ease-in-out infinite'
 			}
 		}
 	},
