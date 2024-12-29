@@ -53,32 +53,37 @@ const GetStarted = () => {
         
         // Handle image upload if there's a selected image
         let photoUrl = null;
-        if (selectedImage && selectedImage.startsWith('data:')) {
-          // Convert base64 to blob
-          const response = await fetch(selectedImage);
-          const blob = await response.blob();
-          const file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
-          
-          // Upload to Supabase Storage
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${crypto.randomUUID()}.${fileExt}`;
-          
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('photos')
-            .upload(fileName, file);
-
-          if (uploadError) {
-            console.error('Upload error:', uploadError);
-            throw uploadError;
+        if (selectedImage) {
+          // Convert base64 to blob if it's a data URL
+          let file;
+          if (selectedImage.startsWith('data:')) {
+            const response = await fetch(selectedImage);
+            const blob = await response.blob();
+            file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
           }
 
-          // Get the public URL
-          const { data: { publicUrl } } = supabase.storage
-            .from('photos')
-            .getPublicUrl(fileName);
+          if (file) {
+            // Upload to Supabase Storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `wedding-photos/${crypto.randomUUID()}.${fileExt}`;
+            
+            const { error: uploadError } = await supabase.storage
+              .from('photos')
+              .upload(fileName, file);
 
-          photoUrl = publicUrl;
-          console.log('Uploaded photo URL:', photoUrl);
+            if (uploadError) {
+              console.error('Upload error:', uploadError);
+              throw uploadError;
+            }
+
+            // Get the public URL
+            const { data: { publicUrl } } = supabase.storage
+              .from('photos')
+              .getPublicUrl(fileName);
+
+            photoUrl = publicUrl;
+            console.log('Uploaded photo URL:', photoUrl);
+          }
         }
 
         // First check if wedding details already exist for this user

@@ -24,8 +24,8 @@ export const WeddingHeader = () => {
 
   if (isLoading || !weddingDetails) return null;
 
-  // Only show the photo section if there's a photo URL and it's not the placeholder
-  const showPhoto = weddingDetails.photo_url && weddingDetails.photo_url !== '/placeholder.svg';
+  // Only show the photo section if there's a photo URL and it's not null
+  const showPhoto = weddingDetails.photo_url !== null;
 
   return (
     <div className="flex items-center gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm border border-wedding-pink/10">
