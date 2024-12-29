@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { ArrowRight, ArrowLeft } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { WeddingImageSelector } from "@/components/onboarding/WeddingImageSelector";
+import { RoleSelection } from "@/components/onboarding/RoleSelection";
+import { PartnerInformation } from "@/components/onboarding/PartnerInformation";
 import { DateSelection } from "@/components/onboarding/DateSelection";
 import { WeddingSummary } from "@/components/onboarding/WeddingSummary";
+import { NavigationButtons } from "@/components/onboarding/NavigationButtons";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
@@ -71,100 +67,19 @@ const GetStarted = () => {
         </h1>
         
         {step === 1 ? (
-          <>
-            <h2 className="text-2xl text-center mb-6">I am...</h2>
-            
-            <RadioGroup
-              className="grid grid-cols-2 gap-4 mb-8"
-              value={role || ""}
-              onValueChange={(value) => setRole(value as "bride" | "groom")}
-            >
-              <div className="relative">
-                <RadioGroupItem
-                  value="groom"
-                  id="groom"
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor="groom"
-                  className="flex flex-col items-center justify-between rounded-lg border-2 border-wedding-pink/20 p-4 hover:bg-wedding-pink/5 peer-checked:border-wedding-pink peer-checked:bg-wedding-pink/10 [&:has([data-state=checked])]:border-wedding-pink cursor-pointer"
-                >
-                  <div className="mb-2 h-48 w-full bg-[url('/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png')] bg-[length:200%] bg-left bg-no-repeat" />
-                  <span className="text-lg font-medium uppercase tracking-wide text-wedding-pink">Groom</span>
-                </Label>
-              </div>
-
-              <div className="relative">
-                <RadioGroupItem
-                  value="bride"
-                  id="bride"
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor="bride"
-                  className="flex flex-col items-center justify-between rounded-lg border-2 border-wedding-pink/20 p-4 hover:bg-wedding-pink/5 peer-checked:border-wedding-pink peer-checked:bg-wedding-pink/10 [&:has([data-state=checked])]:border-wedding-pink cursor-pointer"
-                >
-                  <div className="mb-2 h-48 w-full bg-[url('/lovable-uploads/1beaa62f-b698-460f-9ebb-eff567ab8b44.png')] bg-[length:200%] bg-right bg-no-repeat" />
-                  <span className="text-lg font-medium uppercase tracking-wide text-wedding-pink">Bride</span>
-                </Label>
-              </div>
-            </RadioGroup>
-
-            <Input
-              type="text"
-              placeholder="Your first name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="mb-8 h-14 text-lg"
-            />
-          </>
+          <RoleSelection
+            role={role}
+            firstName={firstName}
+            onRoleChange={setRole}
+            onFirstNameChange={setFirstName}
+          />
         ) : step === 2 ? (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleNext)} className="space-y-6">
-              <WeddingImageSelector
-                selectedImage={selectedImage}
-                onImageSelect={setSelectedImage}
-                className="mb-8"
-              />
-              
-              <h2 className="text-2xl text-center mb-6">My partner is...</h2>
-              
-              <FormField
-                control={form.control}
-                name="partnerName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Your partner's first name"
-                        className="h-14 text-lg"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="partnerEmail"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Your partner's email"
-                        type="email"
-                        className="h-14 text-lg"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
+          <PartnerInformation
+            form={form}
+            selectedImage={selectedImage}
+            onImageSelect={setSelectedImage}
+            onSubmit={handleNext}
+          />
         ) : step === 3 ? (
           <DateSelection date={date} onDateChange={setDate} />
         ) : (
@@ -178,27 +93,12 @@ const GetStarted = () => {
           />
         )}
 
-        <div className="fixed bottom-0 left-0 right-0 grid grid-cols-2 divide-x">
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={handlePrevious}
-            className="rounded-none h-16 bg-[#A5C9C5] hover:bg-[#94b8b4] text-white"
-          >
-            <ArrowLeft className="mr-2 h-5 w-5" />
-            PREVIOUS
-          </Button>
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={handleNext}
-            disabled={step === 1 ? (!role || !firstName.trim()) : false}
-            className="rounded-none h-16 bg-gray-400 hover:bg-gray-500 text-white"
-          >
-            {step === 4 ? "CREATE" : "NEXT"}
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </div>
+        <NavigationButtons
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          isNextDisabled={step === 1 ? (!role || !firstName.trim()) : false}
+          isLastStep={step === 4}
+        />
       </main>
     </div>
   );
