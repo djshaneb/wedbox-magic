@@ -11,6 +11,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { WeddingImageSelector } from "@/components/onboarding/WeddingImageSelector";
 import { DateSelection } from "@/components/onboarding/DateSelection";
+import { WeddingSummary } from "@/components/onboarding/WeddingSummary";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
@@ -42,6 +43,8 @@ const GetStarted = () => {
       form.handleSubmit(() => {
         setStep(3);
       })();
+    } else if (step === 3) {
+      setStep(4);
     } else {
       console.log({ role, firstName, selectedImage, date, ...form.getValues() });
       navigate("/");
@@ -49,7 +52,9 @@ const GetStarted = () => {
   };
 
   const handlePrevious = () => {
-    if (step === 3) {
+    if (step === 4) {
+      setStep(3);
+    } else if (step === 3) {
       setStep(2);
     } else if (step === 2) {
       setStep(1);
@@ -160,8 +165,17 @@ const GetStarted = () => {
               />
             </form>
           </Form>
-        ) : (
+        ) : step === 3 ? (
           <DateSelection date={date} onDateChange={setDate} />
+        ) : (
+          <WeddingSummary
+            firstName={firstName}
+            partnerName={form.getValues().partnerName}
+            date={date}
+            onEditDate={() => setStep(3)}
+            onEditNames={() => setStep(1)}
+            onEditPhoto={() => setStep(2)}
+          />
         )}
 
         <div className="fixed bottom-0 left-0 right-0 grid grid-cols-2 divide-x">
@@ -181,7 +195,7 @@ const GetStarted = () => {
             disabled={step === 1 ? (!role || !firstName.trim()) : false}
             className="rounded-none h-16 bg-gray-400 hover:bg-gray-500 text-white"
           >
-            NEXT
+            {step === 4 ? "CREATE" : "NEXT"}
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
