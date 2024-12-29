@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { ExtendedMediaStreamTrack } from "@/types/camera";
 
 export const useCameraControls = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [isFlashOn, setIsFlashOn] = useState(false);
   const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
   const { toast } = useToast();
 
@@ -24,18 +22,6 @@ export const useCameraControls = () => {
       });
 
       setStream(newStream);
-
-      // Try to turn on the flash if requested
-      if (isFlashOn) {
-        const track = newStream.getVideoTracks()[0] as ExtendedMediaStreamTrack;
-        const capabilities = track.getCapabilities();
-        if (capabilities?.torch) {
-          await track.applyConstraints({
-            advanced: [{ torch: true }]
-          });
-        }
-      }
-
       return newStream;
     } catch (error) {
       console.error("Camera error:", error);
@@ -45,34 +31,6 @@ export const useCameraControls = () => {
         variant: "destructive",
       });
       return null;
-    }
-  };
-
-  const toggleFlash = async () => {
-    if (!stream) return;
-    
-    const track = stream.getVideoTracks()[0] as ExtendedMediaStreamTrack;
-    const capabilities = track.getCapabilities();
-    
-    if (capabilities?.torch) {
-      try {
-        await track.applyConstraints({
-          advanced: [{ torch: !isFlashOn }]
-        });
-        setIsFlashOn(!isFlashOn);
-      } catch (error) {
-        toast({
-          title: "Flash Error",
-          description: "Unable to toggle flash. Your device may not support this feature.",
-          variant: "destructive",
-        });
-      }
-    } else {
-      toast({
-        title: "Flash Not Available",
-        description: "Your device does not support flash control.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -91,9 +49,7 @@ export const useCameraControls = () => {
 
   return {
     stream,
-    isFlashOn,
     facingMode,
-    toggleFlash,
     switchCamera,
     startCamera
   };
