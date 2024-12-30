@@ -55,7 +55,7 @@ export const PhotoLightbox = ({
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onDelete) {
+    if (onDelete && photos[currentIndex]) {
       onDelete(e, photos[currentIndex]);
       onClose();
     }
