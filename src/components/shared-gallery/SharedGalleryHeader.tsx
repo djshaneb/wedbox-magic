@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Camera, Plus, Upload, Image } from "lucide-react";
-import { WeddingHeader } from "@/components/wedding/WeddingHeader";
 
 interface SharedGalleryHeaderProps {
   isMenuOpen: boolean;
@@ -75,9 +74,6 @@ export const SharedGalleryHeader = ({
               </div>
             )}
           </div>
-        </div>
-        <div className="py-4">
-          <WeddingHeader sharedGalleryOwnerId={sharedGalleryOwnerId} />
         </div>
       </div>
     </div>
