@@ -37,9 +37,9 @@ export const ShareGalleryButton = () => {
         .from('shared_galleries')
         .select('access_code')
         .eq('owner_id', session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+      if (fetchError) {
         console.error('Error fetching existing gallery:', fetchError);
         throw new Error(`Failed to check existing gallery: ${fetchError.message}`);
       }
