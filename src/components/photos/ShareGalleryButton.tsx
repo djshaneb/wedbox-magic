@@ -6,29 +6,31 @@ import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { ShareDialog } from "./share/ShareDialog";
+import { useNavigate } from "react-router-dom";
 
 export const ShareGalleryButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [shareLink, setShareLink] = useState<string | null>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   const generateShareLink = async () => {
     try {
-      // Get the current user
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (authError) {
-        console.error('Authentication error:', authError);
-        throw new Error(`Authentication error: ${authError.message}`);
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error(`Session error: ${sessionError.message}`);
       }
       
-      if (!user) {
-        console.error('No user found - user is not authenticated');
-        throw new Error("Not authenticated");
+      if (!session) {
+        console.error('No session found - redirecting to auth');
+        navigate('/auth');
+        throw new Error("Please sign in to share your gallery");
       }
-      
-      console.log('Generating share link for user:', user.id);
+
+      console.log('Generating share link for user:', session.user.id);
       
       // Generate a random access code
       const accessCode = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -37,7 +39,7 @@ export const ShareGalleryButton = () => {
       const { error: insertError } = await supabase
         .from('shared_galleries')
         .insert({
-          owner_id: user.id,
+          owner_id: session.user.id,
           access_code: accessCode,
         });
 
