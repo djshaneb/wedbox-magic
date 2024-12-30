@@ -3,7 +3,7 @@ import "yet-another-react-lightbox/styles.css";
 import { Photo } from "@/hooks/use-photos";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 
 interface PhotoLightboxProps {
   isOpen: boolean;
@@ -61,18 +61,28 @@ export const PhotoLightbox = ({
   };
 
   const toolbar = {
-    buttons: onDelete ? [
-      "close",
+    buttons: [
       <Button
-        key="delete"
-        variant="destructive"
+        key="close"
+        variant="ghost"
         size="icon"
-        className="bg-red-500 hover:bg-red-600 text-white absolute bottom-4 left-4"
-        onClick={handleDelete}
+        className="text-white absolute top-4 right-4"
+        onClick={onClose}
       >
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    ] : ["close"]
+        <X className="h-6 w-6" />
+      </Button>,
+      onDelete && (
+        <Button
+          key="delete"
+          variant="destructive"
+          size="icon"
+          className="bg-red-500 hover:bg-red-600 text-white absolute bottom-4 left-4"
+          onClick={handleDelete}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      )
+    ].filter(Boolean)
   };
 
   return (
