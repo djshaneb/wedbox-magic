@@ -1,5 +1,5 @@
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
-import { Camera, LogOut, ArrowRight, Menu, Plus, Upload, Image } from "lucide-react";
+import { Camera, LogOut, ArrowRight, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -12,12 +12,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -86,31 +80,6 @@ const Index = () => {
               </span>
             </div>
             <div className="flex items-center gap-4">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-wedding-pink hover:text-wedding-pink/80"
-                  >
-                    <Plus className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Image className="mr-2 h-4 w-4" />
-                    Photo Booth Mode
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Camera className="mr-2 h-4 w-4" />
-                    Take Photo
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload Photos
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
               {isMobile ? (
                 <MobileMenu />
               ) : (
