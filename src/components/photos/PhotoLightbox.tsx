@@ -34,7 +34,7 @@ export const PhotoLightbox = ({
   };
 
   return (
-    <>
+    <div className="relative">
       <Lightbox
         open={isOpen}
         close={onClose}
@@ -42,10 +42,15 @@ export const PhotoLightbox = ({
         slides={photos.map(photo => ({ src: photo.url }))}
         toolbar={toolbar}
         styles={{
-          container: { backgroundColor: "rgba(0, 0, 0, 0.9)" }
+          container: { backgroundColor: "rgba(0, 0, 0, 0.9)" },
+          root: { zIndex: 40 }
         }}
       />
-      {isOpen && onDelete && <DeleteButton onClick={handleDelete} />}
-    </>
+      {isOpen && onDelete && (
+        <div className="fixed inset-0 z-50 pointer-events-none">
+          <DeleteButton onClick={handleDelete} />
+        </div>
+      )}
+    </div>
   );
 };

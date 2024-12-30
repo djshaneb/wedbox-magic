@@ -6,7 +6,7 @@ interface DeleteButtonProps {
 }
 
 export const DeleteButton = ({ onClick }: DeleteButtonProps) => (
-  <div className="fixed top-4 right-4 z-[9999]">
+  <div className="absolute top-4 right-16 pointer-events-auto">
     <Button
       variant="destructive"
       size="icon"
