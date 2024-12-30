@@ -34,7 +34,7 @@ export const PhotoLightbox = ({
   };
 
   return (
-    <div className="relative">
+    <>
       <Lightbox
         open={isOpen}
         close={onClose}
@@ -45,7 +45,7 @@ export const PhotoLightbox = ({
           container: { backgroundColor: "rgba(0, 0, 0, 0.9)" }
         }}
       />
-      {onDelete && <DeleteButton onClick={handleDelete} />}
-    </div>
+      {isOpen && onDelete && <DeleteButton onClick={handleDelete} />}
+    </>
   );
 };
