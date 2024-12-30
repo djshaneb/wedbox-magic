@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { WeddingHeader } from "@/components/wedding/WeddingHeader";
 import { SharedGalleryHeader } from "@/components/shared-gallery/SharedGalleryHeader";
 
 interface WeddingDetails {
@@ -41,23 +40,6 @@ const SharedGallery = () => {
     validateAccessCode();
   }, [accessCode]);
 
-  const { data: weddingDetails } = useQuery({
-    queryKey: ['weddingDetails', ownerId],
-    queryFn: async () => {
-      if (!ownerId) return null;
-      
-      const { data, error } = await supabase
-        .from('wedding_details')
-        .select('*')
-        .eq('user_id', ownerId)
-        .single();
-
-      if (error) throw error;
-      return data as WeddingDetails;
-    },
-    enabled: !!ownerId
-  });
-
   if (isValid === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -86,11 +68,6 @@ const SharedGallery = () => {
       />
 
       <div className="container mx-auto px-4 py-8 pt-20">
-        {ownerId && weddingDetails && (
-          <div className="w-full max-w-3xl mx-auto mb-6">
-            <WeddingHeader />
-          </div>
-        )}
         {ownerId && (
           <PhotoGallery 
             sharedGalleryOwnerId={ownerId} 
