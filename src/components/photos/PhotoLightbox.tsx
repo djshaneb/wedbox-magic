@@ -54,7 +54,7 @@ export const PhotoLightbox = ({
   }, [isOpen, onClose]);
 
   return (
-    <>
+    <div className="relative">
       <Lightbox
         open={isOpen}
         close={onClose}
@@ -62,7 +62,7 @@ export const PhotoLightbox = ({
         slides={photos.map(photo => ({ src: photo.url }))}
       />
       {isOpen && isMobile && onDelete && (
-        <div className="fixed bottom-8 left-0 right-0 z-[9999] px-4">
+        <div className="fixed bottom-8 left-0 right-0 z-[99999] px-4">
           <Button
             variant="destructive"
             size="lg"
@@ -77,6 +77,6 @@ export const PhotoLightbox = ({
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 };
