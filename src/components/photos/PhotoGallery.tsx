@@ -47,11 +47,22 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   };
 
   const handleDeletePhoto = async (event: React.MouseEvent, photo: { id: string, storage_path: string }) => {
+    event.preventDefault();
     event.stopPropagation();
-    await deleteMutation.mutateAsync({ 
-      id: photo.id, 
-      storage_path: photo.storage_path 
-    });
+    
+    try {
+      await deleteMutation.mutateAsync({ 
+        id: photo.id, 
+        storage_path: photo.storage_path 
+      });
+      
+      // Close lightbox if we're deleting the current photo
+      if (lightboxOpen) {
+        setLightboxOpen(false);
+      }
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+    }
   };
 
   if (isLoading) {
