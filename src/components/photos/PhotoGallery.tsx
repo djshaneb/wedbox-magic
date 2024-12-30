@@ -6,6 +6,7 @@ import { ShareGalleryButton } from "./ShareGalleryButton";
 import { EmptyGallery } from "./EmptyGallery";
 import { PhotoGrid } from "./PhotoGrid";
 import { PhotoLightbox } from "./PhotoLightbox";
+import { Photo } from "@/hooks/use-photos";
 
 interface PhotoGalleryProps {
   sharedGalleryOwnerId?: string;
@@ -20,7 +21,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
   const isMobile = useIsMobile();
-  const { photos, isLoading, uploadMutation } = usePhotos(sharedGalleryOwnerId);
+  const { photos, isLoading, uploadMutation, deleteMutation } = usePhotos(sharedGalleryOwnerId);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -44,6 +45,20 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       file,
       ownerId: sharedGalleryOwnerId
     });
+  };
+
+  const handleDeletePhoto = async (photo: Photo) => {
+    try {
+      await deleteMutation.mutateAsync({ 
+        id: photo.id, 
+        storage_path: photo.storage_path 
+      });
+      
+      // Close lightbox after deletion
+      setLightboxOpen(false);
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+    }
   };
 
   if (isLoading) {
@@ -88,6 +103,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         onClose={() => setLightboxOpen(false)}
         currentIndex={currentPhotoIndex}
         photos={photos}
+        onDelete={!isSharedView ? handleDeletePhoto : undefined}
+        isSharedView={isSharedView}
       />
     </div>
   );
