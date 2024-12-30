@@ -95,6 +95,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         onClose={() => setLightboxOpen(false)}
         currentIndex={currentPhotoIndex}
         photos={photos}
+        onDelete={!isSharedView ? handleDeletePhoto : undefined}
       />
     </div>
   );

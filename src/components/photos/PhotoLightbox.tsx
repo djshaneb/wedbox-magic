@@ -2,19 +2,23 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { Photo } from "@/hooks/use-photos";
 import { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 interface PhotoLightboxProps {
   isOpen: boolean;
   onClose: () => void;
   currentIndex: number;
   photos: Photo[];
+  onDelete?: (event: React.MouseEvent, photo: Photo) => void;
 }
 
 export const PhotoLightbox = ({
   isOpen,
   onClose,
   currentIndex,
-  photos
+  photos,
+  onDelete
 }: PhotoLightboxProps) => {
   const touchStartY = useRef<number | null>(null);
 
@@ -49,11 +53,26 @@ export const PhotoLightbox = ({
   }, [isOpen, onClose]);
 
   return (
-    <Lightbox
-      open={isOpen}
-      close={onClose}
-      index={currentIndex}
-      slides={photos.map(photo => ({ src: photo.url }))}
-    />
+    <div className="relative">
+      <Lightbox
+        open={isOpen}
+        close={onClose}
+        index={currentIndex}
+        slides={photos.map(photo => ({ src: photo.url }))}
+      />
+      {onDelete && isOpen && (
+        <Button
+          variant="destructive"
+          size="icon"
+          className="fixed top-16 right-4 z-[99999] bg-red-500 hover:bg-red-600 text-white shadow-lg"
+          onClick={(e) => {
+            onDelete(e, photos[currentIndex]);
+            onClose();
+          }}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      )}
+    </div>
   );
 };
