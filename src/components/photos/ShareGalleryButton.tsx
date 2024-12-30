@@ -48,7 +48,7 @@ export const ShareGalleryButton = () => {
         throw new Error(`Failed to create shared gallery: ${insertError.message}`);
       }
 
-      // Generate the share URL
+      // Generate the share URL using the URL parameter format
       const shareUrl = `${window.location.origin}/shared/${accessCode}`;
       console.log('Successfully generated share URL:', shareUrl);
       setShareLink(shareUrl);

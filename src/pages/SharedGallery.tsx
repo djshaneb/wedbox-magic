@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import { SharedGalleryHeader } from "@/components/shared-gallery/SharedGalleryHeader";
 
 interface WeddingDetails {
@@ -13,13 +13,11 @@ interface WeddingDetails {
 }
 
 const SharedGallery = () => {
+  const { accessCode } = useParams();
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const [ownerId, setOwnerId] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
-
-  const params = new URLSearchParams(window.location.search);
-  const accessCode = params.get('code');
 
   const validateAccessCode = async () => {
     if (!accessCode) {
@@ -34,6 +32,7 @@ const SharedGallery = () => {
       .single();
 
     if (error || !data) {
+      console.error('Error validating access code:', error);
       setIsValid(false);
       return;
     }
@@ -58,9 +57,9 @@ const SharedGallery = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Invalid Access Code</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Invalid Gallery Link</h1>
           <p className="text-gray-600">
-            The shared gallery access code is invalid or has expired.
+            This gallery link is invalid or has expired.
           </p>
         </div>
       </div>
