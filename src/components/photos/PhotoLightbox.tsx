@@ -70,19 +70,8 @@ export const PhotoLightbox = ({
         onClick={onClose}
       >
         <X className="h-6 w-6" />
-      </Button>,
-      onDelete && (
-        <Button
-          key="delete"
-          variant="destructive"
-          size="icon"
-          className="bg-red-500 hover:bg-red-600 text-white absolute bottom-4 left-4"
-          onClick={handleDelete}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      )
-    ].filter(Boolean)
+      </Button>
+    ]
   };
 
   return (
@@ -94,6 +83,16 @@ export const PhotoLightbox = ({
         slides={photos.map(photo => ({ src: photo.url }))}
         toolbar={toolbar}
       />
+      {onDelete && (
+        <Button
+          variant="destructive"
+          size="icon"
+          className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999] bg-red-500 hover:bg-red-600 text-white shadow-lg md:left-4 md:translate-x-0"
+          onClick={handleDelete}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 };
