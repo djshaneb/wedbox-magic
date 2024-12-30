@@ -33,7 +33,6 @@ export const PhotoLightbox = ({
       const touchEndY = e.changedTouches[0].clientY;
       const deltaY = touchEndY - touchStartY.current;
       
-      // If swipe up distance is more than 100px, close the lightbox
       if (deltaY < -100) {
         onClose();
       }
@@ -61,6 +60,21 @@ export const PhotoLightbox = ({
     }
   };
 
+  const toolbar = {
+    buttons: onDelete ? [
+      "close",
+      <Button
+        key="delete"
+        variant="destructive"
+        size="icon"
+        className="bg-red-500 hover:bg-red-600 text-white"
+        onClick={handleDelete}
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    ] : ["close"]
+  };
+
   return (
     <div className="relative">
       <Lightbox
@@ -68,17 +82,8 @@ export const PhotoLightbox = ({
         close={onClose}
         index={currentIndex}
         slides={photos.map(photo => ({ src: photo.url }))}
+        toolbar={toolbar}
       />
-      {onDelete && isOpen && (
-        <Button
-          variant="destructive"
-          size="icon"
-          className="fixed top-16 right-4 z-[999999] bg-red-500 hover:bg-red-600 text-white shadow-lg"
-          onClick={handleDelete}
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      )}
     </div>
   );
 };
