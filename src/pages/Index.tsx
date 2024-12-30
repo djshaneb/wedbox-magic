@@ -1,12 +1,19 @@
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Camera, LogOut, ArrowRight } from "lucide-react";
+import { Camera, LogOut, ArrowRight, Menu } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { OnboardingGuide } from "@/components/photos/OnboardingGuide";
 import { WeddingHeader } from "@/components/wedding/WeddingHeader";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -21,6 +28,42 @@ const Index = () => {
     });
     navigate("/auth");
   };
+
+  const MobileMenu = () => (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="md:hidden">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-[240px] sm:w-[280px]">
+        <SheetHeader>
+          <SheetTitle>Menu</SheetTitle>
+        </SheetHeader>
+        <div className="flex flex-col gap-4 mt-4">
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={() => navigate("/get-started")}
+            className="justify-start"
+          >
+            <ArrowRight className="mr-2 h-4 w-4" />
+            Get Started
+          </Button>
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={handleLogout}
+            className="justify-start"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,7 +83,9 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-4">
               <WeddingHeader />
-              {!isMobile && (
+              {isMobile ? (
+                <MobileMenu />
+              ) : (
                 <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
@@ -64,28 +109,6 @@ const Index = () => {
               )}
             </div>
           </div>
-          {isMobile && (
-            <div className="mt-2 flex items-center gap-2 justify-end">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/get-started")}
-                className="text-wedding-pink hover:text-wedding-pink/80"
-              >
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          )}
         </div>
       </div>
       
