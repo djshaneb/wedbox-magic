@@ -36,7 +36,7 @@ export const PhotoLightbox = ({
         <DeleteButton 
           key="delete" 
           onClick={handleDelete}
-          className="mr-2"
+          className="ml-2"  // Changed from mr-2 to ml-2
         />
       ),
       <CloseButton key="close" onClose={onClose} />
