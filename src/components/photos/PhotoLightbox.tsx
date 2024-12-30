@@ -46,7 +46,6 @@ export const PhotoLightbox = ({
           iconPrev: () => null,
           buttonNext: () => null,
           buttonPrev: () => null,
-          buttonZoom: () => null,
           slideFooter: () => !isSharedView && onDelete && (
             <div className="absolute bottom-4 left-4">
               <Button
