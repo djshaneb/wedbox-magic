@@ -48,7 +48,10 @@ export const PhotoLightbox = ({
       />
       {isOpen && onDelete && (
         <div className="fixed inset-0 z-50 pointer-events-none">
-          <DeleteButton onClick={handleDelete} />
+          <DeleteButton 
+            onClick={handleDelete} 
+            className="absolute top-4 right-16 pointer-events-auto" 
+          />
         </div>
       )}
     </div>
