@@ -1,5 +1,5 @@
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
-import { Camera, LogOut, ArrowRight, Menu } from "lucide-react";
+import { Camera, LogOut, ArrowRight, Menu, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -80,6 +80,13 @@ const Index = () => {
               </span>
             </div>
             <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-wedding-pink hover:text-wedding-pink/80"
+              >
+                <Plus className="h-5 w-5" />
+              </Button>
               {isMobile ? (
                 <MobileMenu />
               ) : (
