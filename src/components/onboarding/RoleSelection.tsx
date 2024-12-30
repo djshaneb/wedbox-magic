@@ -38,7 +38,7 @@ export const RoleSelection = ({
             }`}
             onClick={() => onRoleChange("bride")}
           >
-            <CardContent className="p-6 text-center space-y-4">
+            <CardContent className="p-6 text-center">
               <div className="mx-auto w-full aspect-square bg-wedding-pink/10 flex items-center justify-center">
                 <img
                   src="/lovable-uploads/b4b88587-9692-4902-af6d-899e3699d26a.png"
@@ -46,7 +46,6 @@ export const RoleSelection = ({
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="font-medium">Bride</p>
             </CardContent>
           </Card>
 
@@ -58,7 +57,7 @@ export const RoleSelection = ({
             }`}
             onClick={() => onRoleChange("groom")}
           >
-            <CardContent className="p-6 text-center space-y-4">
+            <CardContent className="p-6 text-center">
               <div className="mx-auto w-full aspect-square bg-wedding-pink/10 flex items-center justify-center">
                 <img
                   src="/lovable-uploads/da2d8b46-2e02-4f6b-a9d7-f7bf866e5243.png"
@@ -66,7 +65,6 @@ export const RoleSelection = ({
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="font-medium">Groom</p>
             </CardContent>
           </Card>
         </div>
