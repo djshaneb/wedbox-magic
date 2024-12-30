@@ -43,8 +43,7 @@ export const PhotoLightbox = ({
           iconNext: () => null,
           iconPrev: () => null,
           buttonNext: () => null,
-          buttonPrev: () => null,
-          buttonZoom: () => null
+          buttonPrev: () => null
         }}
       />
       {!isSharedView && onDelete && (
