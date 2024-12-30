@@ -61,7 +61,6 @@ export const ShareGalleryButton = () => {
     } catch (error) {
       console.error('Error in generateShareLink:', error);
       
-      // Show a more detailed error message to the user
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to generate share link. Please try again.",
@@ -85,7 +84,7 @@ export const ShareGalleryButton = () => {
         <motion.div
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="group cursor-pointer"
+          className="group cursor-pointer w-full md:w-auto"
           onClick={() => !shareLink && generateShareLink()}
         >
           <div className="flex items-center gap-3 px-6 py-4 bg-gradient-to-br from-violet-500/90 via-purple-500/90 to-fuchsia-500/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
