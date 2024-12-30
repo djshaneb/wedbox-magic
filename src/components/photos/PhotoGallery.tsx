@@ -46,10 +46,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     });
   };
 
-  const handleDeletePhoto = async (event: React.MouseEvent | null, photo: { id: string, storage_path: string }) => {
-    if (event) {
-      event.stopPropagation();
-    }
+  const handleDeletePhoto = async (event: React.MouseEvent, photo: { id: string, storage_path: string }) => {
+    event.stopPropagation();
     await deleteMutation.mutateAsync({ 
       id: photo.id, 
       storage_path: photo.storage_path 
@@ -97,10 +95,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         onClose={() => setLightboxOpen(false)}
         currentIndex={currentPhotoIndex}
         photos={photos}
-        onDelete={!isSharedView ? (photo) => handleDeletePhoto(null, photo) : undefined}
       />
     </div>
   );
 };
-
-export default PhotoGallery;
