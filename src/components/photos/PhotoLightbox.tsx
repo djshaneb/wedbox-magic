@@ -2,7 +2,6 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { Photo } from "@/hooks/use-photos";
 import { CloseButton } from "./lightbox/CloseButton";
-import { DeleteButton } from "./lightbox/DeleteButton";
 import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
 
 interface PhotoLightboxProps {
@@ -10,7 +9,6 @@ interface PhotoLightboxProps {
   onClose: () => void;
   currentIndex: number;
   photos: Photo[];
-  onDelete?: (event: React.MouseEvent, photo: Photo) => void;
 }
 
 export const PhotoLightbox = ({
@@ -18,15 +16,8 @@ export const PhotoLightbox = ({
   onClose,
   currentIndex,
   photos,
-  onDelete
 }: PhotoLightboxProps) => {
   useSwipeGesture(onClose);
-
-  const handleDelete = (e: React.MouseEvent) => {
-    if (onDelete && photos[currentIndex]) {
-      onDelete(e, photos[currentIndex]);
-    }
-  };
 
   return (
     <div className="relative">
@@ -45,14 +36,6 @@ export const PhotoLightbox = ({
           root: { zIndex: 40 }
         }}
       />
-      {onDelete && (
-        <div className="fixed bottom-4 left-4 z-50">
-          <DeleteButton 
-            onClick={handleDelete}
-            className="shadow-lg"
-          />
-        </div>
-      )}
     </div>
   );
 };

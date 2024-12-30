@@ -5,7 +5,6 @@ import Masonry from 'react-masonry-css';
 interface PhotoGridProps {
   photos: Photo[];
   onPhotoClick: (index: number) => void;
-  onPhotoDelete: (event: React.MouseEvent, photo: Photo) => void;
   isMobile: boolean;
   isSharedView?: boolean;
 }
@@ -13,7 +12,6 @@ interface PhotoGridProps {
 export const PhotoGrid = ({
   photos,
   onPhotoClick,
-  onPhotoDelete,
   isMobile,
   isSharedView = false
 }: PhotoGridProps) => {
@@ -35,9 +33,7 @@ export const PhotoGrid = ({
           key={photo.id}
           photo={photo}
           onClick={() => onPhotoClick(index)}
-          onDelete={(e) => onPhotoDelete(e, photo)}
           isMobile={isMobile}
-          hideDelete={isSharedView}
         />
       ))}
     </Masonry>
