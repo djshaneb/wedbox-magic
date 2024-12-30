@@ -33,26 +33,30 @@ export const PhotoLightbox = ({
         index={currentIndex}
         slides={photos.map(photo => ({ src: photo.url }))}
         toolbar={{
-          buttons: [
-            <CloseButton key="close" onClose={onClose} />,
-            !isSharedView && onDelete && (
-              <Button
-                key="delete"
-                variant="destructive"
-                size="icon"
-                className="absolute top-4 left-4"
-                onClick={() => onDelete(photos[currentIndex])}
-              >
-                <Trash2 className="h-5 w-5" />
-              </Button>
-            )
-          ].filter(Boolean)
+          buttons: [<CloseButton key="close" onClose={onClose} />]
         }}
         styles={{
           container: { backgroundColor: "rgba(0, 0, 0, 0.9)" },
           root: { zIndex: 40 }
         }}
+        render={{
+          iconNext: () => null,
+          iconPrev: () => null,
+          buttonNext: () => null,
+          buttonPrev: () => null,
+          buttonZoom: () => null
+        }}
       />
+      {!isSharedView && onDelete && (
+        <Button
+          variant="destructive"
+          size="icon"
+          className="fixed bottom-4 left-4 z-50"
+          onClick={() => onDelete(photos[currentIndex])}
+        >
+          <Trash2 className="h-5 w-5" />
+        </Button>
+      )}
     </div>
   );
 };
