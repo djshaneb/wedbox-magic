@@ -30,19 +30,6 @@ export const PhotoLightbox = ({
     }
   };
 
-  const toolbar = {
-    buttons: [
-      onDelete && (
-        <DeleteButton 
-          key="delete" 
-          onClick={handleDelete}
-          className="ml-2"  // Changed from mr-2 to ml-2
-        />
-      ),
-      <CloseButton key="close" onClose={onClose} />
-    ].filter(Boolean)
-  };
-
   return (
     <div className="relative">
       <Lightbox
@@ -50,12 +37,24 @@ export const PhotoLightbox = ({
         close={onClose}
         index={currentIndex}
         slides={photos.map(photo => ({ src: photo.url }))}
-        toolbar={toolbar}
+        toolbar={{
+          buttons: [
+            <CloseButton key="close" onClose={onClose} />
+          ]
+        }}
         styles={{
           container: { backgroundColor: "rgba(0, 0, 0, 0.9)" },
           root: { zIndex: 40 }
         }}
       />
+      {onDelete && (
+        <div className="fixed bottom-4 left-4 z-50">
+          <DeleteButton 
+            onClick={handleDelete}
+            className="shadow-lg"
+          />
+        </div>
+      )}
     </div>
   );
 };
