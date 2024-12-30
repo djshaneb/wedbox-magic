@@ -1,6 +1,6 @@
 import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ShareLinkInput } from "./ShareLinkInput";
-import { QRCode } from "qrcode.react";
+import QRCode from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
