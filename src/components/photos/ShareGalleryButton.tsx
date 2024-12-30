@@ -30,27 +30,47 @@ export const ShareGalleryButton = () => {
         throw new Error("Please sign in to share your gallery");
       }
 
-      console.log('Generating share link for user:', session.user.id);
+      console.log('Checking for existing share link for user:', session.user.id);
       
-      // Generate a random access code
-      const accessCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-      
-      // Insert the new shared gallery record
-      const { error: insertError } = await supabase
+      // First, check if user already has a shared gallery
+      const { data: existingGallery, error: fetchError } = await supabase
         .from('shared_galleries')
-        .insert({
-          owner_id: session.user.id,
-          access_code: accessCode,
-        });
+        .select('access_code')
+        .eq('owner_id', session.user.id)
+        .single();
 
-      if (insertError) {
-        console.error('Error inserting shared gallery:', insertError);
-        throw new Error(`Failed to create shared gallery: ${insertError.message}`);
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        console.error('Error fetching existing gallery:', fetchError);
+        throw new Error(`Failed to check existing gallery: ${fetchError.message}`);
+      }
+
+      let accessCode;
+      
+      if (existingGallery) {
+        console.log('Found existing share link with access code:', existingGallery.access_code);
+        accessCode = existingGallery.access_code;
+      } else {
+        // Generate a new access code only if one doesn't exist
+        accessCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        
+        // Insert the new shared gallery record
+        const { error: insertError } = await supabase
+          .from('shared_galleries')
+          .insert({
+            owner_id: session.user.id,
+            access_code: accessCode,
+          });
+
+        if (insertError) {
+          console.error('Error inserting shared gallery:', insertError);
+          throw new Error(`Failed to create shared gallery: ${insertError.message}`);
+        }
+        console.log('Created new share link with access code:', accessCode);
       }
 
       // Generate the share URL using the URL parameter format
       const shareUrl = `${window.location.origin}/shared/${accessCode}`;
-      console.log('Successfully generated share URL:', shareUrl);
+      console.log('Generated share URL:', shareUrl);
       setShareLink(shareUrl);
       
       toast({
