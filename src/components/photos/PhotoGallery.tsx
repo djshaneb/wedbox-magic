@@ -64,16 +64,18 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <PhotoUploadSection
-          onFileUpload={handleFileUpload}
-          onPhotoTaken={handlePhotoTaken}
-          isPhotoBooth={isPhotoBooth}
-          setIsPhotoBooth={setIsPhotoBooth}
-          isMobile={isMobile}
-        />
-        {!isSharedView && <ShareGalleryButton />}
-      </div>
+      {!lightboxOpen && (
+        <div className="flex justify-between items-center">
+          <PhotoUploadSection
+            onFileUpload={handleFileUpload}
+            onPhotoTaken={handlePhotoTaken}
+            isPhotoBooth={isPhotoBooth}
+            setIsPhotoBooth={setIsPhotoBooth}
+            isMobile={isMobile}
+          />
+          {!isSharedView && <ShareGalleryButton />}
+        </div>
+      )}
 
       {photos.length === 0 ? (
         <EmptyGallery />
