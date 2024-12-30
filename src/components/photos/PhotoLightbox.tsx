@@ -1,9 +1,9 @@
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { Photo } from "@/hooks/use-photos";
-import { useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Trash2, X } from "lucide-react";
+import { CloseButton } from "./lightbox/CloseButton";
+import { DeleteButton } from "./lightbox/DeleteButton";
+import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
 
 interface PhotoLightboxProps {
   isOpen: boolean;
@@ -20,36 +20,7 @@ export const PhotoLightbox = ({
   photos,
   onDelete
 }: PhotoLightboxProps) => {
-  const touchStartY = useRef<number | null>(null);
-
-  useEffect(() => {
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY.current = e.touches[0].clientY;
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (!touchStartY.current) return;
-      
-      const touchEndY = e.changedTouches[0].clientY;
-      const deltaY = touchEndY - touchStartY.current;
-      
-      if (deltaY < -100) {
-        onClose();
-      }
-      
-      touchStartY.current = null;
-    };
-
-    if (isOpen) {
-      document.addEventListener('touchstart', handleTouchStart);
-      document.addEventListener('touchend', handleTouchEnd);
-    }
-
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [isOpen, onClose]);
+  useSwipeGesture(onClose);
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -66,17 +37,7 @@ export const PhotoLightbox = ({
   };
 
   const toolbar = {
-    buttons: [
-      <Button
-        key="close"
-        variant="ghost"
-        size="icon"
-        className="text-white absolute top-4 right-4"
-        onClick={onClose}
-      >
-        <X className="h-6 w-6" />
-      </Button>
-    ]
+    buttons: [<CloseButton key="close" onClose={onClose} />]
   };
 
   return (
@@ -91,17 +52,7 @@ export const PhotoLightbox = ({
           container: { backgroundColor: "rgba(0, 0, 0, 0.9)" }
         }}
       />
-      {onDelete && (
-        <Button
-          variant="destructive"
-          size="icon"
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[99999999] bg-red-500 hover:bg-red-600 text-white shadow-lg md:left-8 md:translate-x-0 h-12 w-12"
-          onClick={handleDelete}
-          type="button"
-        >
-          <Trash2 className="h-6 w-6" />
-        </Button>
-      )}
+      {onDelete && <DeleteButton onClick={handleDelete} />}
     </div>
   );
 };
