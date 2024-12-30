@@ -43,7 +43,7 @@ export const RoleSelection = ({
                 <img
                   src="/placeholder.svg"
                   alt="Bride"
-                  className="w-3/4 h-3/4 object-contain"
+                  className="w-full h-full object-cover"
                 />
               </div>
               <p className="font-medium">Bride</p>
@@ -63,7 +63,7 @@ export const RoleSelection = ({
                 <img
                   src="/lovable-uploads/da2d8b46-2e02-4f6b-a9d7-f7bf866e5243.png"
                   alt="Groom"
-                  className="w-3/4 h-3/4 object-contain"
+                  className="w-full h-full object-cover"
                 />
               </div>
               <p className="font-medium">Groom</p>
