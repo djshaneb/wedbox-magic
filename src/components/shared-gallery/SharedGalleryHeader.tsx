@@ -58,6 +58,17 @@ export const SharedGalleryHeader = ({
                 >
                   <Camera className="mr-2 h-4 w-4" /> Take Photo
                 </Button>
+
+                <Button
+                  onClick={() => {
+                    setIsPhotoBooth(true);
+                    setIsMenuOpen(false);
+                  }}
+                  variant="ghost"
+                  className="w-full justify-start"
+                >
+                  <Image className="mr-2 h-4 w-4" /> Photo Booth Mode
+                </Button>
               </div>
             )}
           </div>
