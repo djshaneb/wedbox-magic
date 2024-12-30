@@ -15,21 +15,36 @@ export const ShareGalleryButton = () => {
 
   const generateShareLink = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError) {
+        console.error('Auth error:', authError);
+        throw new Error("Authentication error");
+      }
+      
+      if (!user) {
+        console.error('No user found');
+        throw new Error("Not authenticated");
+      }
+      
+      console.log('Generating share link for user:', user.id);
       
       const accessCode = Math.random().toString(36).substring(2, 8).toUpperCase();
       
-      const { error } = await supabase
+      const { error: insertError } = await supabase
         .from('shared_galleries')
         .insert({
           owner_id: user.id,
           access_code: accessCode,
         });
 
-      if (error) throw error;
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        throw insertError;
+      }
 
       const shareUrl = `${window.location.origin}/shared/${accessCode}`;
+      console.log('Generated share URL:', shareUrl);
       setShareLink(shareUrl);
       
       toast({
