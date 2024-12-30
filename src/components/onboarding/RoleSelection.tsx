@@ -1,11 +1,11 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface RoleSelectionProps {
   role: "bride" | "groom" | null;
   firstName: string;
-  onRoleChange: (role: "bride" | "groom") => void;
+  onRoleChange: (role: "bride" | "groom" | null) => void;
   onFirstNameChange: (name: string) => void;
 }
 
@@ -16,52 +16,61 @@ export const RoleSelection = ({
   onFirstNameChange,
 }: RoleSelectionProps) => {
   return (
-    <>
-      <h2 className="text-2xl text-center mb-6">I am...</h2>
-      
-      <RadioGroup
-        className="grid grid-cols-2 gap-4 mb-8"
-        value={role || ""}
-        onValueChange={(value) => onRoleChange(value as "bride" | "groom")}
-      >
-        <div className="relative">
-          <RadioGroupItem
-            value="groom"
-            id="groom"
-            className="peer sr-only"
-          />
-          <Label
-            htmlFor="groom"
-            className="flex flex-col items-center justify-between rounded-lg border-2 border-wedding-pink/20 p-4 hover:bg-wedding-pink/5 peer-checked:border-wedding-pink peer-checked:bg-wedding-pink/10 [&:has([data-state=checked])]:border-wedding-pink cursor-pointer"
-          >
-            <div className="mb-2 h-48 w-full bg-[url('/placeholder.svg')] bg-cover bg-center" />
-            <span className="text-lg font-medium uppercase tracking-wide text-wedding-pink">Groom</span>
-          </Label>
-        </div>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <Label htmlFor="firstName">Your first name</Label>
+        <Input
+          id="firstName"
+          value={firstName}
+          onChange={(e) => onFirstNameChange(e.target.value)}
+          placeholder="Enter your first name"
+        />
+      </div>
 
-        <div className="relative">
-          <RadioGroupItem
-            value="bride"
-            id="bride"
-            className="peer sr-only"
-          />
-          <Label
-            htmlFor="bride"
-            className="flex flex-col items-center justify-between rounded-lg border-2 border-wedding-pink/20 p-4 hover:bg-wedding-pink/5 peer-checked:border-wedding-pink peer-checked:bg-wedding-pink/10 [&:has([data-state=checked])]:border-wedding-pink cursor-pointer"
+      <div className="space-y-4">
+        <Label>I am the...</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <Card
+            className={`cursor-pointer transition-all ${
+              role === "bride"
+                ? "border-wedding-pink ring-2 ring-wedding-pink"
+                : "hover:border-wedding-pink/50"
+            }`}
+            onClick={() => onRoleChange("bride")}
           >
-            <div className="mb-2 h-48 w-full bg-[url('/placeholder.svg')] bg-cover bg-center" />
-            <span className="text-lg font-medium uppercase tracking-wide text-wedding-pink">Bride</span>
-          </Label>
-        </div>
-      </RadioGroup>
+            <CardContent className="p-6 text-center space-y-4">
+              <div className="mx-auto w-32 h-32 bg-wedding-pink/10 rounded-full flex items-center justify-center">
+                <img
+                  src="/placeholder.svg"
+                  alt="Bride"
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+              <p className="font-medium">Bride</p>
+            </CardContent>
+          </Card>
 
-      <Input
-        type="text"
-        placeholder="Your first name"
-        value={firstName}
-        onChange={(e) => onFirstNameChange(e.target.value)}
-        className="mb-8 h-14 text-lg"
-      />
-    </>
+          <Card
+            className={`cursor-pointer transition-all ${
+              role === "groom"
+                ? "border-wedding-pink ring-2 ring-wedding-pink"
+                : "hover:border-wedding-pink/50"
+            }`}
+            onClick={() => onRoleChange("groom")}
+          >
+            <CardContent className="p-6 text-center space-y-4">
+              <div className="mx-auto w-32 h-32 bg-wedding-pink/10 rounded-full flex items-center justify-center">
+                <img
+                  src="/lovable-uploads/1f09b5c7-2101-4821-8d8f-9a0b259f5bd7.png"
+                  alt="Groom"
+                  className="w-20 h-20 object-contain"
+                />
+              </div>
+              <p className="font-medium">Groom</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 };
