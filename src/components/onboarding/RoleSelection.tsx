@@ -41,7 +41,7 @@ export const RoleSelection = ({
             <CardContent className="p-6 text-center space-y-4">
               <div className="mx-auto w-full aspect-square bg-wedding-pink/10 flex items-center justify-center">
                 <img
-                  src="/placeholder.svg"
+                  src="/lovable-uploads/b4b88587-9692-4902-af6d-899e3699d26a.png"
                   alt="Bride"
                   className="w-full h-full object-cover"
                 />
