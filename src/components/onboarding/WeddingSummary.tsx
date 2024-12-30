@@ -40,8 +40,16 @@ export const WeddingSummary = ({
 
       <div className="w-full text-center relative">
         <EditableText
-          text={firstName && partnerName ? `${firstName} & ${partnerName}` : firstName || ""}
-          onTextChange={(text) => onEditNames(text, "")}
+          text={firstName && partnerName ? `${firstName} & ${partnerName}` : firstName}
+          onTextChange={(text) => {
+            // Split the text by "&" and trim whitespace
+            const names = text.split("&").map(name => name.trim());
+            if (names.length > 1) {
+              onEditNames(names[0], names[1]);
+            } else {
+              onEditNames(text, "");
+            }
+          }}
         />
       </div>
 
