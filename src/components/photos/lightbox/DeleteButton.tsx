@@ -9,10 +9,10 @@ export const DeleteButton = ({ onClick }: DeleteButtonProps) => (
   <Button
     variant="destructive"
     size="icon"
-    className="fixed bottom-8 right-8 z-[9999] bg-red-500 hover:bg-red-600 text-white shadow-lg"
+    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white shadow-lg z-[9999]"
     onClick={onClick}
     type="button"
   >
-    <Trash2 className="h-6 w-6" />
+    <Trash2 className="h-4 w-4" />
   </Button>
 );
