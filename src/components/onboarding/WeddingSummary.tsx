@@ -32,11 +32,10 @@ export const WeddingSummary = ({
   );
 
   return (
-    <div className="flex flex-col items-center space-y-8 max-w-md mx-auto">
+    <div className="flex flex-col items-center space-y-6 max-w-md mx-auto">
       <WeddingImageSelector
         selectedImage={selectedImage}
         onImageSelect={onImageSelect}
-        className="mb-8"
       />
 
       <div className="w-full text-center relative">
@@ -67,7 +66,7 @@ export const WeddingSummary = ({
         </Popover>
       </div>
 
-      <div className="w-full h-px bg-gray-200 my-8" />
+      <div className="w-full h-px bg-gray-200" />
 
       <div className="text-center space-y-4 text-gray-600 w-full">
         <EditableText
