@@ -56,7 +56,7 @@ export const ShareGalleryButton = () => {
       toast({
         title: "Share link generated!",
         description: "Copy and share this link with your guests.",
-        className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
+        className: isMobile ? "fixed top-20 left-4 right-4 md:left-auto md:right-4 md:top-4" : "top-[10%]"
       });
     } catch (error) {
       console.error('Error in generateShareLink:', error);
@@ -65,7 +65,7 @@ export const ShareGalleryButton = () => {
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to generate share link. Please try again.",
         variant: "destructive",
-        className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
+        className: isMobile ? "fixed top-20 left-4 right-4 md:left-auto md:right-4 md:top-4" : "top-[10%]"
       });
     }
   };
@@ -74,7 +74,7 @@ export const ShareGalleryButton = () => {
     toast({
       title: "Copied!",
       description: "Share link copied to clipboard",
-      className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
+      className: isMobile ? "fixed top-20 left-4 right-4 md:left-auto md:right-4 md:top-4" : "top-[10%]"
     });
   };
 
