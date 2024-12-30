@@ -26,17 +26,21 @@ export const PhotoLightbox = ({
     e.preventDefault();
     e.stopPropagation();
     if (onDelete && photos[currentIndex]) {
-      try {
-        await onDelete(e, photos[currentIndex]);
-        onClose();
-      } catch (error) {
-        console.error('Error deleting photo:', error);
-      }
+      await onDelete(e, photos[currentIndex]);
     }
   };
 
   const toolbar = {
-    buttons: [<CloseButton key="close" onClose={onClose} />]
+    buttons: [
+      onDelete && (
+        <DeleteButton 
+          key="delete" 
+          onClick={handleDelete}
+          className="mr-2"
+        />
+      ),
+      <CloseButton key="close" onClose={onClose} />
+    ].filter(Boolean)
   };
 
   return (
@@ -52,14 +56,6 @@ export const PhotoLightbox = ({
           root: { zIndex: 40 }
         }}
       />
-      {isOpen && onDelete && (
-        <div className="fixed inset-0 z-50 pointer-events-none">
-          <DeleteButton 
-            onClick={handleDelete} 
-            className="absolute top-4 right-16 pointer-events-auto" 
-          />
-        </div>
-      )}
     </div>
   );
 };
