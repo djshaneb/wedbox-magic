@@ -1,6 +1,6 @@
 import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ShareLinkInput } from "./ShareLinkInput";
-import QRCode from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -55,7 +55,7 @@ export const ShareDialog = ({ shareLink, onCopy }: ShareDialogProps) => {
           {shareLink && (
             <div className="flex flex-col items-center gap-4 pt-4">
               <div className="bg-white p-4 rounded-lg shadow-sm">
-                <QRCode
+                <QRCodeSVG
                   id="qr-code"
                   value={shareLink}
                   size={200}
