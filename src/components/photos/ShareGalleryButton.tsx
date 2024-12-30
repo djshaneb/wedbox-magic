@@ -15,22 +15,25 @@ export const ShareGalleryButton = () => {
 
   const generateShareLink = async () => {
     try {
+      // Get the current user
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
       if (authError) {
-        console.error('Auth error:', authError);
-        throw new Error("Authentication error");
+        console.error('Authentication error:', authError);
+        throw new Error(`Authentication error: ${authError.message}`);
       }
       
       if (!user) {
-        console.error('No user found');
+        console.error('No user found - user is not authenticated');
         throw new Error("Not authenticated");
       }
       
       console.log('Generating share link for user:', user.id);
       
+      // Generate a random access code
       const accessCode = Math.random().toString(36).substring(2, 8).toUpperCase();
       
+      // Insert the new shared gallery record
       const { error: insertError } = await supabase
         .from('shared_galleries')
         .insert({
@@ -39,12 +42,13 @@ export const ShareGalleryButton = () => {
         });
 
       if (insertError) {
-        console.error('Insert error:', insertError);
-        throw insertError;
+        console.error('Error inserting shared gallery:', insertError);
+        throw new Error(`Failed to create shared gallery: ${insertError.message}`);
       }
 
+      // Generate the share URL
       const shareUrl = `${window.location.origin}/shared/${accessCode}`;
-      console.log('Generated share URL:', shareUrl);
+      console.log('Successfully generated share URL:', shareUrl);
       setShareLink(shareUrl);
       
       toast({
@@ -53,10 +57,12 @@ export const ShareGalleryButton = () => {
         className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
       });
     } catch (error) {
-      console.error('Error generating share link:', error);
+      console.error('Error in generateShareLink:', error);
+      
+      // Show a more detailed error message to the user
       toast({
         title: "Error",
-        description: "Failed to generate share link. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to generate share link. Please try again.",
         variant: "destructive",
         className: isMobile ? "top-[5%] w-[calc(100%-32px)] mx-auto" : "top-[10%]"
       });
