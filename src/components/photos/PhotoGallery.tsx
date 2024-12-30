@@ -7,6 +7,7 @@ import { EmptyGallery } from "./EmptyGallery";
 import { PhotoGrid } from "./PhotoGrid";
 import { PhotoLightbox } from "./PhotoLightbox";
 import { Photo } from "@/hooks/use-photos";
+import { WeddingHeader } from "@/components/wedding/WeddingHeader";
 
 interface PhotoGalleryProps {
   sharedGalleryOwnerId?: string;
@@ -66,7 +67,13 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   return (
     <div className="space-y-4">
       {!lightboxOpen && (
-        <div className={`flex flex-col md:flex-row md:justify-between md:items-center gap-4 ${isMobile ? 'mt-16' : ''}`}>
+        <div className={`flex flex-col gap-4 ${isMobile ? 'mt-16' : ''}`}>
+          {isMobile && !isSharedView && (
+            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
+              <WeddingHeader />
+            </div>
+          )}
+          {!isSharedView && <ShareGalleryButton />}
           <PhotoUploadSection
             onFileUpload={handleFileUpload}
             onPhotoTaken={handlePhotoTaken}
@@ -74,7 +81,6 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
             setIsPhotoBooth={setIsPhotoBooth}
             isMobile={isMobile}
           />
-          {!isSharedView && <ShareGalleryButton />}
         </div>
       )}
 
