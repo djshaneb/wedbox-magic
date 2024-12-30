@@ -70,7 +70,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   return (
     <div className="space-y-2 max-w-7xl mx-auto px-4 md:px-6">
       {!lightboxOpen && (
-        <div className={`flex flex-col gap-2 ${isMobile ? 'mt-12' : 'mt-14'}`}>
+        <div className={`flex flex-col gap-2 ${isMobile ? 'mt-0' : 'mt-2'}`}>
           <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-sm">
             <WeddingHeader sharedGalleryOwnerId={sharedGalleryOwnerId} />
           </div>
