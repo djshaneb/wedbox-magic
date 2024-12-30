@@ -71,11 +71,9 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     <div className="space-y-4 max-w-7xl mx-auto px-4 md:px-6">
       {!lightboxOpen && (
         <div className={`flex flex-col gap-4 ${isMobile ? 'mt-16' : 'mt-24'}`}>
-          {!isSharedView && (
-            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
-              <WeddingHeader />
-            </div>
-          )}
+          <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
+            <WeddingHeader sharedGalleryOwnerId={sharedGalleryOwnerId} />
+          </div>
           {!isSharedView && (
             <div className="w-full max-w-3xl mx-auto">
               <ShareGalleryButton />

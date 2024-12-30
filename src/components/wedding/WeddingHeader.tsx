@@ -1,54 +1,53 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
-import { CalendarHeart } from "lucide-react";
 
-export const WeddingHeader = () => {
-  const { data: weddingDetails, isLoading } = useQuery({
-    queryKey: ['weddingDetails'],
+interface WeddingHeaderProps {
+  sharedGalleryOwnerId?: string;
+}
+
+export const WeddingHeader = ({ sharedGalleryOwnerId }: WeddingHeaderProps) => {
+  const { data: weddingDetails } = useQuery({
+    queryKey: ['weddingDetails', sharedGalleryOwnerId],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = sharedGalleryOwnerId || user?.id;
+      
+      if (!userId) return null;
+      
       const { data, error } = await supabase
         .from('wedding_details')
         .select('*')
-        .maybeSingle();
+        .eq('user_id', userId)
+        .single();
 
-      if (error) {
-        console.error('Error fetching wedding details:', error);
-        throw error;
-      }
-      
+      if (error) throw error;
       return data;
     },
+    enabled: true
   });
 
-  if (isLoading) return null;
   if (!weddingDetails) return null;
 
-  // Only show the photo section if there's a photo URL
-  const showPhoto = weddingDetails.photo_url !== null;
-
   return (
-    <div className="flex items-center gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm border border-wedding-pink/10">
-      {showPhoto && (
-        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-wedding-pink flex-shrink-0">
+    <div className="text-center space-y-2">
+      <h1 className="text-2xl font-bold text-gray-900">{weddingDetails.couple_names}</h1>
+      <p className="text-gray-600">
+        {new Date(weddingDetails.wedding_date).toLocaleDateString(undefined, {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}
+      </p>
+      {weddingDetails.photo_url && (
+        <div className="mt-4">
           <img
             src={weddingDetails.photo_url}
-            alt="Wedding couple"
-            className="w-full h-full object-cover"
+            alt={weddingDetails.couple_names}
+            className="w-32 h-32 object-cover rounded-full mx-auto"
           />
         </div>
       )}
-      <div className="flex flex-col">
-        <h2 className="text-lg font-semibold text-gray-800">
-          {weddingDetails.couple_names}
-        </h2>
-        <div className="flex items-center gap-1 text-sm text-gray-600">
-          <CalendarHeart className="w-4 h-4 text-wedding-pink" />
-          <span>
-            {format(new Date(weddingDetails.wedding_date), 'MMMM d, yyyy')}
-          </span>
-        </div>
-      </div>
     </div>
   );
 };
