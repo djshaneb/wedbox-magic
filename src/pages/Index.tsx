@@ -13,6 +13,7 @@ import { Camera, LogOut, ArrowRight, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";  // Add this import
 import {
   Sheet,
   SheetContent,
@@ -42,6 +43,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();  // Add this line to use the hook
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
