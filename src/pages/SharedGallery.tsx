@@ -6,6 +6,7 @@ import { Camera, Plus, Upload, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
+import { WeddingHeader } from "@/components/wedding/WeddingHeader";
 
 interface WeddingDetails {
   couple_names: string;
@@ -93,28 +94,6 @@ const SharedGallery = () => {
               <span className="text-sm font-medium text-gray-600">PHOTO SHARE</span>
             </div>
 
-            {weddingDetails && (
-              <div className="flex items-center gap-4">
-                {weddingDetails.photo_url && (
-                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-wedding-pink">
-                    <img
-                      src={weddingDetails.photo_url}
-                      alt="Wedding couple"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="text-right">
-                  <h2 className="font-semibold text-gray-900">
-                    {weddingDetails.couple_names}
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    {format(new Date(weddingDetails.wedding_date), 'MMMM d, yyyy')}
-                  </p>
-                </div>
-              </div>
-            )}
-
             <div className="flex items-center gap-4">
               <Button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -155,6 +134,34 @@ const SharedGallery = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 pt-20">
+        {ownerId && weddingDetails && (
+          <div className="mb-6">
+            <div className="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
+              <div className="flex items-center gap-4">
+                {weddingDetails.photo_url && (
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-wedding-pink flex-shrink-0">
+                    <img
+                      src={weddingDetails.photo_url}
+                      alt="Wedding couple"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {weddingDetails.couple_names}
+                  </h2>
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <Camera className="w-4 h-4 text-wedding-pink" />
+                    <span>
+                      {format(new Date(weddingDetails.wedding_date), 'MMMM d, yyyy')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {ownerId && (
           <PhotoGallery 
             sharedGalleryOwnerId={ownerId} 
