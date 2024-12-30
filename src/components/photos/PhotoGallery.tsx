@@ -66,7 +66,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   return (
     <div className="space-y-4">
       {!lightboxOpen && (
-        <div className="flex justify-between items-center">
+        <div className={`flex flex-col md:flex-row md:justify-between md:items-center gap-4 ${isMobile ? 'mt-16' : ''}`}>
           <PhotoUploadSection
             onFileUpload={handleFileUpload}
             onPhotoTaken={handlePhotoTaken}
