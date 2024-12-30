@@ -45,19 +45,21 @@ export const PhotoLightbox = ({
           iconNext: () => null,
           iconPrev: () => null,
           buttonNext: () => null,
-          buttonPrev: () => null
+          buttonPrev: () => null,
+          buttonZoom: () => null,
+          slideFooter: () => !isSharedView && onDelete && (
+            <div className="absolute bottom-4 left-4">
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={() => onDelete(photos[currentIndex])}
+              >
+                <Trash2 className="h-5 w-5" />
+              </Button>
+            </div>
+          )
         }}
       />
-      {isOpen && !isSharedView && onDelete && (
-        <Button
-          variant="destructive"
-          size="icon"
-          className="fixed bottom-4 left-4 z-50"
-          onClick={() => onDelete(photos[currentIndex])}
-        >
-          <Trash2 className="h-5 w-5" />
-        </Button>
-      )}
     </div>
   );
 };
