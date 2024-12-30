@@ -35,8 +35,8 @@ export const PartnerInformation = ({
             }`}
             onClick={() => setPartnerRole("bride")}
           >
-            <CardContent className="p-6 text-center">
-              <div className="mx-auto w-full aspect-square bg-wedding-pink/10 flex items-center justify-center">
+            <CardContent className="p-0">
+              <div className="w-full aspect-square">
                 <img
                   src="/lovable-uploads/b39f9b88-9c30-47ca-9783-bb68659f8de4.png"
                   alt="Bride"
@@ -54,8 +54,8 @@ export const PartnerInformation = ({
             }`}
             onClick={() => setPartnerRole("groom")}
           >
-            <CardContent className="p-6 text-center">
-              <div className="mx-auto w-full aspect-square bg-wedding-pink/10 flex items-center justify-center">
+            <CardContent className="p-0">
+              <div className="w-full aspect-square">
                 <img
                   src="/lovable-uploads/6b14a633-f382-4acb-8ce5-eb601bdf3075.png"
                   alt="Groom"
