@@ -62,7 +62,7 @@ export const PhotoLightbox = ({
         slides={photos.map(photo => ({ src: photo.url }))}
       />
       {isOpen && isMobile && onDelete && (
-        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[9999]">
+        <div className="fixed bottom-8 left-0 right-0 z-[9999] px-4">
           <Button
             variant="destructive"
             size="lg"
@@ -70,7 +70,7 @@ export const PhotoLightbox = ({
               onDelete(photos[currentIndex]);
               onClose();
             }}
-            className="bg-red-500 hover:bg-red-600 text-white shadow-lg rounded-full px-6"
+            className="w-full bg-red-500 hover:bg-red-600 text-white shadow-lg rounded-full py-6"
           >
             <Trash2 className="h-5 w-5 mr-2" />
             Delete Photo
