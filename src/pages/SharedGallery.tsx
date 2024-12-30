@@ -87,7 +87,7 @@ const SharedGallery = () => {
 
       <div className="container mx-auto px-4 py-8 pt-20">
         {ownerId && weddingDetails && (
-          <div className="mb-6">
+          <div className="w-full max-w-3xl mx-auto mb-6">
             <WeddingHeader />
           </div>
         )}
