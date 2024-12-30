@@ -108,7 +108,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-      <main className={`container mx-auto ${isMobile ? 'px-2 pt-20' : 'p-6 pt-24'}`}>
+      <main className={`container mx-auto ${isMobile ? 'px-2' : 'p-6'}`}>
         <PhotoGallery />
       </main>
     </div>
