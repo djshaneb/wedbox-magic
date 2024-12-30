@@ -21,7 +21,8 @@ export const useGetStartedSubmit = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
-      const coupleNames = `${firstName} & ${partnerName}`;
+      // Use the names exactly as entered without adding "&"
+      const coupleNames = firstName;
       
       let photoUrl = null;
       if (selectedImage) {
