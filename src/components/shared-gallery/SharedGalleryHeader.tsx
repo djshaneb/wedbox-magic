@@ -56,7 +56,7 @@ export const SharedGalleryHeader = ({
                   variant="ghost"
                   className="w-full justify-start"
                 >
-                  <Image className="mr-2 h-4 w-4" /> Photo Booth Mode
+                  <Camera className="mr-2 h-4 w-4" /> Take Photo
                 </Button>
               </div>
             )}
