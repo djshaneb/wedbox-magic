@@ -95,8 +95,17 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
         onClose={() => setLightboxOpen(false)}
         currentIndex={currentPhotoIndex}
         photos={photos}
-        onDelete={!isSharedView ? (photo) => handleDeletePhoto(new MouseEvent('click'), photo) : undefined}
+        onDelete={!isSharedView ? (photo) => {
+          // Create a synthetic React MouseEvent
+          const syntheticEvent = {
+            stopPropagation: () => {},
+          } as React.MouseEvent;
+          
+          return handleDeletePhoto(syntheticEvent, photo);
+        } : undefined}
       />
     </div>
   );
 };
+
+export default PhotoGallery;
