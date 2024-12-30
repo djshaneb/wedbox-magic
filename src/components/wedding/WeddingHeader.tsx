@@ -29,7 +29,7 @@ export const WeddingHeader = ({ sharedGalleryOwnerId }: WeddingHeaderProps) => {
   if (!weddingDetails) return null;
 
   return (
-    <div className={`text-center py-2 ${sharedGalleryOwnerId ? '-mt-16' : 'mt-16'}`}>
+    <div className={`text-center py-2 ${sharedGalleryOwnerId ? '-mt-8' : 'mt-16'}`}>
       <h1 className="text-2xl font-bold text-gray-900">{weddingDetails.couple_names}</h1>
       <p className="text-gray-600 text-sm">
         {new Date(weddingDetails.wedding_date).toLocaleDateString(undefined, {
