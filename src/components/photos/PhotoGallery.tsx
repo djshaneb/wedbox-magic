@@ -12,15 +12,18 @@ import { WeddingHeader } from "@/components/wedding/WeddingHeader";
 interface PhotoGalleryProps {
   sharedGalleryOwnerId?: string;
   isSharedView?: boolean;
+  isPhotoBooth?: boolean;
+  setIsPhotoBooth?: (value: boolean) => void;
 }
 
 export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ 
   sharedGalleryOwnerId,
-  isSharedView = false 
+  isSharedView = false,
+  isPhotoBooth = false,
+  setIsPhotoBooth = () => {}
 }) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  const [isPhotoBooth, setIsPhotoBooth] = useState(false);
   const isMobile = useIsMobile();
   const { photos, isLoading, uploadMutation, deleteMutation } = usePhotos(sharedGalleryOwnerId);
 

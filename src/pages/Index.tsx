@@ -19,6 +19,7 @@ const Index = () => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPhotoBooth, setIsPhotoBooth] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -159,7 +160,7 @@ const Index = () => {
         </div>
       </div>
       <main className={`container mx-auto ${isMobile ? 'px-2' : 'p-6'}`}>
-        <PhotoGallery />
+        <PhotoGallery isPhotoBooth={isPhotoBooth} setIsPhotoBooth={setIsPhotoBooth} />
       </main>
     </div>
   );
