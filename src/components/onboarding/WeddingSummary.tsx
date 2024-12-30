@@ -32,7 +32,7 @@ export const WeddingSummary = ({
   );
 
   return (
-    <div className="flex flex-col items-center space-y-6 max-w-md mx-auto">
+    <div className="flex flex-col items-center space-y-4 max-w-md mx-auto">
       <WeddingImageSelector
         selectedImage={selectedImage}
         onImageSelect={onImageSelect}
