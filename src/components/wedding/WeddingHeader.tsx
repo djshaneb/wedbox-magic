@@ -29,9 +29,9 @@ export const WeddingHeader = ({ sharedGalleryOwnerId }: WeddingHeaderProps) => {
   if (!weddingDetails) return null;
 
   return (
-    <div className="text-center space-y-2">
+    <div className="text-center py-2">
       <h1 className="text-2xl font-bold text-gray-900">{weddingDetails.couple_names}</h1>
-      <p className="text-gray-600">
+      <p className="text-gray-600 text-sm">
         {new Date(weddingDetails.wedding_date).toLocaleDateString(undefined, {
           weekday: 'long',
           year: 'numeric',
@@ -40,11 +40,11 @@ export const WeddingHeader = ({ sharedGalleryOwnerId }: WeddingHeaderProps) => {
         })}
       </p>
       {weddingDetails.photo_url && (
-        <div className="mt-4">
+        <div className="mt-2">
           <img
             src={weddingDetails.photo_url}
             alt={weddingDetails.couple_names}
-            className="w-32 h-32 object-cover rounded-full mx-auto"
+            className="w-24 h-24 object-cover rounded-full mx-auto"
           />
         </div>
       )}
