@@ -2,21 +2,27 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { Photo } from "@/hooks/use-photos";
 import { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PhotoLightboxProps {
   isOpen: boolean;
   onClose: () => void;
   currentIndex: number;
   photos: Photo[];
+  onDelete?: (photo: Photo) => void;
 }
 
 export const PhotoLightbox = ({
   isOpen,
   onClose,
   currentIndex,
-  photos
+  photos,
+  onDelete
 }: PhotoLightboxProps) => {
   const touchStartY = useRef<number | null>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
@@ -29,7 +35,6 @@ export const PhotoLightbox = ({
       const touchEndY = e.changedTouches[0].clientY;
       const deltaY = touchEndY - touchStartY.current;
       
-      // If swipe up distance is more than 100px, close the lightbox
       if (deltaY < -100) {
         onClose();
       }
@@ -49,11 +54,29 @@ export const PhotoLightbox = ({
   }, [isOpen, onClose]);
 
   return (
-    <Lightbox
-      open={isOpen}
-      close={onClose}
-      index={currentIndex}
-      slides={photos.map(photo => ({ src: photo.url }))}
-    />
+    <>
+      <Lightbox
+        open={isOpen}
+        close={onClose}
+        index={currentIndex}
+        slides={photos.map(photo => ({ src: photo.url }))}
+      />
+      {isOpen && isMobile && onDelete && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-[9999]">
+          <Button
+            variant="destructive"
+            size="lg"
+            onClick={() => {
+              onDelete(photos[currentIndex]);
+              onClose();
+            }}
+            className="bg-red-500 hover:bg-red-600 text-white shadow-lg rounded-full px-6"
+          >
+            <Trash2 className="h-5 w-5 mr-2" />
+            Delete Photo
+          </Button>
+        </div>
+      )}
+    </>
   );
 };
