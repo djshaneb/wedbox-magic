@@ -23,10 +23,15 @@ export const PhotoLightbox = ({
   useSwipeGesture(onClose);
 
   const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     if (onDelete && photos[currentIndex]) {
-      await onDelete(e, photos[currentIndex]);
-      onClose();
+      try {
+        await onDelete(e, photos[currentIndex]);
+        onClose();
+      } catch (error) {
+        console.error('Error deleting photo:', error);
+      }
     }
   };
 

@@ -11,7 +11,11 @@ export const DeleteButton = ({ onClick, className }: DeleteButtonProps) => (
     variant="destructive"
     size="icon"
     className={`bg-red-500 hover:bg-red-600 text-white shadow-lg ${className}`}
-    onClick={onClick}
+    onClick={(e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onClick(e);
+    }}
     type="button"
   >
     <Trash2 className="h-4 w-4" />
