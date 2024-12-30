@@ -4,6 +4,7 @@ import { Photo } from "@/hooks/use-photos";
 import { CloseButton } from "./lightbox/CloseButton";
 import { DeleteButton } from "./lightbox/DeleteButton";
 import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
+import { useToast } from "@/hooks/use-toast";
 
 interface PhotoLightboxProps {
   isOpen: boolean;
@@ -20,18 +21,25 @@ export const PhotoLightbox = ({
   photos,
   onDelete
 }: PhotoLightboxProps) => {
+  const { toast } = useToast();
   useSwipeGesture(onClose);
 
   const handleDelete = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
     if (onDelete && photos[currentIndex]) {
       try {
         await onDelete(e, photos[currentIndex]);
+        toast({
+          title: "Photo deleted",
+          description: "The photo has been removed from your gallery",
+        });
         onClose();
       } catch (error) {
         console.error('Error deleting photo:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete the photo. Please try again.",
+          variant: "destructive",
+        });
       }
     }
   };
@@ -52,7 +60,7 @@ export const PhotoLightbox = ({
           container: { backgroundColor: "rgba(0, 0, 0, 0.9)" }
         }}
       />
-      {onDelete && <DeleteButton onClick={handleDelete} />}
+      {onDelete && photos.length > 0 && <DeleteButton onClick={handleDelete} />}
     </div>
   );
 };
