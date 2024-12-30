@@ -5,6 +5,17 @@ import { CloseButton } from "./lightbox/CloseButton";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface PhotoLightboxProps {
   isOpen: boolean;
@@ -23,7 +34,15 @@ export const PhotoLightbox = ({
   onDelete,
   isSharedView = false
 }: PhotoLightboxProps) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   useSwipeGesture(onClose);
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(photos[currentIndex]);
+    }
+    setShowDeleteDialog(false);
+  };
 
   return (
     <div className="relative">
@@ -51,7 +70,7 @@ export const PhotoLightbox = ({
               <Button
                 variant="destructive"
                 size="icon"
-                onClick={() => onDelete(photos[currentIndex])}
+                onClick={() => setShowDeleteDialog(true)}
               >
                 <Trash2 className="h-5 w-5" />
               </Button>
@@ -59,6 +78,23 @@ export const PhotoLightbox = ({
           )
         }}
       />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the photo from your gallery.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
