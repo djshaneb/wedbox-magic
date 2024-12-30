@@ -10,19 +10,19 @@ export const WeddingHeader = () => {
       const { data, error } = await supabase
         .from('wedding_details')
         .select('*')
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching wedding details:', error);
         throw error;
       }
       
-      console.log('Wedding details:', data);
       return data;
     },
   });
 
-  if (isLoading || !weddingDetails) return null;
+  if (isLoading) return null;
+  if (!weddingDetails) return null;
 
   // Only show the photo section if there's a photo URL
   const showPhoto = weddingDetails.photo_url !== null;
