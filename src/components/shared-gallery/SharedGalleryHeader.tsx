@@ -15,9 +15,9 @@ export const SharedGalleryHeader = ({
   sharedGalleryOwnerId
 }: SharedGalleryHeaderProps) => {
   return (
-    <div className="fixed top-0 left-0 right-0 z-10 bg-white/95 backdrop-blur-sm border-b border-wedding-pink/20 shadow-sm">
+    <div className="fixed top-0 left-0 right-0 z-10 bg-white/95 backdrop-blur-sm border-b border-wedding-pink/20">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-between py-2">
           <div className="flex flex-col items-start">
             <h1 className="font-semibold text-xl flex items-center gap-2">
               <Camera className="h-5 w-5 text-wedding-pink" />
