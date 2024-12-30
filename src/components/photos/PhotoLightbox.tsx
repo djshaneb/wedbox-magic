@@ -53,6 +53,13 @@ export const PhotoLightbox = ({
     };
   }, [isOpen, onClose]);
 
+  const handleDelete = async () => {
+    if (onDelete && photos[currentIndex]) {
+      await onDelete(photos[currentIndex]);
+      onClose();
+    }
+  };
+
   return (
     <div className="relative">
       <Lightbox
@@ -66,10 +73,7 @@ export const PhotoLightbox = ({
           <Button
             variant="destructive"
             size="lg"
-            onClick={() => {
-              onDelete(photos[currentIndex]);
-              onClose();
-            }}
+            onClick={handleDelete}
             className="w-full bg-red-500 hover:bg-red-600 text-white shadow-lg rounded-full py-6"
           >
             <Trash2 className="h-5 w-5 mr-2" />
