@@ -87,13 +87,17 @@ export const PhotoLightbox = ({
         index={currentIndex}
         slides={photos.map(photo => ({ src: photo.url }))}
         toolbar={toolbar}
+        styles={{
+          container: { backgroundColor: "rgba(0, 0, 0, 0.9)" }
+        }}
       />
       {onDelete && (
         <Button
           variant="destructive"
           size="icon"
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[99999] bg-red-500 hover:bg-red-600 text-white shadow-lg md:left-8 md:translate-x-0 h-12 w-12"
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[99999999] bg-red-500 hover:bg-red-600 text-white shadow-lg md:left-8 md:translate-x-0 h-12 w-12"
           onClick={handleDelete}
+          type="button"
         >
           <Trash2 className="h-6 w-6" />
         </Button>
