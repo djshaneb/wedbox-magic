@@ -2,7 +2,8 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { Photo } from "@/hooks/use-photos";
 import { CloseButton } from "./lightbox/CloseButton";
-import { DeleteButton } from "./lightbox/DeleteButton";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
 
 interface PhotoLightboxProps {
@@ -24,13 +25,6 @@ export const PhotoLightbox = ({
 }: PhotoLightboxProps) => {
   useSwipeGesture(onClose);
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onDelete && photos[currentIndex]) {
-      onDelete(photos[currentIndex]);
-    }
-  };
-
   return (
     <div className="relative">
       <Lightbox
@@ -40,22 +34,25 @@ export const PhotoLightbox = ({
         slides={photos.map(photo => ({ src: photo.url }))}
         toolbar={{
           buttons: [
-            <CloseButton key="close" onClose={onClose} />
-          ]
+            <CloseButton key="close" onClose={onClose} />,
+            !isSharedView && onDelete && (
+              <Button
+                key="delete"
+                variant="destructive"
+                size="icon"
+                className="absolute top-4 left-4"
+                onClick={() => onDelete(photos[currentIndex])}
+              >
+                <Trash2 className="h-5 w-5" />
+              </Button>
+            )
+          ].filter(Boolean)
         }}
         styles={{
           container: { backgroundColor: "rgba(0, 0, 0, 0.9)" },
           root: { zIndex: 40 }
         }}
       />
-      {!isSharedView && onDelete && (
-        <div className="fixed bottom-4 left-4 z-50">
-          <DeleteButton 
-            onClick={handleDelete}
-            className="shadow-lg hover:bg-red-600"
-          />
-        </div>
-      )}
     </div>
   );
 };
