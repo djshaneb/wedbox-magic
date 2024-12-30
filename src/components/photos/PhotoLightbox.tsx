@@ -73,7 +73,7 @@ export const PhotoLightbox = ({
         <Button
           variant="destructive"
           size="icon"
-          className="fixed top-16 right-4 z-[99999] bg-red-500 hover:bg-red-600 text-white shadow-lg"
+          className="fixed top-16 right-4 z-[999999] bg-red-500 hover:bg-red-600 text-white shadow-lg"
           onClick={handleDelete}
         >
           <Trash2 className="h-4 w-4" />
