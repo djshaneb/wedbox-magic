@@ -67,7 +67,7 @@ export const PhotoLightbox = ({
         key="delete"
         variant="destructive"
         size="icon"
-        className="bg-red-500 hover:bg-red-600 text-white"
+        className="bg-red-500 hover:bg-red-600 text-white absolute bottom-4 left-4"
         onClick={handleDelete}
       >
         <Trash2 className="h-4 w-4" />
