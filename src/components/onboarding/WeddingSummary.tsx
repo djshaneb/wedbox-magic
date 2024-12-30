@@ -49,7 +49,8 @@ export const WeddingSummary = ({
           text={displayedNames}
           onTextChange={(text) => {
             setDisplayedNames(text);
-            onEditNames(text, partnerName);
+            // Pass the full text as the first name since it's now the complete couple names
+            onEditNames(text, "");
           }}
         />
       </div>
