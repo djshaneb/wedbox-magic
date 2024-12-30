@@ -8,7 +8,7 @@ interface ShareDialogProps {
 
 export const ShareDialog = ({ shareLink, onCopy }: ShareDialogProps) => {
   return (
-    <DialogContent className="sm:max-w-md">
+    <DialogContent className="sm:max-w-md mt-16 sm:mt-0">
       <DialogHeader>
         <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
           Share Your Gallery
