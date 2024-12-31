@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EditableText } from "./wedding-summary/EditableText";
 import { WeddingImageSelector } from "./WeddingImageSelector";
 
@@ -30,7 +30,14 @@ export const WeddingSummary = ({
   const [descriptionText, setDescriptionText] = useState(
     "we're so excited to celebrate with you! Please use the WeddingWin Photo App to share your photos and videos with us, so that we get all the best memories from our special day."
   );
-  const [displayedNames, setDisplayedNames] = useState(firstName);
+  const [displayedNames, setDisplayedNames] = useState("");
+  const [hasBeenEdited, setHasBeenEdited] = useState(false);
+
+  useEffect(() => {
+    if (!hasBeenEdited) {
+      setDisplayedNames(`${firstName} & ${partnerName}`);
+    }
+  }, [firstName, partnerName, hasBeenEdited]);
 
   return (
     <div className="flex flex-col items-center space-y-4 max-w-md mx-auto">
@@ -43,6 +50,7 @@ export const WeddingSummary = ({
         <EditableText
           text={displayedNames}
           onTextChange={(text) => {
+            setHasBeenEdited(true);
             setDisplayedNames(text);
             onEditNames(text, "");
           }}
