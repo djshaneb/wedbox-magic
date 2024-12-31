@@ -32,7 +32,6 @@ export const WeddingSummary = ({
   );
   const [displayedNames, setDisplayedNames] = useState(`${firstName} & ${partnerName}`);
 
-  // Update displayed names when props change
   useEffect(() => {
     setDisplayedNames(`${firstName} & ${partnerName}`);
   }, [firstName, partnerName]);
@@ -49,7 +48,6 @@ export const WeddingSummary = ({
           text={displayedNames}
           onTextChange={(text) => {
             setDisplayedNames(text);
-            // Pass the full text as the first name since it's now the complete couple names
             onEditNames(text, "");
           }}
         />

@@ -10,10 +10,7 @@ interface WeddingDetails {
 }
 
 const processCoupleName = (firstName: string, partnerName: string): string => {
-  if (firstName.includes(" & ")) {
-    return firstName;
-  }
-  return partnerName ? `${firstName} & ${partnerName}` : firstName;
+  return firstName;
 };
 
 const uploadWeddingPhoto = async (selectedImage: string): Promise<string | null> => {
