@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { uploadWeddingPhoto } from "./usePhotoUpload";
+import { saveWeddingDetails } from "./useWeddingDetails";
 
 interface WeddingDetails {
   firstName: string;
@@ -8,66 +10,6 @@ interface WeddingDetails {
   date?: Date;
   selectedImage: string | null;
 }
-
-const uploadWeddingPhoto = async (selectedImage: string): Promise<string | null> => {
-  try {
-    const response = await fetch(selectedImage);
-    const blob = await response.blob();
-    const file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
-    const fileName = `wedding-photos/${crypto.randomUUID()}.jpg`;
-    
-    const { error: uploadError } = await supabase.storage
-      .from('photos')
-      .upload(fileName, file);
-
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      throw uploadError;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('photos')
-      .getPublicUrl(fileName);
-
-    return publicUrl;
-  } catch (error) {
-    console.error('Error processing image:', error);
-    throw error;
-  }
-};
-
-const saveWeddingDetails = async (
-  userId: string, 
-  coupleNames: string, 
-  date: Date | undefined, 
-  photoUrl: string | null
-) => {
-  const { data: existingDetails } = await supabase
-    .from('wedding_details')
-    .select('id')
-    .eq('user_id', userId)
-    .maybeSingle();
-
-  if (existingDetails) {
-    return supabase
-      .from('wedding_details')
-      .update({
-        couple_names: coupleNames,
-        wedding_date: date?.toISOString(),
-        photo_url: photoUrl
-      })
-      .eq('user_id', userId);
-  }
-
-  return supabase
-    .from('wedding_details')
-    .insert({
-      user_id: userId,
-      couple_names: coupleNames,
-      wedding_date: date?.toISOString(),
-      photo_url: photoUrl
-    });
-};
 
 export const useGetStartedSubmit = () => {
   const { toast } = useToast();
@@ -97,10 +39,9 @@ export const useGetStartedSubmit = () => {
         }
       }
 
-      // Save the exact displayed text from the WeddingSummary component
       const result = await saveWeddingDetails(
         user.id,
-        `${firstName}`, // This will now contain the exact text from the editable field
+        firstName,
         date,
         photoUrl
       );
