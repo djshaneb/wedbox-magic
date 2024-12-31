@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { EditableText } from "./wedding-summary/EditableText";
 import { WeddingImageSelector } from "./WeddingImageSelector";
 
@@ -30,11 +30,7 @@ export const WeddingSummary = ({
   const [descriptionText, setDescriptionText] = useState(
     "we're so excited to celebrate with you! Please use the WeddingWin Photo App to share your photos and videos with us, so that we get all the best memories from our special day."
   );
-  const [displayedNames, setDisplayedNames] = useState(`${firstName} & ${partnerName}`);
-
-  useEffect(() => {
-    setDisplayedNames(`${firstName} & ${partnerName}`);
-  }, [firstName, partnerName]);
+  const [displayedNames, setDisplayedNames] = useState(firstName);
 
   return (
     <div className="flex flex-col items-center space-y-4 max-w-md mx-auto">

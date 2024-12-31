@@ -9,10 +9,6 @@ interface WeddingDetails {
   selectedImage: string | null;
 }
 
-const processCoupleName = (firstName: string, partnerName: string): string => {
-  return firstName;
-};
-
 const uploadWeddingPhoto = async (selectedImage: string): Promise<string | null> => {
   try {
     const response = await fetch(selectedImage);
@@ -86,8 +82,6 @@ export const useGetStartedSubmit = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
-
-      const coupleNames = processCoupleName(firstName, partnerName);
       
       let photoUrl = null;
       if (selectedImage) {
@@ -103,7 +97,7 @@ export const useGetStartedSubmit = () => {
         }
       }
 
-      const result = await saveWeddingDetails(user.id, coupleNames, date, photoUrl);
+      const result = await saveWeddingDetails(user.id, firstName, date, photoUrl);
 
       if (result.error) throw result.error;
 
