@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Camera, Upload } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface ImageUploadProps {
   imagePreview: string | null;
@@ -8,54 +8,61 @@ interface ImageUploadProps {
 }
 
 export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) => {
+  const workerRef = useRef<Worker | null>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
+  useEffect(() => {
+    // Initialize the worker
+    workerRef.current = new Worker(
+      new URL('../../../workers/imageOptimizer.ts', import.meta.url),
+      { type: 'module' }
+    );
+
+    // Clean up worker on unmount
+    return () => {
+      workerRef.current?.terminate();
+    };
+  }, []);
+
   const optimizeImage = async (file: File): Promise<File> => {
-    // Create a canvas to resize the image
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const img = new Image();
-
-    // Create a promise to handle the image loading
-    const loadImage = new Promise((resolve) => {
-      img.onload = () => resolve(img);
-      img.src = URL.createObjectURL(file);
-    });
-
-    await loadImage;
-
-    // Calculate new dimensions (max 256px while maintaining aspect ratio)
-    const maxSize = 256;
-    let width = img.width;
-    let height = img.height;
-
-    if (width > height && width > maxSize) {
-      height = (height * maxSize) / width;
-      width = maxSize;
-    } else if (height > maxSize) {
-      width = (width * maxSize) / height;
-      height = maxSize;
+    if (!workerRef.current) {
+      throw new Error('Worker not initialized');
     }
 
-    // Set canvas size and draw image
-    canvas.width = width;
-    canvas.height = height;
-    ctx?.drawImage(img, 0, 0, width, height);
+    return new Promise((resolve, reject) => {
+      const worker = workerRef.current!;
 
-    // Convert to WebP
-    const webpBlob = await new Promise<Blob>((resolve) => {
-      canvas.toBlob((blob) => {
-        if (blob) resolve(blob);
-      }, 'image/webp', 0.8); // 0.8 quality gives good balance between size and quality
-    });
+      worker.onmessage = (e) => {
+        if (e.data.success) {
+          const { blob, type } = e.data.result;
+          resolve(new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), { type }));
+        } else {
+          reject(new Error(e.data.error));
+        }
+      };
 
-    // Create a new file from the blob
-    return new File([webpBlob], file.name.replace(/\.[^/.]+$/, '.webp'), {
-      type: 'image/webp',
+      worker.onerror = (error) => {
+        reject(error);
+      };
+
+      // Read file as ArrayBuffer to send to worker
+      const reader = new FileReader();
+      reader.onload = () => {
+        worker.postMessage({
+          imageData: reader.result,
+          fileName: file.name
+        });
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(file);
     });
   };
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const originalFile = event.target.files[0];
+      setIsOptimizing(true);
+      
       try {
         const optimizedFile = await optimizeImage(originalFile);
         onImageChange(optimizedFile);
@@ -63,6 +70,8 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
         console.error('Error optimizing image:', error);
         // Fallback to original file if optimization fails
         onImageChange(originalFile);
+      } finally {
+        setIsOptimizing(false);
       }
     }
   };
@@ -81,7 +90,9 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
           <img
             src={imagePreview}
             alt="Wedding preview"
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover transition-opacity duration-300 ${
+              isOptimizing ? 'opacity-50' : 'opacity-100'
+            }`}
             width={256}
             height={256}
             loading="lazy"
@@ -92,9 +103,15 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
             size="icon"
             className="absolute top-2 right-2 rounded-full bg-coral text-white hover:bg-coral/90 border-none"
             onClick={() => document.getElementById("image-upload")?.click()}
+            disabled={isOptimizing}
           >
             <Camera className="h-4 w-4" />
           </Button>
+          {isOptimizing && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
         </div>
       ) : (
         <label
