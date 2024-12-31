@@ -8,9 +8,62 @@ interface ImageUploadProps {
 }
 
 export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) => {
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const optimizeImage = async (file: File): Promise<File> => {
+    // Create a canvas to resize the image
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    // Create a promise to handle the image loading
+    const loadImage = new Promise((resolve) => {
+      img.onload = () => resolve(img);
+      img.src = URL.createObjectURL(file);
+    });
+
+    await loadImage;
+
+    // Calculate new dimensions (max 256px while maintaining aspect ratio)
+    const maxSize = 256;
+    let width = img.width;
+    let height = img.height;
+
+    if (width > height && width > maxSize) {
+      height = (height * maxSize) / width;
+      width = maxSize;
+    } else if (height > maxSize) {
+      width = (width * maxSize) / height;
+      height = maxSize;
+    }
+
+    // Set canvas size and draw image
+    canvas.width = width;
+    canvas.height = height;
+    ctx?.drawImage(img, 0, 0, width, height);
+
+    // Convert to WebP
+    const webpBlob = await new Promise<Blob>((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+      }, 'image/webp', 0.8); // 0.8 quality gives good balance between size and quality
+    });
+
+    // Create a new file from the blob
+    return new File([webpBlob], file.name.replace(/\.[^/.]+$/, '.webp'), {
+      type: 'image/webp',
+    });
+  };
+
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      onImageChange(event.target.files[0]);
+      const originalFile = event.target.files[0];
+      try {
+        const optimizedFile = await optimizeImage(originalFile);
+        onImageChange(optimizedFile);
+      } catch (error) {
+        console.error('Error optimizing image:', error);
+        // Fallback to original file if optimization fails
+        onImageChange(originalFile);
+      }
     }
   };
 
