@@ -44,7 +44,7 @@ export const GetStartedForm = () => {
       setStep(4);
     } else {
       await handleFormSubmit({
-        firstName,
+        firstName: `${firstName} & ${form.getValues().partnerName}`,
         partnerName: form.getValues().partnerName,
         date,
         selectedImage,

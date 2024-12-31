@@ -97,7 +97,13 @@ export const useGetStartedSubmit = () => {
         }
       }
 
-      const result = await saveWeddingDetails(user.id, firstName, date, photoUrl);
+      // Save the exact displayed text from the WeddingSummary component
+      const result = await saveWeddingDetails(
+        user.id,
+        `${firstName}`, // This will now contain the exact text from the editable field
+        date,
+        photoUrl
+      );
 
       if (result.error) throw result.error;
 
