@@ -21,8 +21,9 @@ export const useGetStartedSubmit = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
-      // Save the names exactly as they appear in the form
-      const coupleNames = firstName;
+      // If partnerName is empty, use firstName as is (it might contain both names)
+      // Otherwise, combine the names with " & "
+      const coupleNames = partnerName ? `${firstName} & ${partnerName}` : firstName;
       
       let photoUrl = null;
       if (selectedImage) {
