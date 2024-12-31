@@ -29,6 +29,10 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
             src={imagePreview}
             alt="Wedding preview"
             className="w-full h-full object-cover"
+            width={256}
+            height={256}
+            loading="lazy"
+            decoding="async"
           />
           <Button
             variant="outline"

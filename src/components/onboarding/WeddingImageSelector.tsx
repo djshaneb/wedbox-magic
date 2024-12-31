@@ -13,10 +13,11 @@ export const WeddingImageSelector = ({
   className
 }: WeddingImageSelectorProps) => {
   return (
-    <div className={cn("flex justify-center", className)}>
+    <div className={cn("flex justify-center w-full max-w-[256px] mx-auto", className)}>
       <ImageUpload
         imagePreview={selectedImage}
         onImageChange={(file) => {
+          // Create an optimized object URL
           const url = URL.createObjectURL(file);
           onImageSelect(url);
         }}
