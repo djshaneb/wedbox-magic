@@ -2,6 +2,79 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
+interface WeddingDetails {
+  firstName: string;
+  partnerName: string;
+  date?: Date;
+  selectedImage: string | null;
+}
+
+const processCoupleName = (firstName: string, partnerName: string): string => {
+  return firstName.includes(" & ") 
+    ? firstName 
+    : (partnerName ? `${firstName} & ${partnerName}` : firstName);
+};
+
+const uploadWeddingPhoto = async (selectedImage: string): Promise<string | null> => {
+  try {
+    const response = await fetch(selectedImage);
+    const blob = await response.blob();
+    const file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
+    const fileName = `wedding-photos/${crypto.randomUUID()}.jpg`;
+    
+    const { error: uploadError } = await supabase.storage
+      .from('photos')
+      .upload(fileName, file);
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      throw uploadError;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('photos')
+      .getPublicUrl(fileName);
+
+    return publicUrl;
+  } catch (error) {
+    console.error('Error processing image:', error);
+    throw error;
+  }
+};
+
+const saveWeddingDetails = async (
+  userId: string, 
+  coupleNames: string, 
+  date: Date | undefined, 
+  photoUrl: string | null
+) => {
+  const { data: existingDetails } = await supabase
+    .from('wedding_details')
+    .select('id')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (existingDetails) {
+    return supabase
+      .from('wedding_details')
+      .update({
+        couple_names: coupleNames,
+        wedding_date: date?.toISOString(),
+        photo_url: photoUrl
+      })
+      .eq('user_id', userId);
+  }
+
+  return supabase
+    .from('wedding_details')
+    .insert({
+      user_id: userId,
+      couple_names: coupleNames,
+      wedding_date: date?.toISOString(),
+      photo_url: photoUrl
+    });
+};
+
 export const useGetStartedSubmit = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -11,47 +84,18 @@ export const useGetStartedSubmit = () => {
     partnerName,
     date,
     selectedImage,
-  }: {
-    firstName: string;
-    partnerName: string;
-    date?: Date;
-    selectedImage: string | null;
-  }) => {
+  }: WeddingDetails) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
 
-      // If the names already contain " & ", use as-is
-      // Otherwise, combine the names with " & "
-      const coupleNames = firstName.includes(" & ") 
-        ? firstName 
-        : (partnerName ? `${firstName} & ${partnerName}` : firstName);
+      const coupleNames = processCoupleName(firstName, partnerName);
       
       let photoUrl = null;
       if (selectedImage) {
         try {
-          const response = await fetch(selectedImage);
-          const blob = await response.blob();
-          const file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
-
-          const fileName = `wedding-photos/${crypto.randomUUID()}.jpg`;
-          
-          const { error: uploadError } = await supabase.storage
-            .from('photos')
-            .upload(fileName, file);
-
-          if (uploadError) {
-            console.error('Upload error:', uploadError);
-            throw uploadError;
-          }
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('photos')
-            .getPublicUrl(fileName);
-
-          photoUrl = publicUrl;
+          photoUrl = await uploadWeddingPhoto(selectedImage);
         } catch (error) {
-          console.error('Error processing image:', error);
           toast({
             title: "Error uploading image",
             description: "There was a problem uploading your wedding photo.",
@@ -61,33 +105,7 @@ export const useGetStartedSubmit = () => {
         }
       }
 
-      const { data: existingDetails } = await supabase
-        .from('wedding_details')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      let result;
-      
-      if (existingDetails) {
-        result = await supabase
-          .from('wedding_details')
-          .update({
-            couple_names: coupleNames,
-            wedding_date: date?.toISOString(),
-            photo_url: photoUrl
-          })
-          .eq('user_id', user.id);
-      } else {
-        result = await supabase
-          .from('wedding_details')
-          .insert({
-            user_id: user.id,
-            couple_names: coupleNames,
-            wedding_date: date?.toISOString(),
-            photo_url: photoUrl
-          });
-      }
+      const result = await saveWeddingDetails(user.id, coupleNames, date, photoUrl);
 
       if (result.error) throw result.error;
 
