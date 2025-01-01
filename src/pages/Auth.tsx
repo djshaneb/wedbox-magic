@@ -2,11 +2,18 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [eventId, setEventId] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     // Check current auth session on mount
@@ -28,6 +35,37 @@ const AuthPage = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const handleEventAccess = async () => {
+    if (!eventId.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter an event ID",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Verify if the event ID exists
+    const { data: gallery, error } = await supabase
+      .from('shared_galleries')
+      .select('*')
+      .eq('access_code', eventId.trim())
+      .single();
+
+    if (error || !gallery) {
+      toast({
+        title: "Invalid Event ID",
+        description: "The event ID you entered is not valid",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Navigate to the shared gallery
+    navigate(`/shared/${eventId.trim()}`);
+    setIsDialogOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
@@ -45,7 +83,7 @@ const AuthPage = () => {
           </p>
         </div>
         
-        <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="bg-white shadow-md rounded-lg p-6 space-y-6">
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -62,6 +100,51 @@ const AuthPage = () => {
             providers={[]}
             redirectTo={window.location.origin}
           />
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-muted-foreground">
+                Or attend an event
+              </span>
+            </div>
+          </div>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full"
+              >
+                Attend Event
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Enter Event ID</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <Input
+                  placeholder="Enter event ID (e.g., 1QXVCV)"
+                  value={eventId}
+                  onChange={(e) => setEventId(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleEventAccess();
+                    }
+                  }}
+                />
+                <Button 
+                  className="w-full"
+                  onClick={handleEventAccess}
+                >
+                  Access Gallery
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
