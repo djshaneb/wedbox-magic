@@ -1,15 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ShareDialog } from "./share/ShareDialog";
+import { useNavigate } from "react-router-dom";
 
 export const ShareGalleryButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [shareLink, setShareLink] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate('/auth');
+      }
+    };
+
+    checkSession();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate('/auth');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const generateShareLink = async () => {
     try {
@@ -22,6 +46,7 @@ export const ShareGalleryButton = () => {
           description: "You must be logged in to share your gallery",
           variant: "destructive",
         });
+        navigate('/auth');
         return;
       }
 
