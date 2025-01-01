@@ -22,27 +22,25 @@ const AppContent = () => {
     // Initialize Supabase auth session
     const initializeAuth = async () => {
       try {
+        // If we're on a shared gallery route, don't check auth
+        if (location.pathname.startsWith('/shared/')) {
+          console.log('Shared gallery route detected, skipping auth check');
+          setIsInitialized(true);
+          return;
+        }
+
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Failed to get session:', error);
           setIsInitialized(true);
-          // Only redirect to auth if not on a shared gallery route
-          if (!location.pathname.startsWith('/shared/')) {
-            navigate('/auth');
-          }
+          navigate('/auth');
           return;
         }
         
         setSession(currentSession);
         if (!currentSession) {
           console.log('No active session found');
-          // Only redirect to auth if not on a shared gallery route
-          if (!location.pathname.startsWith('/shared/')) {
-            console.log('Redirecting to auth (not a shared route)');
-            navigate('/auth');
-          } else {
-            console.log('On shared gallery route, allowing access');
-          }
+          navigate('/auth');
         } else {
           console.log('Active session found:', currentSession);
         }
@@ -50,10 +48,7 @@ const AppContent = () => {
       } catch (error) {
         console.error('Failed to initialize auth:', error);
         setIsInitialized(true);
-        // Only redirect to auth if not on a shared gallery route
-        if (!location.pathname.startsWith('/shared/')) {
-          navigate('/auth');
-        }
+        navigate('/auth');
       }
     };
 
@@ -64,14 +59,16 @@ const AppContent = () => {
       console.log('Auth state changed:', event, 'New session:', newSession);
       setSession(newSession);
       
+      // Don't redirect if on shared gallery route
+      if (location.pathname.startsWith('/shared/')) {
+        return;
+      }
+      
       if (event === 'SIGNED_OUT') {
         console.log('User signed out, clearing state');
         setSession(null);
         queryClient.clear();
-        // Only redirect to auth if not on a shared gallery route
-        if (!location.pathname.startsWith('/shared/')) {
-          navigate('/auth');
-        }
+        navigate('/auth');
       } else if (event === 'SIGNED_IN' && newSession) {
         console.log('User signed in successfully');
         navigate('/');

@@ -1,7 +1,7 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,17 @@ import { useToast } from "@/hooks/use-toast";
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [eventId, setEventId] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
+    // If we're coming from a shared gallery route, don't check auth
+    if (location.state?.from?.startsWith('/shared/')) {
+      return;
+    }
+
     // Check current auth session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
@@ -33,7 +39,7 @@ const AuthPage = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, location]);
 
   const handleEventAccess = async () => {
     if (!eventId.trim()) {
