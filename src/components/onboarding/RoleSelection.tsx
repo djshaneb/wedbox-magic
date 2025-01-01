@@ -16,25 +16,24 @@ export const RoleSelection = ({
   onFirstNameChange,
 }: RoleSelectionProps) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="space-y-4">
-        <Label htmlFor="firstName" className="text-lg font-medium">Your first name</Label>
+        <Label htmlFor="firstName">Your first name</Label>
         <Input
           id="firstName"
           value={firstName}
           onChange={(e) => onFirstNameChange(e.target.value)}
           placeholder="Enter your first name"
-          className="h-12 text-lg"
         />
       </div>
 
-      <div className="space-y-6">
-        <Label className="text-lg font-medium block text-center">I am the...</Label>
-        <div className="grid grid-cols-2 gap-6">
+      <div className="space-y-4">
+        <Label>I am the...</Label>
+        <div className="grid grid-cols-2 gap-4">
           <Card
-            className={`cursor-pointer transition-all hover:scale-105 duration-200 ${
+            className={`cursor-pointer transition-all ${
               role === "bride"
-                ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
+                ? "border-wedding-pink ring-2 ring-wedding-pink"
                 : "hover:border-wedding-pink/50"
             }`}
             onClick={() => onRoleChange("bride")}
@@ -44,16 +43,16 @@ export const RoleSelection = ({
                 <img
                   src="/lovable-uploads/b4b88587-9692-4902-af6d-899e3699d26a.png"
                   alt="Bride"
-                  className="w-full h-full object-cover rounded-t-lg"
+                  className="w-full h-full object-cover"
                 />
               </div>
             </CardContent>
           </Card>
 
           <Card
-            className={`cursor-pointer transition-all hover:scale-105 duration-200 ${
+            className={`cursor-pointer transition-all ${
               role === "groom"
-                ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
+                ? "border-wedding-pink ring-2 ring-wedding-pink"
                 : "hover:border-wedding-pink/50"
             }`}
             onClick={() => onRoleChange("groom")}
@@ -63,7 +62,7 @@ export const RoleSelection = ({
                 <img
                   src="/lovable-uploads/da2d8b46-2e02-4f6b-a9d7-f7bf866e5243.png"
                   alt="Groom"
-                  className="w-full h-full object-cover rounded-t-lg"
+                  className="w-full h-full object-cover"
                 />
               </div>
             </CardContent>

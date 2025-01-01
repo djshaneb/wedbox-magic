@@ -67,28 +67,26 @@ export const GetStartedForm = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-1 container max-w-md mx-auto px-4 py-12 flex flex-col">
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-16">
-          <h1 className="text-4xl font-light text-center text-wedding-pink mb-12">
-            Create new wedding
-          </h1>
-          
-          <GetStartedSteps
-            form={form}
-            step={step}
-            role={role}
-            firstName={firstName}
-            selectedImage={selectedImage}
-            date={date}
-            setRole={setRole}
-            setFirstName={(name) => {
-              setFirstName(name);
-              if (step === 4) setHasEditedNames(true);
-            }}
-            setSelectedImage={setSelectedImage}
-            setDate={setDate}
-          />
-        </div>
+      <main className="flex-1 container max-w-md mx-auto px-4 py-8 flex flex-col">
+        <h1 className="text-3xl font-light text-center text-wedding-pink mb-8">
+          Create new wedding
+        </h1>
+        
+        <GetStartedSteps
+          form={form}
+          step={step}
+          role={role}
+          firstName={firstName}
+          selectedImage={selectedImage}
+          date={date}
+          setRole={setRole}
+          setFirstName={(name) => {
+            setFirstName(name);
+            if (step === 4) setHasEditedNames(true);
+          }}
+          setSelectedImage={setSelectedImage}
+          setDate={setDate}
+        />
 
         <NavigationButtons
           onPrevious={handlePrevious}
