@@ -65,7 +65,9 @@ export const usePartnerAccess = () => {
             role: 'admin',
             inviter_name: inviterName,
             partner_name: partnerName
-          }
+          },
+          // Specify the custom template for partner admin invites
+          emailTemplate: 'partner-admin-invite'
         }
       });
 
