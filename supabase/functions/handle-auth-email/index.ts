@@ -1,10 +1,11 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,28 +13,59 @@ serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
     const { type, email, data } = await req.json()
+    console.log('Received webhook:', { type, email, data })
 
     if (data?.template === 'partner-admin-invite') {
-      // Custom template for partner admin invite
-      const emailContent = `
-        Hi ${data.partner_name},
+      if (!RESEND_API_KEY) {
+        throw new Error('RESEND_API_KEY is not set')
+      }
 
-        ${data.inviter_name} would like to give you admin access to the WeddingWin Photo App for your wedding day.
+      console.log('Sending partner admin invite email to:', email)
+      
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'WeddingWin <onboarding@resend.dev>',
+          to: [email],
+          subject: 'Wedding Admin Access Invitation',
+          html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2>Hi ${data.partner_name},</h2>
+              
+              <p>${data.inviter_name} would like to give you admin access to the WeddingWin Photo App for your wedding day.</p>
+              
+              <p>Follow this link to login:</p>
+              <a href="${data.confirmation_url}" 
+                 style="display: inline-block; 
+                        background: #7c3aed; 
+                        color: white; 
+                        padding: 12px 24px; 
+                        text-decoration: none; 
+                        border-radius: 6px;
+                        margin: 16px 0;">
+                Accept Invitation
+              </a>
+              
+              <p style="color: #666; font-size: 14px; margin-top: 32px;">
+                If you didn't request this invitation, you can safely ignore this email.
+              </p>
+            </div>
+          `
+        })
+      });
 
-        Follow this link to login:
-        ${data.confirmation_url}
-      `
+      if (!res.ok) {
+        const error = await res.text();
+        console.error('Failed to send email:', error);
+        throw new Error(`Failed to send email: ${error}`);
+      }
 
-      // Send custom email using your preferred email service
-      // You'll need to implement this part using a service like Resend
-      // For now, we'll just log it
-      console.log('Would send email:', emailContent)
+      console.log('Email sent successfully');
     }
 
     return new Response(
@@ -44,6 +76,7 @@ serve(async (req) => {
       },
     )
   } catch (error) {
+    console.error('Error in handle-auth-email function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
@@ -52,4 +85,4 @@ serve(async (req) => {
       },
     )
   }
-})
+});
