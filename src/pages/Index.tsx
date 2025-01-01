@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import { AdminAccessDialog } from "@/components/admin/AdminAccessDialog";
 import {
   Sheet,
   SheetContent,
@@ -43,6 +44,7 @@ const Index = () => {
           <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-4 mt-4">
+          <AdminAccessDialog />
           <Button
             variant="ghost"
             size="lg"
@@ -135,6 +137,7 @@ const Index = () => {
                 <MobileMenu />
               ) : (
                 <div className="flex items-center gap-2">
+                  <AdminAccessDialog />
                   <Button
                     variant="ghost"
                     size="default"
