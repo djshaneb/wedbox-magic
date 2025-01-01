@@ -81,6 +81,8 @@ export const AdminAccessDialog = () => {
     },
   });
 
+  const hasExistingPartner = partnerAccess && partnerAccess.length > 0;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -126,6 +128,7 @@ export const AdminAccessDialog = () => {
                 placeholder="Partner's email"
                 value={newPartnerEmail}
                 onChange={(e) => setNewPartnerEmail(e.target.value)}
+                disabled={hasExistingPartner}
               />
               <Button
                 size="sm"
@@ -134,12 +137,17 @@ export const AdminAccessDialog = () => {
                     addPartnerMutation.mutate(newPartnerEmail);
                   }
                 }}
-                disabled={!newPartnerEmail || addPartnerMutation.isPending}
+                disabled={!newPartnerEmail || addPartnerMutation.isPending || hasExistingPartner}
               >
                 <UserPlus className="h-4 w-4 mr-2" />
                 Add
               </Button>
             </div>
+            {hasExistingPartner && (
+              <p className="text-sm text-muted-foreground mt-2">
+                You can only have one partner with admin access
+              </p>
+            )}
           </div>
         </div>
       </DialogContent>
