@@ -13,11 +13,18 @@ const formSchema = z.object({
   partnerEmail: z.string().email("Invalid email address").optional(),
 });
 
+const PLACEHOLDER_IMAGES = [
+  "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+  "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+  "https://images.unsplash.com/photo-1518770660439-4636190af475",
+  "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+];
+
 export const GetStartedForm = () => {
   const [step, setStep] = useState(1);
   const [role, setRole] = useState<"bride" | "groom" | null>(null);
   const [firstName, setFirstName] = useState("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(PLACEHOLDER_IMAGES[0]);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [hasEditedNames, setHasEditedNames] = useState(false);
   const navigate = useNavigate();

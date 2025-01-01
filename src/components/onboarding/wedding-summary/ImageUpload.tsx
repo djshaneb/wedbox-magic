@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { EmptyImageUpload } from "./EmptyImageUpload";
 import { ImagePreview } from "./ImagePreview";
+import { useToast } from "@/hooks/use-toast";
 
 interface ImageUploadProps {
   imagePreview: string | null;
@@ -10,6 +11,7 @@ interface ImageUploadProps {
 export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) => {
   const workerRef = useRef<Worker | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const { toast } = useToast();
   const INPUT_ID = "image-upload";
 
   useEffect(() => {
@@ -58,15 +60,40 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
 
   const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const originalFile = event.target.files[0];
+      const file = event.target.files[0];
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image under 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file type",
+          description: "Please select an image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setIsOptimizing(true);
       
       try {
-        const optimizedFile = await optimizeImage(originalFile);
+        const optimizedFile = await optimizeImage(file);
         onImageChange(optimizedFile);
       } catch (error) {
         console.error('Error optimizing image:', error);
-        onImageChange(originalFile);
+        toast({
+          title: "Error processing image",
+          description: "Please try again with a different image",
+          variant: "destructive",
+        });
       } finally {
         setIsOptimizing(false);
       }
