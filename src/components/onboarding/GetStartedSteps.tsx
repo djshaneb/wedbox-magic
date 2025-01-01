@@ -8,7 +8,6 @@ import { z } from "zod";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
-  partnerEmail: z.string().email("Invalid email address"),
 });
 
 interface GetStartedStepsProps {

@@ -7,7 +7,6 @@ import { useState } from "react";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
-  partnerEmail: z.string().email("Invalid email address").optional(),
 });
 
 interface PartnerInformationProps {
@@ -79,27 +78,6 @@ export const PartnerInformation = ({
                 />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="partnerEmail"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  placeholder="Your partner's email (optional)"
-                  type="email"
-                  className="h-12 text-lg"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-              <p className="text-sm text-muted-foreground mt-2">
-                Add your partner's email to give them admin access to your wedding gallery
-              </p>
             </FormItem>
           )}
         />
