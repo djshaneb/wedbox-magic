@@ -123,7 +123,7 @@ export const AdminAccessDialog = () => {
             {isLoading ? (
               <div className="text-sm text-muted-foreground">Loading...</div>
             ) : !partnerAccess || partnerAccess.length === 0 ? (
-              <div className="text-sm text-muted-foreground">{partnerName} does not have admin access granted yet</div>
+              <div className="text-sm text-muted-foreground">No partner admin access granted yet</div>
             ) : (
               <ul className="space-y-2">
                 {partnerAccess.map((access) => (
@@ -144,7 +144,9 @@ export const AdminAccessDialog = () => {
           
           <div>
             <h3 className="text-sm font-medium mb-2">
-              {`Give ${partnerName} Admin Access`}
+              {hasExistingPartner 
+                ? `Give ${partnerName} Admin Access`
+                : "Give Partner Admin Access"}
             </h3>
             <div className="flex gap-2">
               <Input
