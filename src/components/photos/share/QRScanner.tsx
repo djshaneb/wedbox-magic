@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { ScanLine } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Html5QrcodeScanner } from 'html5-qrcode';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const QRScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const startScanning = () => {
     setIsScanning(true);
@@ -25,18 +27,24 @@ const QRScanner = () => {
         // Small delay to ensure DOM element exists
         setTimeout(() => {
           try {
+            const qrboxSize = isMobile ? {
+              width: window.innerWidth - 40,
+              height: window.innerWidth - 40
+            } : {
+              width: 250,
+              height: 250
+            };
+
             scannerRef.current = new Html5QrcodeScanner(
               "qr-reader",
               { 
                 fps: 10,
-                qrbox: {
-                  width: Math.min(250, window.innerWidth - 50),
-                  height: Math.min(250, window.innerWidth - 50)
-                },
+                qrbox: qrboxSize,
                 rememberLastUsedCamera: true,
                 supportedScanTypes: [],
                 videoConstraints: {
-                  facingMode: { ideal: "environment" }
+                  facingMode: { ideal: "environment" },
+                  aspectRatio: isMobile ? 4/3 : 16/9,
                 }
               },
               /* verbose= */ false
@@ -129,11 +137,11 @@ const QRScanner = () => {
           Scan QR Code
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className={`sm:max-w-md ${isMobile ? 'h-[100dvh] w-screen p-0 mt-0' : ''}`}>
+        <DialogHeader className={isMobile ? 'p-4' : ''}>
           <DialogTitle>Scan QR Code</DialogTitle>
         </DialogHeader>
-        <div className="aspect-video relative overflow-hidden rounded-lg">
+        <div className={`relative overflow-hidden ${isMobile ? 'h-full' : 'aspect-video rounded-lg'}`}>
           <div id="qr-reader" className="w-full h-full" />
         </div>
       </DialogContent>
