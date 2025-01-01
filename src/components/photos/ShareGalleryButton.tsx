@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ShareDialog } from "./share/ShareDialog";
 import { useNavigate } from "react-router-dom";
+import { useSession } from '@supabase/auth-helpers-react';
 
 export const ShareGalleryButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -12,35 +13,19 @@ export const ShareGalleryButton = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const session = useSession();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/auth');
-      }
-    };
-
-    checkSession();
-
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate('/auth');
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
+    if (!session) {
+      navigate('/auth');
+    }
+  }, [session, navigate]);
 
   const generateShareLink = async () => {
     try {
       setIsLoading(true);
-      const { data: sessionData } = await supabase.auth.getSession();
       
-      if (!sessionData.session?.user) {
+      if (!session?.user) {
         toast({
           title: "Error",
           description: "You must be logged in to share your gallery",
@@ -50,7 +35,7 @@ export const ShareGalleryButton = () => {
         return;
       }
 
-      const userId = sessionData.session.user.id;
+      const userId = session.user.id;
       console.log('Checking for existing share link for user:', userId);
       
       // First, check if user already has a shared gallery - get the most recent one
