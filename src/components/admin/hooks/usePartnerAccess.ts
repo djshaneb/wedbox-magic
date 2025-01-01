@@ -65,16 +65,12 @@ export const usePartnerAccess = () => {
             role: 'admin',
             inviter_name: inviterName,
           },
-          // Using the correct property name 'emailTemplate' instead of 'emailContent'
-          emailTemplate: {
-            subject: "WeddingWin Photo App - Admin Access Invitation",
-            body: `Hi ${partnerName},
+          emailContent: `Hi ${partnerName},
 
 ${inviterName} would like to give you admin access to the WeddingWin Photo App for your wedding day.
 
 Follow this link to login:
 {link}`
-          }
         }
       });
 
