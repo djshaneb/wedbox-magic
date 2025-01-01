@@ -31,9 +31,7 @@ const QRScanner = () => {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
                 rememberLastUsedCamera: true,
-                showTorchButtonIfSupported: true,
-                hideSelectScanType: true, // Hide the select scan type option
-                formatsToSupport: [ Html5QrcodeScanner.SCAN_TYPE_CAMERA ], // Only support camera scanning
+                supportedScanTypes: [], // This replaces hideSelectScanType and formatsToSupport
                 videoConstraints: {
                   facingMode: { ideal: "environment" } // Prefer back camera on mobile
                 }
