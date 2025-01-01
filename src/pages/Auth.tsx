@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import QRScanner from "@/components/photos/share/QRScanner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -118,39 +119,43 @@ const AuthPage = () => {
             </div>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full"
-              >
-                Attend Event
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Enter Event ID</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <Input
-                  placeholder="Enter event ID (e.g., 1QXVCV)"
-                  value={eventId}
-                  onChange={(e) => setEventId(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleEventAccess();
-                    }
-                  }}
-                />
+          <div className="space-y-2">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
                 <Button 
+                  variant="outline" 
                   className="w-full"
-                  onClick={handleEventAccess}
                 >
-                  Access Gallery
+                  Enter Event Code
                 </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Enter Event ID</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <Input
+                    placeholder="Enter event ID (e.g., 1QXVCV)"
+                    value={eventId}
+                    onChange={(e) => setEventId(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleEventAccess();
+                      }
+                    }}
+                  />
+                  <Button 
+                    className="w-full"
+                    onClick={handleEventAccess}
+                  >
+                    Access Gallery
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            
+            <QRScanner />
+          </div>
         </div>
       </div>
     </div>
