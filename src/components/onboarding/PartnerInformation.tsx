@@ -31,10 +31,13 @@ export const PartnerInformation = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-8 flex-1 flex flex-col">
-        <h2 className="text-xl md:text-2xl text-center text-gray-700 mb-4 md:mb-8">My partner is...</h2>
+        <div className="text-center space-y-2">
+          <h2 className="text-xl md:text-2xl text-gray-700">Tell us about your partner</h2>
+          <p className="text-sm text-gray-500">Select their role and enter their name</p>
+        </div>
         
         <div className="grid grid-cols-2 gap-3 md:gap-6 justify-center">
-          <div className="w-full max-w-[160px]">
+          <div className="w-full max-w-[160px] mx-auto">
             <Card
               className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
                 partnerRole === "bride"
@@ -51,11 +54,14 @@ export const PartnerInformation = ({
                     className="w-full h-full object-cover rounded-t-lg"
                   />
                 </div>
+                <div className="py-2 text-center text-sm font-medium text-gray-700">
+                  Bride
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="w-full max-w-[160px]">
+          <div className="w-full max-w-[160px] mx-auto">
             <Card
               className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
                 partnerRole === "groom"
@@ -71,6 +77,9 @@ export const PartnerInformation = ({
                     alt="Groom"
                     className="w-full h-full object-cover rounded-t-lg"
                   />
+                </div>
+                <div className="py-2 text-center text-sm font-medium text-gray-700">
+                  Groom
                 </div>
               </CardContent>
             </Card>

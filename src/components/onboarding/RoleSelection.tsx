@@ -29,9 +29,13 @@ export const RoleSelection = ({
       </div>
 
       <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
-        <Label className="text-lg text-gray-700">I am the...</Label>
+        <div className="text-center space-y-2">
+          <Label className="text-xl md:text-2xl text-gray-700 block">Select your role</Label>
+          <p className="text-sm text-gray-500">Choose the image that represents you</p>
+        </div>
+        
         <div className="grid grid-cols-2 gap-3 md:gap-6 justify-center">
-          <div className="w-full max-w-[160px]">
+          <div className="w-full max-w-[160px] mx-auto">
             <Card
               className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
                 role === "bride"
@@ -48,11 +52,14 @@ export const RoleSelection = ({
                     className="w-full h-full object-cover rounded-t-lg"
                   />
                 </div>
+                <div className="py-2 text-center text-sm font-medium text-gray-700">
+                  Bride
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="w-full max-w-[160px]">
+          <div className="w-full max-w-[160px] mx-auto">
             <Card
               className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
                 role === "groom"
@@ -68,6 +75,9 @@ export const RoleSelection = ({
                     alt="Groom"
                     className="w-full h-full object-cover rounded-t-lg"
                   />
+                </div>
+                <div className="py-2 text-center text-sm font-medium text-gray-700">
+                  Groom
                 </div>
               </CardContent>
             </Card>
