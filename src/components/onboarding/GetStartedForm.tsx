@@ -10,7 +10,7 @@ import { useGetStartedSubmit } from "./form-handlers/useGetStartedSubmit";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
-  partnerEmail: z.string().email("Invalid email address").optional(),
+  partnerEmail: z.string().email("Invalid email address").optional().or(z.literal('')),
 });
 
 export const GetStartedForm = () => {
@@ -47,7 +47,7 @@ export const GetStartedForm = () => {
       await handleFormSubmit({
         firstName: hasEditedNames ? firstName : `${firstName} & ${form.getValues().partnerName}`,
         partnerName: form.getValues().partnerName,
-        partnerEmail: form.getValues().partnerEmail,
+        partnerEmail: form.getValues().partnerEmail || undefined,
         date,
         selectedImage,
       });
