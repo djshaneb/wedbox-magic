@@ -60,6 +60,7 @@ export const AdminAccessDialog = () => {
       // Get partner name from couple names
       const partnerName = weddingDetails?.couple_names?.split(" & ")[1] || "Partner";
 
+      // First, insert the partner access record
       const { error: insertError } = await supabase
         .from("partner_access")
         .insert({
@@ -69,14 +70,34 @@ export const AdminAccessDialog = () => {
         });
       
       if (insertError) throw insertError;
+
+      // Then, send the invitation email
+      const { error: inviteError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+          data: {
+            wedding_id: session.session.user.id,
+            role: 'admin',
+            inviter_name: weddingDetails?.couple_names?.split(" & ")[0] || "Your partner",
+          }
+        }
+      });
+
+      if (inviteError) throw inviteError;
     },
     onSuccess: () => {
-      toast.success("Partner access granted");
+      toast.success("Partner access granted and invitation sent");
       setNewPartnerEmail("");
       queryClient.invalidateQueries({ queryKey: ["partnerAccess"] });
     },
     onError: (error) => {
-      toast.error("Failed to add partner access: " + error.message);
+      // Check if it's a rate limit error
+      if (error.message?.includes('rate_limit')) {
+        toast.error("Please wait a minute before sending another invitation");
+      } else {
+        toast.error("Failed to add partner access: " + error.message);
+      }
     },
   });
 
@@ -103,7 +124,6 @@ export const AdminAccessDialog = () => {
   });
 
   const hasExistingPartner = partnerAccess && partnerAccess.length > 0;
-  const partnerName = weddingDetails?.couple_names?.split(" & ")[1] || "Partner";
 
   return (
     <Dialog>
