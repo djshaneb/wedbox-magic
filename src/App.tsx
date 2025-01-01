@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
@@ -14,6 +14,7 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isInitialized, setIsInitialized] = useState(false);
   const [session, setSession] = useState(null);
 
@@ -25,14 +26,23 @@ const AppContent = () => {
         if (error) {
           console.error('Failed to get session:', error);
           setIsInitialized(true);
-          navigate('/auth');
+          // Only redirect to auth if not on a shared gallery route
+          if (!location.pathname.startsWith('/shared/')) {
+            navigate('/auth');
+          }
           return;
         }
         
         setSession(currentSession);
         if (!currentSession) {
-          console.log('No active session found, redirecting to auth');
-          navigate('/auth');
+          console.log('No active session found');
+          // Only redirect to auth if not on a shared gallery route
+          if (!location.pathname.startsWith('/shared/')) {
+            console.log('Redirecting to auth (not a shared route)');
+            navigate('/auth');
+          } else {
+            console.log('On shared gallery route, allowing access');
+          }
         } else {
           console.log('Active session found:', currentSession);
         }
@@ -40,7 +50,10 @@ const AppContent = () => {
       } catch (error) {
         console.error('Failed to initialize auth:', error);
         setIsInitialized(true);
-        navigate('/auth');
+        // Only redirect to auth if not on a shared gallery route
+        if (!location.pathname.startsWith('/shared/')) {
+          navigate('/auth');
+        }
       }
     };
 
@@ -55,7 +68,10 @@ const AppContent = () => {
         console.log('User signed out, clearing state');
         setSession(null);
         queryClient.clear();
-        navigate('/auth');
+        // Only redirect to auth if not on a shared gallery route
+        if (!location.pathname.startsWith('/shared/')) {
+          navigate('/auth');
+        }
       } else if (event === 'SIGNED_IN' && newSession) {
         console.log('User signed in successfully');
         navigate('/');
@@ -65,7 +81,7 @@ const AppContent = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   if (!isInitialized) {
     return (
