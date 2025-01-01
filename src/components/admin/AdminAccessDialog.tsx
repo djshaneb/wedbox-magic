@@ -9,8 +9,24 @@ import { useState } from "react";
 
 export const AdminAccessDialog = () => {
   const [newPartnerEmail, setNewPartnerEmail] = useState("");
-  const [newPartnerName, setNewPartnerName] = useState("");
   const queryClient = useQueryClient();
+
+  const { data: weddingDetails } = useQuery({
+    queryKey: ["weddingDetails"],
+    queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user.id) throw new Error("No user session");
+
+      const { data, error } = await supabase
+        .from("wedding_details")
+        .select("couple_names")
+        .eq("user_id", session.session.user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const { data: partnerAccess, isLoading } = useQuery({
     queryKey: ["partnerAccess"],
@@ -37,15 +53,18 @@ export const AdminAccessDialog = () => {
   });
 
   const addPartnerMutation = useMutation({
-    mutationFn: async ({ email, name }: { email: string; name: string }) => {
+    mutationFn: async (email: string) => {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session?.user.id) throw new Error("No user session");
+
+      // Get partner name from couple names
+      const partnerName = weddingDetails?.couple_names?.split(" & ")[1] || "Partner";
 
       const { error: insertError } = await supabase
         .from("partner_access")
         .insert({
           partner_email: email,
-          partner_name: name,
+          partner_name: partnerName,
           user_id: session.session.user.id
         });
       
@@ -54,7 +73,6 @@ export const AdminAccessDialog = () => {
     onSuccess: () => {
       toast.success("Partner access granted");
       setNewPartnerEmail("");
-      setNewPartnerName("");
       queryClient.invalidateQueries({ queryKey: ["partnerAccess"] });
     },
     onError: (error) => {
@@ -85,6 +103,7 @@ export const AdminAccessDialog = () => {
   });
 
   const hasExistingPartner = partnerAccess && partnerAccess.length > 0;
+  const partnerName = weddingDetails?.couple_names?.split(" & ")[1] || "Partner";
 
   return (
     <Dialog>
@@ -126,38 +145,29 @@ export const AdminAccessDialog = () => {
           <div>
             <h3 className="text-sm font-medium mb-2">
               {hasExistingPartner 
-                ? `Give ${partnerAccess[0].partner_name} Admin Access`
+                ? `Give ${partnerName} Admin Access`
                 : "Give Partner Admin Access"}
             </h3>
-            <div className="space-y-4">
+            <div className="flex gap-2">
               <Input
-                type="text"
-                placeholder="Partner's name"
-                value={newPartnerName}
-                onChange={(e) => setNewPartnerName(e.target.value)}
+                type="email"
+                placeholder="Partner's email"
+                value={newPartnerEmail}
+                onChange={(e) => setNewPartnerEmail(e.target.value)}
                 disabled={hasExistingPartner}
               />
-              <div className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="Partner's email"
-                  value={newPartnerEmail}
-                  onChange={(e) => setNewPartnerEmail(e.target.value)}
-                  disabled={hasExistingPartner}
-                />
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    if (newPartnerEmail && newPartnerName) {
-                      addPartnerMutation.mutate({ email: newPartnerEmail, name: newPartnerName });
-                    }
-                  }}
-                  disabled={!newPartnerEmail || !newPartnerName || addPartnerMutation.isPending || hasExistingPartner}
-                >
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Add
-                </Button>
-              </div>
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (newPartnerEmail) {
+                    addPartnerMutation.mutate(newPartnerEmail);
+                  }
+                }}
+                disabled={!newPartnerEmail || addPartnerMutation.isPending || hasExistingPartner}
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add
+              </Button>
             </div>
             {hasExistingPartner && (
               <p className="text-sm text-muted-foreground mt-2">
