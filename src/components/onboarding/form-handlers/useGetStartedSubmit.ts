@@ -59,16 +59,21 @@ export const useGetStartedSubmit = () => {
       if (result.error) throw result.error;
       if (!result.data) throw new Error('Failed to save wedding details');
 
-      // If partner email is provided, send an invitation
+      // If partner email is provided, send a magic link
       if (partnerEmail) {
-        const { error: inviteError } = await supabase.auth.admin.inviteUserByEmail(partnerEmail, {
-          data: {
-            wedding_id: result.data.id,
-            role: 'admin'
+        const { error: otpError } = await supabase.auth.signInWithOtp({
+          email: partnerEmail,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth`,
+            data: {
+              wedding_id: result.data.id,
+              role: 'admin',
+              inviter_name: firstName,
+            }
           }
         });
 
-        if (inviteError) {
+        if (otpError) {
           toast({
             title: "Warning",
             description: "Wedding details saved, but we couldn't send an invitation to your partner. They can be invited later.",
