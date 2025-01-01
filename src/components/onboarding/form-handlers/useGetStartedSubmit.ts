@@ -49,6 +49,7 @@ export const useGetStartedSubmit = () => {
       );
 
       if (result.error) throw result.error;
+      if (!result.data) throw new Error('Failed to save wedding details');
 
       // If partner email is provided, send an invitation
       if (partnerEmail) {
