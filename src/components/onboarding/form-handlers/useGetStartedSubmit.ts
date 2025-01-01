@@ -74,11 +74,20 @@ export const useGetStartedSubmit = () => {
         });
 
         if (otpError) {
-          toast({
-            title: "Warning",
-            description: "Wedding details saved, but we couldn't send an invitation to your partner. They can be invited later.",
-            variant: "default",
-          });
+          // Check if it's a rate limit error
+          if (otpError.message?.includes('rate_limit')) {
+            toast({
+              title: "Please wait",
+              description: "For security purposes, we need to wait a minute before sending another invitation. The wedding details have been saved.",
+              variant: "default",
+            });
+          } else {
+            toast({
+              title: "Warning",
+              description: "Wedding details saved, but we couldn't send an invitation to your partner. They can be invited later.",
+              variant: "default",
+            });
+          }
         } else {
           toast({
             title: "Success!",
