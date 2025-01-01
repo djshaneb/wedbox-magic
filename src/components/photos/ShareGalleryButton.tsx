@@ -14,9 +14,9 @@ export const ShareGalleryButton = () => {
   const generateShareLink = async () => {
     try {
       setIsLoading(true);
-      const { data: session } = await supabase.auth.getSession();
+      const { data: sessionData } = await supabase.auth.getSession();
       
-      if (!session?.user) {
+      if (!sessionData.session?.user) {
         toast({
           title: "Error",
           description: "You must be logged in to share your gallery",
@@ -25,13 +25,14 @@ export const ShareGalleryButton = () => {
         return;
       }
 
-      console.log('Checking for existing share link for user:', session.user.id);
+      const userId = sessionData.session.user.id;
+      console.log('Checking for existing share link for user:', userId);
       
       // First, check if user already has a shared gallery - get the most recent one
       const { data: existingGallery, error: fetchError } = await supabase
         .from('shared_galleries')
         .select('access_code')
-        .eq('owner_id', session.user.id)
+        .eq('owner_id', userId)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -54,7 +55,7 @@ export const ShareGalleryButton = () => {
       const { error: insertError } = await supabase
         .from('shared_galleries')
         .insert([
-          { owner_id: session.user.id, access_code: accessCode }
+          { owner_id: userId, access_code: accessCode }
         ]);
 
       if (insertError) {
