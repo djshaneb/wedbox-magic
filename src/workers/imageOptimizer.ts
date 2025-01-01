@@ -1,6 +1,6 @@
 const optimizeImage = async (imageData: ArrayBuffer, fileName: string): Promise<{ blob: Blob, type: string }> => {
   const img = new Image();
-  const canvas = new OffscreenCanvas(256, 256);
+  const canvas = new OffscreenCanvas(192, 192);
   const ctx = canvas.getContext('2d');
   
   if (!ctx) throw new Error('Could not get canvas context');
@@ -8,8 +8,8 @@ const optimizeImage = async (imageData: ArrayBuffer, fileName: string): Promise<
   // Create a bitmap from the array buffer
   const bitmap = await createImageBitmap(new Blob([imageData]));
   
-  // Calculate new dimensions (max 256px while maintaining aspect ratio)
-  const maxSize = 256;
+  // Calculate new dimensions (max 192px while maintaining aspect ratio)
+  const maxSize = 192;
   let width = bitmap.width;
   let height = bitmap.height;
 
@@ -24,12 +24,17 @@ const optimizeImage = async (imageData: ArrayBuffer, fileName: string): Promise<
   // Set canvas size and draw image
   canvas.width = width;
   canvas.height = height;
+  
+  // Use better image rendering
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  
   ctx.drawImage(bitmap, 0, 0, width, height);
 
-  // Convert to WebP with lower quality for faster processing
+  // Convert to WebP with optimized quality
   const blob = await canvas.convertToBlob({
     type: 'image/webp',
-    quality: 0.75
+    quality: 0.65  // Reduced quality for better compression while maintaining good visuals
   });
 
   return { 

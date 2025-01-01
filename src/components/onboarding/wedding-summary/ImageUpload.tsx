@@ -77,7 +77,7 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
   };
 
   return (
-    <div className="relative w-full aspect-square max-w-[256px] rounded-lg overflow-hidden">
+    <div className="relative w-full aspect-square max-w-[192px] rounded-lg overflow-hidden">
       <input
         type="file"
         accept="image/*"
@@ -93,8 +93,8 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
             className={`w-full h-full object-cover transition-opacity duration-300 ${
               isOptimizing ? 'opacity-50' : 'opacity-100'
             }`}
-            width={256}
-            height={256}
+            width={192}
+            height={192}
             loading="lazy"
             decoding="async"
           />
