@@ -3,14 +3,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface EditableTextProps {
   text: string;
   onTextChange: (text: string) => void;
   multiline?: boolean;
+  className?: string;
 }
 
-export const EditableText = ({ text, onTextChange, multiline = false }: EditableTextProps) => {
+export const EditableText = ({ text, onTextChange, multiline = false, className }: EditableTextProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(text);
 
@@ -27,7 +29,7 @@ export const EditableText = ({ text, onTextChange, multiline = false }: Editable
             value={editedText}
             onChange={(e) => setEditedText(e.target.value)}
             onBlur={handleSubmit}
-            className="text-center min-h-[100px]"
+            className={cn("text-center min-h-[100px] focus:ring-wedding-pink/20", className)}
             autoFocus
           />
         ) : (
@@ -35,13 +37,13 @@ export const EditableText = ({ text, onTextChange, multiline = false }: Editable
             value={editedText}
             onChange={(e) => setEditedText(e.target.value)}
             onBlur={handleSubmit}
-            className="text-lg text-center"
+            className={cn("text-center focus:ring-wedding-pink/20", className)}
             autoFocus
           />
         )
       ) : (
         <div className="flex items-center justify-center gap-2">
-          <p className={`${multiline ? "" : "text-lg"}`}>
+          <p className={cn(className)}>
             {text}
           </p>
           <Button

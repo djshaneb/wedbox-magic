@@ -40,13 +40,14 @@ export const WeddingSummary = ({
   }, [firstName, partnerName, hasBeenEdited]);
 
   return (
-    <div className="flex flex-col items-center space-y-4 max-w-md mx-auto">
+    <div className="flex flex-col items-center space-y-8 max-w-md mx-auto">
       <WeddingImageSelector
         selectedImage={selectedImage}
         onImageSelect={onImageSelect}
+        className="hover:scale-105 transition-transform duration-200"
       />
 
-      <div className="w-full text-center relative">
+      <div className="w-full text-center">
         <EditableText
           text={displayedNames}
           onTextChange={(text) => {
@@ -54,16 +55,18 @@ export const WeddingSummary = ({
             setDisplayedNames(text);
             onEditNames(text, "");
           }}
+          className="text-2xl font-light text-wedding-pink"
         />
       </div>
 
-      <div className="w-full text-center relative">
+      <div className="w-full text-center">
         <Popover>
           <PopoverTrigger asChild>
             <div className="cursor-pointer">
               <EditableText
                 text={date ? format(date, "EEEE, MMMM d, yyyy") : "Select a date"}
                 onTextChange={() => {}}
+                className="text-lg text-gray-600"
               />
             </div>
           </PopoverTrigger>
@@ -73,22 +76,25 @@ export const WeddingSummary = ({
               selected={date}
               onSelect={onEditDate}
               initialFocus
+              className="rounded-lg border-2"
             />
           </PopoverContent>
         </Popover>
       </div>
 
-      <div className="w-full h-px bg-gray-200" />
+      <div className="w-full h-px bg-gray-100" />
 
-      <div className="text-center space-y-4 text-gray-600 w-full">
+      <div className="text-center space-y-6 text-gray-600 w-full">
         <EditableText
           text={welcomeText}
           onTextChange={setWelcomeText}
+          className="text-lg"
         />
         <EditableText
           text={descriptionText}
           onTextChange={setDescriptionText}
           multiline
+          className="text-sm leading-relaxed"
         />
       </div>
     </div>
