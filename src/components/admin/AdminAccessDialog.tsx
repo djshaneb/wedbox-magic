@@ -144,9 +144,7 @@ export const AdminAccessDialog = () => {
           
           <div>
             <h3 className="text-sm font-medium mb-2">
-              {hasExistingPartner 
-                ? `Give ${partnerName} Admin Access`
-                : "Give Partner Admin Access"}
+              Give Partner Admin Access
             </h3>
             <div className="flex gap-2">
               <Input
