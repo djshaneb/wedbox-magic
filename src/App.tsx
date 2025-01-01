@@ -51,8 +51,8 @@ const AppContent = () => {
       console.log('Auth state changed:', event, 'New session:', newSession);
       setSession(newSession);
       
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User signed out or deleted, clearing state');
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out, clearing state');
         setSession(null);
         queryClient.clear();
         navigate('/auth');
