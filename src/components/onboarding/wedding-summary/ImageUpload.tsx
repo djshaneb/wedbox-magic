@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Camera, Upload } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { EmptyImageUpload } from "./EmptyImageUpload";
+import { ImagePreview } from "./ImagePreview";
 
 interface ImageUploadProps {
   imagePreview: string | null;
@@ -10,15 +10,14 @@ interface ImageUploadProps {
 export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) => {
   const workerRef = useRef<Worker | null>(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const INPUT_ID = "image-upload";
 
   useEffect(() => {
-    // Initialize the worker
     workerRef.current = new Worker(
       new URL('../../../workers/imageOptimizer.ts', import.meta.url),
       { type: 'module' }
     );
 
-    // Clean up worker on unmount
     return () => {
       workerRef.current?.terminate();
     };
@@ -45,7 +44,6 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
         reject(error);
       };
 
-      // Read file as ArrayBuffer to send to worker
       const reader = new FileReader();
       reader.onload = () => {
         worker.postMessage({
@@ -68,7 +66,6 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
         onImageChange(optimizedFile);
       } catch (error) {
         console.error('Error optimizing image:', error);
-        // Fallback to original file if optimization fails
         onImageChange(originalFile);
       } finally {
         setIsOptimizing(false);
@@ -83,44 +80,16 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
         accept="image/*"
         onChange={handleImageChange}
         className="hidden"
-        id="image-upload"
+        id={INPUT_ID}
       />
       {imagePreview ? (
-        <div className="relative w-full h-full">
-          <img
-            src={imagePreview}
-            alt="Wedding preview"
-            className={`w-full h-full object-cover transition-opacity duration-300 ${
-              isOptimizing ? 'opacity-50' : 'opacity-100'
-            }`}
-            width={192}
-            height={192}
-            loading="lazy"
-            decoding="async"
-          />
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute top-2 right-2 rounded-full bg-coral text-white hover:bg-coral/90 border-none"
-            onClick={() => document.getElementById("image-upload")?.click()}
-            disabled={isOptimizing}
-          >
-            <Camera className="h-4 w-4" />
-          </Button>
-          {isOptimizing && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-        </div>
+        <ImagePreview
+          imageUrl={imagePreview}
+          isOptimizing={isOptimizing}
+          onEditClick={() => document.getElementById(INPUT_ID)?.click()}
+        />
       ) : (
-        <label
-          htmlFor="image-upload"
-          className="w-full h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-wedding-pink transition-colors"
-        >
-          <Upload className="h-12 w-12 text-gray-400 mb-2" />
-          <span className="text-sm text-gray-500">Upload wedding photo</span>
-        </label>
+        <EmptyImageUpload inputId={INPUT_ID} />
       )}
     </div>
   );
