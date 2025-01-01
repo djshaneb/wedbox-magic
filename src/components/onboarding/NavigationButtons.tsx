@@ -30,7 +30,7 @@ export const NavigationButtons = ({
         size="lg"
         onClick={onNext}
         disabled={isNextDisabled}
-        className="rounded-none h-16 bg-gray-400 hover:bg-gray-500 text-white"
+        className="rounded-none h-16 bg-wedding-pink hover:bg-wedding-pink/90 text-white"
       >
         {isLastStep ? "CREATE" : "NEXT"}
         <ArrowRight className="ml-2 h-5 w-5" />
