@@ -16,21 +16,21 @@ export const RoleSelection = ({
   onFirstNameChange,
 }: RoleSelectionProps) => {
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
+    <div className="space-y-4 md:space-y-8 flex-1 flex flex-col">
+      <div className="space-y-2 md:space-y-4">
         <Label htmlFor="firstName" className="text-lg text-gray-700">Your first name</Label>
         <Input
           id="firstName"
           value={firstName}
           onChange={(e) => onFirstNameChange(e.target.value)}
           placeholder="Enter your first name"
-          className="h-12 text-lg"
+          className="h-10 md:h-12 text-lg"
         />
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
         <Label className="text-lg text-gray-700">I am the...</Label>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-3 md:gap-6 flex-1">
           <Card
             className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
               role === "bride"

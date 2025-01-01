@@ -15,16 +15,16 @@ interface DateSelectionProps {
 
 export const DateSelection = ({ date, onDateChange }: DateSelectionProps) => {
   return (
-    <div className="flex flex-col items-center space-y-10">
+    <div className="flex flex-col items-center space-y-4 md:space-y-10 flex-1">
       <div className="relative">
-        <CalendarIcon className="w-32 h-32 text-wedding-pink mb-6" />
+        <CalendarIcon className="w-24 h-24 md:w-32 md:h-32 text-wedding-pink mb-4 md:mb-6" />
       </div>
 
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="w-[280px] justify-start text-left font-normal border-2 h-14 text-lg hover:border-wedding-pink/50"
+            className="w-[280px] justify-start text-left font-normal border-2 h-12 md:h-14 text-lg hover:border-wedding-pink/50"
           >
             <CalendarIcon className="mr-3 h-5 w-5 text-wedding-pink" />
             {date ? format(date, "PPP") : <span>Pick a date</span>}

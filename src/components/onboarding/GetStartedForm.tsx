@@ -65,9 +65,9 @@ export const GetStartedForm = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-1 container max-w-md mx-auto px-4 py-12 flex flex-col">
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-16">
-          <h1 className="text-4xl font-light text-center text-wedding-pink mb-12">
+      <main className="flex-1 container max-w-md mx-auto px-4 py-4 md:py-12 flex flex-col h-[calc(100vh-64px)]">
+        <div className="bg-white rounded-lg shadow-sm p-4 md:p-8 mb-4 md:mb-16 flex-1 flex flex-col">
+          <h1 className="text-3xl md:text-4xl font-light text-center text-wedding-pink mb-6 md:mb-12">
             Create new wedding
           </h1>
           

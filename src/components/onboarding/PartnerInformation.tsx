@@ -22,10 +22,10 @@ export const PartnerInformation = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <h2 className="text-2xl text-center text-gray-700 mb-8">My partner is...</h2>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-8 flex-1 flex flex-col">
+        <h2 className="text-xl md:text-2xl text-center text-gray-700 mb-4 md:mb-8">My partner is...</h2>
         
-        <div className="grid grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-2 gap-3 md:gap-6 flex-1">
           <Card
             className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
               partnerRole === "bride"
@@ -73,7 +73,7 @@ export const PartnerInformation = ({
               <FormControl>
                 <Input
                   placeholder="Your partner's first name"
-                  className="h-12 text-lg"
+                  className="h-10 md:h-12 text-lg"
                   {...field}
                 />
               </FormControl>
