@@ -1,5 +1,13 @@
 import { supabase } from "@/integrations/supabase/client";
 
+interface WeddingDetails {
+  id: string;
+  user_id: string;
+  couple_names: string;
+  wedding_date: string | null;
+  photo_url: string | null;
+}
+
 export const saveWeddingDetails = async (
   userId: string, 
   coupleNames: string, 
@@ -20,7 +28,9 @@ export const saveWeddingDetails = async (
         wedding_date: date?.toISOString(),
         photo_url: photoUrl
       })
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .select()
+      .single();
   }
 
   return supabase
@@ -30,5 +40,7 @@ export const saveWeddingDetails = async (
       couple_names: coupleNames,
       wedding_date: date?.toISOString(),
       photo_url: photoUrl
-    });
+    })
+    .select()
+    .single();
 };
