@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useToast } from "@/hooks/use-toast";
 import { NavigationButtons } from "./NavigationButtons";
 import { GetStartedSteps } from "./GetStartedSteps";
 import { useGetStartedSubmit } from "./form-handlers/useGetStartedSubmit";
@@ -28,10 +27,9 @@ export const GetStartedForm = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [hasEditedNames, setHasEditedNames] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { handleSubmit: handleFormSubmit } = useGetStartedSubmit();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       partnerName: "",
@@ -39,72 +37,61 @@ export const GetStartedForm = () => {
     },
   });
 
-  const handleNext = async () => {
-    if (step === 1) {
-      if (role && firstName.trim()) {
-        setStep(2);
-      }
-    } else if (step === 2) {
-      form.handleSubmit(() => {
-        setStep(3);
-      })();
-    } else if (step === 3) {
-      setStep(4);
-    } else {
-      await handleFormSubmit({
-        firstName: hasEditedNames ? firstName : `${firstName} & ${form.getValues().partnerName}`,
-        partnerName: form.getValues().partnerName,
-        partnerEmail: form.getValues().partnerEmail,
-        date,
-        selectedImage,
-      });
-    }
+  const onSubmit = async () => {
+    const formData = form.getValues();
+    await handleFormSubmit({
+      firstName,
+      partnerName: formData.partnerName,
+      partnerEmail: formData.partnerEmail,
+      date,
+      selectedImage,
+    });
   };
 
-  const handlePrevious = () => {
-    if (step === 4) {
-      setStep(3);
-    } else if (step === 3) {
-      setStep(2);
-    } else if (step === 2) {
-      setStep(1);
-    } else {
-      navigate("/auth");
+  const handleNext = async () => {
+    if (step === 2) {
+      const result = await form.trigger();
+      if (!result) return;
     }
+
+    if (step === 4) {
+      await onSubmit();
+      return;
+    }
+
+    setStep((prev) => prev + 1);
+  };
+
+  const handleBack = () => {
+    if (step === 1) {
+      navigate("/auth");
+      return;
+    }
+    setStep((prev) => prev - 1);
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <main className="flex-1 container max-w-md mx-auto px-4 py-12 flex flex-col">
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-16">
-          <h1 className="text-4xl font-light text-center text-wedding-pink mb-12">
-            Create new wedding
-          </h1>
-          
-          <GetStartedSteps
-            form={form}
-            step={step}
-            role={role}
-            firstName={firstName}
-            selectedImage={selectedImage}
-            date={date}
-            setRole={setRole}
-            setFirstName={(name) => {
-              setFirstName(name);
-              if (step === 4) setHasEditedNames(true);
-            }}
-            setSelectedImage={setSelectedImage}
-            setDate={setDate}
-          />
-        </div>
-
-        <NavigationButtons
-          onPrevious={handlePrevious}
-          onNext={handleNext}
-          isNextDisabled={step === 1 ? (!role || !firstName.trim()) : false}
-          isLastStep={step === 4}
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-1 container max-w-2xl mx-auto px-4 py-8">
+        <GetStartedSteps
+          form={form}
+          step={step}
+          role={role}
+          firstName={firstName}
+          selectedImage={selectedImage}
+          date={date}
+          setRole={setRole}
+          setFirstName={setFirstName}
+          setSelectedImage={setSelectedImage}
+          setDate={setDate}
         />
-      </main>
+      </div>
+      <NavigationButtons
+        step={step}
+        onNext={handleNext}
+        onBack={handleBack}
+        isValid={true}
+      />
     </div>
   );
 };

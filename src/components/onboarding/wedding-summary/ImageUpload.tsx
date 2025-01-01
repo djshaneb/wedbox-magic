@@ -16,45 +16,46 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
 
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL('../../../workers/imageOptimizer.ts', import.meta.url),
-      { type: 'module' }
+      new URL("../../../workers/imageOptimizer.ts", import.meta.url),
+      { type: "module" }
     );
 
-    return () => {
-      workerRef.current?.terminate();
+    workerRef.current.onmessage = (event) => {
+      const { optimizedBlob } = event.data;
+      if (optimizedBlob) {
+        const file = new File([optimizedBlob], "optimized-image.jpg", {
+          type: "image/jpeg",
+        });
+        onImageChange(file);
+      }
     };
-  }, []);
 
-  const optimizeImage = async (file: File): Promise<File> => {
-    if (!workerRef.current) {
-      throw new Error('Worker not initialized');
-    }
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+      }
+    };
+  }, [onImageChange]);
 
+  const optimizeImage = (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
-      const worker = workerRef.current!;
-
-      worker.onmessage = (e) => {
-        if (e.data.success) {
-          const { blob, type } = e.data.result;
-          resolve(new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), { type }));
-        } else {
-          reject(new Error(e.data.error));
-        }
-      };
-
-      worker.onerror = (error) => {
-        reject(error);
-      };
+      if (!workerRef.current) {
+        reject(new Error("Worker not initialized"));
+        return;
+      }
 
       const reader = new FileReader();
       reader.onload = () => {
-        worker.postMessage({
-          imageData: reader.result,
-          fileName: file.name
-        });
+        if (reader.result && typeof reader.result === "string") {
+          workerRef.current?.postMessage({
+            imageData: reader.result,
+            maxWidth: 1920,
+            quality: 0.8,
+          });
+        }
       };
-      reader.onerror = () => reject(reader.error);
-      reader.readAsArrayBuffer(file);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
     });
   };
 
@@ -101,19 +102,22 @@ export const ImageUpload = ({ imagePreview, onImageChange }: ImageUploadProps) =
   };
 
   return (
-    <div className="relative w-full aspect-square max-w-[192px] rounded-lg overflow-hidden">
+    <div className="relative w-64 h-64 mx-auto rounded-lg overflow-hidden">
       <input
         type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        className="hidden"
         id={INPUT_ID}
+        className="hidden"
+        onChange={handleImageChange}
+        accept="image/*"
       />
       {imagePreview ? (
         <ImagePreview
           imageUrl={imagePreview}
           isOptimizing={isOptimizing}
-          onEditClick={() => document.getElementById(INPUT_ID)?.click()}
+          onEditClick={() => {
+            const input = document.getElementById(INPUT_ID) as HTMLInputElement;
+            input?.click();
+          }}
         />
       ) : (
         <EmptyImageUpload inputId={INPUT_ID} />
