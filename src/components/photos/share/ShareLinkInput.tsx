@@ -1,49 +1,48 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Copy, Check } from "lucide-react";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
+import { Copy, CheckCircle2 } from "lucide-react";
 
 interface ShareLinkInputProps {
   shareLink: string | null;
-  isLoading: boolean;
+  onCopy: () => void;
 }
 
-export const ShareLinkInput = ({ shareLink, isLoading }: ShareLinkInputProps) => {
-  const [copied, setCopied] = useState(false);
-  const { toast } = useToast();
+export const ShareLinkInput = ({ shareLink, onCopy }: ShareLinkInputProps) => {
+  const [isCopied, setIsCopied] = useState(false);
 
-  const onCopy = () => {
+  const handleCopy = async () => {
     if (!shareLink) return;
-    navigator.clipboard.writeText(shareLink);
-    setCopied(true);
-    toast({
-      title: "Copied!",
-      description: "Share link copied to clipboard",
-    });
-    setTimeout(() => setCopied(false), 2000);
+    
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+      onCopy();
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+    }
   };
 
   return (
-    <>
+    <div className="relative flex-1">
       <Input
-        value={isLoading ? "Generating link..." : shareLink || ""}
+        value={shareLink || ""}
         readOnly
-        className="flex-1"
+        className="pr-10 bg-gray-50/50 border-gray-200 focus-visible:ring-violet-500"
       />
-      <Button
-        size="icon"
-        onClick={onCopy}
-        disabled={!shareLink || isLoading}
-        className="transition-all duration-200"
+      <motion.button
+        whileTap={{ scale: 0.95 }}
+        onClick={handleCopy}
+        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-gray-100 transition-colors"
+        disabled={!shareLink}
       >
-        {copied ? (
-          <Check className="h-4 w-4" />
+        {isCopied ? (
+          <CheckCircle2 className="h-4 w-4 text-green-500" />
         ) : (
-          <Copy className="h-4 w-4" />
+          <Copy className="h-4 w-4 text-gray-500" />
         )}
-        <span className="sr-only">Copy link</span>
-      </Button>
-    </>
+      </motion.button>
+    </div>
   );
 };

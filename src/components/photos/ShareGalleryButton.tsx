@@ -1,116 +1,121 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Share2 } from "lucide-react";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { ShareDialog } from "./share/ShareDialog";
 import { useNavigate } from "react-router-dom";
-import { useSession } from '@supabase/auth-helpers-react';
 
 export const ShareGalleryButton = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [shareLink, setShareLink] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const session = useSession();
-
-  useEffect(() => {
-    if (!session) {
-      navigate('/auth');
-    }
-  }, [session, navigate]);
 
   const generateShareLink = async () => {
     try {
-      setIsLoading(true);
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (!session?.user) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to share your gallery",
-          variant: "destructive",
-        });
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error(`Session error: ${sessionError.message}`);
+      }
+      
+      if (!session) {
+        console.error('No session found - redirecting to auth');
         navigate('/auth');
-        return;
+        throw new Error("Please sign in to share your gallery");
       }
 
-      const userId = session.user.id;
-      console.log('Checking for existing share link for user:', userId);
+      console.log('Checking for existing share link for user:', session.user.id);
       
       // First, check if user already has a shared gallery - get the most recent one
       const { data: existingGallery, error: fetchError } = await supabase
         .from('shared_galleries')
         .select('access_code')
-        .eq('owner_id', userId)
+        .eq('owner_id', session.user.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (fetchError) {
-        console.error('Failed to check existing gallery:', fetchError);
-        throw new Error('Failed to check existing gallery');
+        console.error('Error fetching existing gallery:', fetchError);
+        throw new Error(`Failed to check existing gallery: ${fetchError.message}`);
       }
 
-      if (existingGallery?.access_code) {
-        console.log('Found existing gallery:', existingGallery);
-        setShareLink(`${window.location.origin}/shared/${existingGallery.access_code}`);
-        return;
-      }
-
-      // If no existing gallery, create a new one
-      console.log('No existing gallery found, creating new one');
-      const accessCode = Math.random().toString(36).substring(2, 15);
+      let accessCode;
       
-      const { error: insertError } = await supabase
-        .from('shared_galleries')
-        .insert([
-          { owner_id: userId, access_code: accessCode }
-        ]);
+      if (existingGallery) {
+        console.log('Found existing share link with access code:', existingGallery.access_code);
+        accessCode = existingGallery.access_code;
+      } else {
+        // Generate a new access code only if one doesn't exist
+        accessCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        
+        // Insert the new shared gallery record
+        const { error: insertError } = await supabase
+          .from('shared_galleries')
+          .insert({
+            owner_id: session.user.id,
+            access_code: accessCode,
+          });
 
-      if (insertError) {
-        console.error('Failed to create shared gallery:', insertError);
-        throw new Error('Failed to create shared gallery');
+        if (insertError) {
+          console.error('Error inserting shared gallery:', insertError);
+          throw new Error(`Failed to create shared gallery: ${insertError.message}`);
+        }
+        console.log('Created new share link with access code:', accessCode);
       }
 
-      setShareLink(`${window.location.origin}/shared/${accessCode}`);
+      // Generate the share URL using the URL parameter format
+      const shareUrl = `${window.location.origin}/shared/${accessCode}`;
+      console.log('Generated share URL:', shareUrl);
+      setShareLink(shareUrl);
       
+      toast({
+        title: "Share link generated!",
+        description: "Copy and share this link with your guests.",
+        className: isMobile ? "fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:top-4" : "top-[10%]"
+      });
     } catch (error) {
-      console.error('Error generating share link:', error);
+      console.error('Error in generateShareLink:', error);
+      
       toast({
         title: "Error",
-        description: "Failed to generate share link. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to generate share link. Please try again.",
         variant: "destructive",
+        className: isMobile ? "fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:top-4" : "top-[10%]"
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const handleOpenDialog = async () => {
-    setIsDialogOpen(true);
-    if (!shareLink) {
-      await generateShareLink();
-    }
+  const handleCopy = () => {
+    toast({
+      title: "Copied!",
+      description: "Share link copied to clipboard",
+      className: isMobile ? "fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:top-4" : "top-[10%]"
+    });
   };
 
   return (
-    <>
-      <Button
-        onClick={handleOpenDialog}
-        variant="outline"
-        className="w-full bg-white hover:bg-gray-50"
-      >
-        <Share2 className="mr-2 h-4 w-4" />
-        Share Gallery
-      </Button>
-
-      <ShareDialog
-        isOpen={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        shareLink={shareLink}
-        isLoading={isLoading}
-      />
-    </>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="group cursor-pointer w-full md:w-auto"
+          onClick={() => !shareLink && generateShareLink()}
+        >
+          <div className="flex items-center gap-3 px-6 py-4 bg-gradient-to-br from-violet-500/90 via-purple-500/90 to-fuchsia-500/90 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <Share2 className="h-5 w-5 text-white group-hover:rotate-12 transition-transform duration-300" />
+            <span className="text-white font-medium">Share Gallery</span>
+          </div>
+        </motion.div>
+      </DialogTrigger>
+      <ShareDialog shareLink={shareLink} onCopy={handleCopy} />
+    </Dialog>
   );
 };
