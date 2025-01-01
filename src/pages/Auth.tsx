@@ -10,22 +10,41 @@ const AuthPage = () => {
 
   useEffect(() => {
     // Check current auth session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        navigate("/");
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error checking session:', error);
+          return;
+        }
+        
+        if (session) {
+          console.log('Active session found, redirecting to home');
+          navigate("/");
+        }
+      } catch (error) {
+        console.error('Failed to check session:', error);
       }
-    });
+    };
+
+    checkSession();
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
+      
       if (session) {
+        // Store the session in localStorage to persist it
+        localStorage.setItem('supabase.auth.token', session.access_token);
         navigate("/");
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   return (
