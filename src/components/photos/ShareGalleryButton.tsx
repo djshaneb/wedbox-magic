@@ -32,11 +32,13 @@ export const ShareGalleryButton = () => {
 
       console.log('Checking for existing share link for user:', session.user.id);
       
-      // First, check if user already has a shared gallery
+      // First, check if user already has a shared gallery - get the most recent one
       const { data: existingGallery, error: fetchError } = await supabase
         .from('shared_galleries')
         .select('access_code')
         .eq('owner_id', session.user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (fetchError) {
