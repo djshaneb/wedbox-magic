@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Copy, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ShareLinkInputProps {
   shareLink: string | null;
@@ -25,24 +26,29 @@ export const ShareLinkInput = ({ shareLink, onCopy }: ShareLinkInputProps) => {
   };
 
   return (
-    <div className="relative flex-1">
+    <div className="relative flex items-center gap-2 w-full">
       <Input
         value={shareLink || ""}
         readOnly
-        className="pr-10 bg-gray-50/50 border-gray-200 focus-visible:ring-violet-500"
+        className="pr-4 bg-gray-50/50 border-gray-200 focus-visible:ring-violet-500"
       />
-      <motion.button
+      <motion.div
         whileTap={{ scale: 0.95 }}
-        onClick={handleCopy}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-gray-100 transition-colors"
-        disabled={!shareLink}
       >
-        {isCopied ? (
-          <CheckCircle2 className="h-4 w-4 text-green-500" />
-        ) : (
-          <Copy className="h-4 w-4 text-gray-500" />
-        )}
-      </motion.button>
+        <Button
+          onClick={handleCopy}
+          disabled={!shareLink}
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 shrink-0 bg-white hover:bg-gray-100 transition-colors"
+        >
+          {isCopied ? (
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+          ) : (
+            <Copy className="h-5 w-5 text-gray-500" />
+          )}
+        </Button>
+      </motion.div>
     </div>
   );
 };
