@@ -14,9 +14,13 @@ export const AdminAccessDialog = () => {
   const { data: partnerAccess, isLoading } = useQuery({
     queryKey: ["partnerAccess"],
     queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user.id) throw new Error("No user session");
+
       const { data, error } = await supabase
         .from("partner_access")
-        .select("*");
+        .select("*")
+        .eq("user_id", session.session.user.id);
       
       if (error) throw error;
       return data;
@@ -25,6 +29,9 @@ export const AdminAccessDialog = () => {
 
   const addPartnerMutation = useMutation({
     mutationFn: async (email: string) => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user.id) throw new Error("No user session");
+
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
@@ -38,7 +45,10 @@ export const AdminAccessDialog = () => {
 
       const { error: insertError } = await supabase
         .from("partner_access")
-        .insert([{ partner_email: email }]);
+        .insert({
+          partner_email: email,
+          user_id: session.session.user.id
+        });
       
       if (insertError) throw insertError;
     },
@@ -54,10 +64,14 @@ export const AdminAccessDialog = () => {
 
   const removePartnerMutation = useMutation({
     mutationFn: async (email: string) => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user.id) throw new Error("No user session");
+
       const { error } = await supabase
         .from("partner_access")
         .delete()
-        .eq("partner_email", email);
+        .eq("partner_email", email)
+        .eq("user_id", session.session.user.id);
       
       if (error) throw error;
     },
