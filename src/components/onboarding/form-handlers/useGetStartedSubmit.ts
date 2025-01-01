@@ -24,9 +24,17 @@ export const useGetStartedSubmit = () => {
     selectedImage,
   }: WeddingDetails) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-      
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        toast({
+          title: "Authentication error",
+          description: "Please sign in again to continue.",
+          variant: "destructive",
+        });
+        navigate("/auth");
+        return;
+      }
+
       let photoUrl = null;
       if (selectedImage) {
         try {
@@ -42,7 +50,7 @@ export const useGetStartedSubmit = () => {
       }
 
       const result = await saveWeddingDetails(
-        user.id,
+        session.user.id,
         firstName,
         date,
         photoUrl

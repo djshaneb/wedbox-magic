@@ -29,8 +29,8 @@ export const saveWeddingDetails = async (
         photo_url: photoUrl
       })
       .eq('user_id', userId)
-      .select()
-      .single();
+      .select('*')
+      .single<WeddingDetails>();
   }
 
   return supabase
@@ -41,6 +41,6 @@ export const saveWeddingDetails = async (
       wedding_date: date?.toISOString(),
       photo_url: photoUrl
     })
-    .select()
-    .single();
+    .select('*')
+    .single<WeddingDetails>();
 };
