@@ -4,85 +4,71 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { ScanLine } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 const QRScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const startScanning = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'environment' } 
-      });
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setIsScanning(true);
-        
-        // Create a canvas to capture video frames
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        
-        // Start scanning frames
-        const scanFrame = () => {
-          if (!isScanning) {
-            stream.getTracks().forEach(track => track.stop());
-            return;
-          }
-          
-          if (videoRef.current && context) {
-            canvas.width = videoRef.current.videoWidth;
-            canvas.height = videoRef.current.videoHeight;
-            
-            context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            
-            // Here you would typically use a QR code detection library
-            // For now, we'll simulate finding a code after 3 seconds
-            setTimeout(() => {
-              handleQRCode("example-access-code");
-            }, 3000);
-          }
-          
-          requestAnimationFrame(scanFrame);
-        };
-        
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play();
-          scanFrame();
-        };
-      }
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      toast({
-        title: "Camera Error",
-        description: "Unable to access camera. Please make sure you've granted camera permissions.",
-        variant: "destructive"
-      });
+  const startScanning = () => {
+    if (!scannerRef.current) {
+      scannerRef.current = new Html5QrcodeScanner(
+        "qr-reader",
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        false
+      );
+
+      scannerRef.current.render(
+        (decodedText) => {
+          handleQRCode(decodedText);
+        },
+        (error) => {
+          console.error("QR Code scanning error:", error);
+        }
+      );
     }
+    setIsScanning(true);
   };
 
   const handleQRCode = (accessCode: string) => {
-    setIsScanning(false);
-    if (videoRef.current?.srcObject instanceof MediaStream) {
-      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+    // Clean up scanner
+    if (scannerRef.current) {
+      scannerRef.current.clear();
+      scannerRef.current = null;
     }
-    navigate(`/shared/${accessCode}`);
+    setIsScanning(false);
+
+    // Extract access code from URL if it's a full URL
+    let code = accessCode;
+    try {
+      const url = new URL(accessCode);
+      const pathParts = url.pathname.split('/');
+      code = pathParts[pathParts.length - 1];
+    } catch {
+      // If it's not a URL, use the code as is
+    }
+
+    navigate(`/shared/${code}`);
     toast({
       title: "QR Code Scanned",
       description: "Redirecting to shared gallery..."
     });
   };
 
+  const handleDialogClose = () => {
+    if (scannerRef.current) {
+      scannerRef.current.clear();
+      scannerRef.current = null;
+    }
+    setIsScanning(false);
+  };
+
   return (
     <Dialog onOpenChange={(open) => {
       if (!open) {
-        setIsScanning(false);
-        if (videoRef.current?.srcObject instanceof MediaStream) {
-          videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-        }
+        handleDialogClose();
       }
     }}>
       <DialogTrigger asChild>
@@ -96,12 +82,7 @@ const QRScanner = () => {
           <DialogTitle>Scan QR Code</DialogTitle>
         </DialogHeader>
         <div className="aspect-video relative overflow-hidden rounded-lg">
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            playsInline
-          />
-          <div className="absolute inset-0 border-2 border-wedding-pink/50 rounded-lg" />
+          <div id="qr-reader" className="w-full h-full" />
         </div>
       </DialogContent>
     </Dialog>
