@@ -36,11 +36,19 @@ export const GetStartedForm = () => {
         setStep(2);
       }
     } else if (step === 2) {
-      form.handleSubmit(() => {
+      const partnerName = form.getValues().partnerName;
+      if (partnerName.trim()) {
         setStep(3);
-      })();
+      } else {
+        form.setError("partnerName", {
+          type: "manual",
+          message: "Partner's name is required",
+        });
+      }
     } else if (step === 3) {
-      setStep(4);
+      if (date) {
+        setStep(4);
+      }
     } else {
       await handleFormSubmit({
         firstName: hasEditedNames ? firstName : `${firstName} & ${form.getValues().partnerName}`,
@@ -61,6 +69,19 @@ export const GetStartedForm = () => {
     } else {
       navigate("/auth");
     }
+  };
+
+  const isNextDisabled = () => {
+    if (step === 1) {
+      return !role || !firstName.trim();
+    }
+    if (step === 2) {
+      return !form.getValues().partnerName.trim();
+    }
+    if (step === 3) {
+      return !date;
+    }
+    return false;
   };
 
   return (
@@ -91,7 +112,7 @@ export const GetStartedForm = () => {
         <NavigationButtons
           onPrevious={handlePrevious}
           onNext={handleNext}
-          isNextDisabled={step === 1 ? (!role || !firstName.trim()) : false}
+          isNextDisabled={isNextDisabled()}
           isLastStep={step === 4}
         />
       </main>
