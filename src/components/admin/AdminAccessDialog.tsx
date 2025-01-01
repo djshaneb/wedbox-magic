@@ -32,17 +32,6 @@ export const AdminAccessDialog = () => {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session?.user.id) throw new Error("No user session");
 
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          data: {
-            role: "admin",
-          },
-        },
-      });
-      
-      if (error) throw error;
-
       const { error: insertError } = await supabase
         .from("partner_access")
         .insert({
@@ -53,7 +42,7 @@ export const AdminAccessDialog = () => {
       if (insertError) throw insertError;
     },
     onSuccess: () => {
-      toast.success("Partner access invitation sent");
+      toast.success("Partner access granted");
       setNewPartnerEmail("");
       queryClient.invalidateQueries({ queryKey: ["partnerAccess"] });
     },
