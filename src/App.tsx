@@ -15,14 +15,17 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
     // Initialize Supabase auth session
     const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) {
-          console.error('Error initializing auth:', error);
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        setSession(currentSession);
+        if (!currentSession) {
           navigate('/auth');
         }
         setIsInitialized(true);
@@ -36,12 +39,14 @@ const AppContent = () => {
     initializeAuth();
 
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      setSession(newSession);
+      
       if (event === 'SIGNED_OUT') {
         // Clear any auth-related state or caches
         queryClient.clear();
         navigate('/auth');
-      } else if (event === 'SIGNED_IN' && session) {
+      } else if (event === 'SIGNED_IN' && newSession) {
         // Handle successful sign in
         navigate('/');
       }
