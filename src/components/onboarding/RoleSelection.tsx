@@ -64,7 +64,7 @@ export const RoleSelection = ({
               <CardContent className="p-0">
                 <div className="aspect-square">
                   <img
-                    src="/lovable-uploads/da2d8b46-2e02-4f6b-a9d7-f7bf866e5243.png"
+                    src="/lovable-uploads/ba6f8052-7ace-4288-9b32-508c94ed0496.png"
                     alt="Groom"
                     className="w-full h-full object-cover rounded-t-lg"
                   />
