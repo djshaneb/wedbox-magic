@@ -35,6 +35,10 @@ export const GetStartedSteps = ({
   setSelectedImage,
   setDate,
 }: GetStartedStepsProps) => {
+  const [partnerRole, setPartnerRole] = useState<"bride" | "groom" | null>(
+    role === "bride" ? "groom" : role === "groom" ? "bride" : null
+  );
+
   return (
     <>
       {step === 1 ? (
@@ -47,6 +51,8 @@ export const GetStartedSteps = ({
       ) : step === 2 ? (
         <PartnerInformation
           form={form}
+          partnerRole={partnerRole}
+          onPartnerRoleChange={setPartnerRole}
           onSubmit={() => {}}
         />
       ) : step === 3 ? (
