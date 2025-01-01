@@ -1,32 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
 import { NavigationButtons } from "./NavigationButtons";
 import { GetStartedSteps } from "./GetStartedSteps";
 import { useGetStartedSubmit } from "./form-handlers/useGetStartedSubmit";
 
 const formSchema = z.object({
-  partnerName: z.string().min(1, "Partner's name is required").optional(),
+  partnerName: z.string().min(1, "Partner's name is required"),
   partnerEmail: z.string().email("Invalid email address").optional(),
 });
-
-const PLACEHOLDER_IMAGES = [
-  "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
-  "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-  "https://images.unsplash.com/photo-1518770660439-4636190af475",
-  "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-];
 
 export const GetStartedForm = () => {
   const [step, setStep] = useState(1);
   const [role, setRole] = useState<"bride" | "groom" | null>(null);
   const [firstName, setFirstName] = useState("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(PLACEHOLDER_IMAGES[0]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [hasEditedNames, setHasEditedNames] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { handleSubmit: handleFormSubmit } = useGetStartedSubmit();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -37,62 +32,72 @@ export const GetStartedForm = () => {
     },
   });
 
-  const onSubmit = async () => {
-    const formData = form.getValues();
-    await handleFormSubmit({
-      firstName,
-      partnerName: formData.partnerName || "",
-      partnerEmail: formData.partnerEmail,
-      date,
-      selectedImage,
-    });
-  };
-
   const handleNext = async () => {
-    if (step === 2) {
-      const result = await form.trigger();
-      if (!result) return;
+    if (step === 1) {
+      if (role && firstName.trim()) {
+        setStep(2);
+      }
+    } else if (step === 2) {
+      form.handleSubmit(() => {
+        setStep(3);
+      })();
+    } else if (step === 3) {
+      setStep(4);
+    } else {
+      await handleFormSubmit({
+        firstName: hasEditedNames ? firstName : `${firstName} & ${form.getValues().partnerName}`,
+        partnerName: form.getValues().partnerName,
+        partnerEmail: form.getValues().partnerEmail,
+        date,
+        selectedImage,
+      });
     }
-
-    if (step === 4) {
-      await onSubmit();
-      return;
-    }
-
-    setStep((prev) => prev + 1);
   };
 
-  const handleBack = () => {
-    if (step === 1) {
+  const handlePrevious = () => {
+    if (step === 4) {
+      setStep(3);
+    } else if (step === 3) {
+      setStep(2);
+    } else if (step === 2) {
+      setStep(1);
+    } else {
       navigate("/auth");
-      return;
     }
-    setStep((prev) => prev - 1);
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex-1 container max-w-2xl mx-auto px-4 py-8">
-        <GetStartedSteps
-          form={form}
-          step={step}
-          role={role}
-          firstName={firstName}
-          selectedImage={selectedImage}
-          date={date}
-          setRole={setRole}
-          setFirstName={setFirstName}
-          setSelectedImage={setSelectedImage}
-          setDate={setDate}
+    <div className="min-h-screen bg-background flex flex-col">
+      <main className="flex-1 container max-w-md mx-auto px-4 py-12 flex flex-col">
+        <div className="bg-white rounded-lg shadow-sm p-8 mb-16">
+          <h1 className="text-4xl font-light text-center text-wedding-pink mb-12">
+            Create new wedding
+          </h1>
+          
+          <GetStartedSteps
+            form={form}
+            step={step}
+            role={role}
+            firstName={firstName}
+            selectedImage={selectedImage}
+            date={date}
+            setRole={setRole}
+            setFirstName={(name) => {
+              setFirstName(name);
+              if (step === 4) setHasEditedNames(true);
+            }}
+            setSelectedImage={setSelectedImage}
+            setDate={setDate}
+          />
+        </div>
+
+        <NavigationButtons
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          isNextDisabled={step === 1 ? (!role || !firstName.trim()) : false}
+          isLastStep={step === 4}
         />
-      </div>
-      <NavigationButtons
-        step={step}
-        onPrevious={handleBack}
-        onNext={handleNext}
-        isNextDisabled={false}
-        isLastStep={step === 4}
-      />
+      </main>
     </div>
   );
 };
