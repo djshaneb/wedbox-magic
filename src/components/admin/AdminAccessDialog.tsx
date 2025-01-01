@@ -9,6 +9,7 @@ import { useState } from "react";
 
 export const AdminAccessDialog = () => {
   const [newPartnerEmail, setNewPartnerEmail] = useState("");
+  const [newPartnerName, setNewPartnerName] = useState("");
   const queryClient = useQueryClient();
 
   const { data: partnerAccess, isLoading } = useQuery({
@@ -36,7 +37,7 @@ export const AdminAccessDialog = () => {
   });
 
   const addPartnerMutation = useMutation({
-    mutationFn: async (email: string) => {
+    mutationFn: async ({ email, name }: { email: string; name: string }) => {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session?.user.id) throw new Error("No user session");
 
@@ -44,6 +45,7 @@ export const AdminAccessDialog = () => {
         .from("partner_access")
         .insert({
           partner_email: email,
+          partner_name: name,
           user_id: session.session.user.id
         });
       
@@ -52,6 +54,7 @@ export const AdminAccessDialog = () => {
     onSuccess: () => {
       toast.success("Partner access granted");
       setNewPartnerEmail("");
+      setNewPartnerName("");
       queryClient.invalidateQueries({ queryKey: ["partnerAccess"] });
     },
     onError: (error) => {
@@ -106,7 +109,7 @@ export const AdminAccessDialog = () => {
               <ul className="space-y-2">
                 {partnerAccess.map((access) => (
                   <li key={access.id} className="flex items-center justify-between gap-2 text-sm">
-                    <span>{access.partner_email}</span>
+                    <span>{access.partner_name} ({access.partner_email})</span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -123,29 +126,38 @@ export const AdminAccessDialog = () => {
           <div>
             <h3 className="text-sm font-medium mb-2">
               {hasExistingPartner 
-                ? `Give ${partnerAccess[0].partner_email} Admin Access`
+                ? `Give ${partnerAccess[0].partner_name} Admin Access`
                 : "Give Partner Admin Access"}
             </h3>
-            <div className="flex gap-2">
+            <div className="space-y-4">
               <Input
-                type="email"
-                placeholder="Partner's email"
-                value={newPartnerEmail}
-                onChange={(e) => setNewPartnerEmail(e.target.value)}
+                type="text"
+                placeholder="Partner's name"
+                value={newPartnerName}
+                onChange={(e) => setNewPartnerName(e.target.value)}
                 disabled={hasExistingPartner}
               />
-              <Button
-                size="sm"
-                onClick={() => {
-                  if (newPartnerEmail) {
-                    addPartnerMutation.mutate(newPartnerEmail);
-                  }
-                }}
-                disabled={!newPartnerEmail || addPartnerMutation.isPending || hasExistingPartner}
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Add
-              </Button>
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="Partner's email"
+                  value={newPartnerEmail}
+                  onChange={(e) => setNewPartnerEmail(e.target.value)}
+                  disabled={hasExistingPartner}
+                />
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    if (newPartnerEmail && newPartnerName) {
+                      addPartnerMutation.mutate({ email: newPartnerEmail, name: newPartnerName });
+                    }
+                  }}
+                  disabled={!newPartnerEmail || !newPartnerName || addPartnerMutation.isPending || hasExistingPartner}
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
+              </div>
             </div>
             {hasExistingPartner && (
               <p className="text-sm text-muted-foreground mt-2">
