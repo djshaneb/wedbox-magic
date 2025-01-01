@@ -32,23 +32,48 @@ export const GetStartedForm = () => {
 
   const handleNext = async () => {
     if (step === 1) {
-      if (role && firstName.trim()) {
-        setStep(2);
+      if (!role) {
+        toast({
+          title: "Please select your role",
+          description: "Choose whether you are the bride or groom",
+          variant: "destructive",
+        });
+        return;
       }
+      if (!firstName.trim()) {
+        toast({
+          title: "Please enter your name",
+          description: "Your first name is required",
+          variant: "destructive",
+        });
+        return;
+      }
+      setStep(2);
     } else if (step === 2) {
       const partnerName = form.getValues().partnerName;
-      if (partnerName.trim()) {
-        setStep(3);
-      } else {
+      if (!partnerName.trim()) {
+        toast({
+          title: "Partner's name required",
+          description: "Please enter your partner's first name",
+          variant: "destructive",
+        });
         form.setError("partnerName", {
           type: "manual",
           message: "Partner's name is required",
         });
+        return;
       }
+      setStep(3);
     } else if (step === 3) {
-      if (date) {
-        setStep(4);
+      if (!date) {
+        toast({
+          title: "Wedding date required",
+          description: "Please select your wedding date",
+          variant: "destructive",
+        });
+        return;
       }
+      setStep(4);
     } else {
       await handleFormSubmit({
         firstName: hasEditedNames ? firstName : `${firstName} & ${form.getValues().partnerName}`,
