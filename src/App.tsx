@@ -22,11 +22,19 @@ const AppContent = () => {
     const initializeAuth = async () => {
       try {
         const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        if (error) {
+          console.error('Failed to get session:', error);
+          setIsInitialized(true);
+          navigate('/auth');
+          return;
+        }
         
         setSession(currentSession);
         if (!currentSession) {
+          console.log('No active session found, redirecting to auth');
           navigate('/auth');
+        } else {
+          console.log('Active session found:', currentSession);
         }
         setIsInitialized(true);
       } catch (error) {
@@ -40,14 +48,16 @@ const AppContent = () => {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      console.log('Auth state changed:', event, 'New session:', newSession);
       setSession(newSession);
       
-      if (event === 'SIGNED_OUT') {
-        // Clear any auth-related state or caches
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        console.log('User signed out or deleted, clearing state');
+        setSession(null);
         queryClient.clear();
         navigate('/auth');
       } else if (event === 'SIGNED_IN' && newSession) {
-        // Handle successful sign in
+        console.log('User signed in successfully');
         navigate('/');
       }
     });
