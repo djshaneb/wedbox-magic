@@ -29,11 +29,14 @@ const QRScanner = () => {
               "qr-reader",
               { 
                 fps: 10,
-                qrbox: { width: 250, height: 250 },
+                qrbox: {
+                  width: Math.min(250, window.innerWidth - 50),
+                  height: Math.min(250, window.innerWidth - 50)
+                },
                 rememberLastUsedCamera: true,
-                supportedScanTypes: [], // This replaces hideSelectScanType and formatsToSupport
+                supportedScanTypes: [],
                 videoConstraints: {
-                  facingMode: { ideal: "environment" } // Prefer back camera on mobile
+                  facingMode: { ideal: "environment" }
                 }
               },
               /* verbose= */ false
