@@ -44,7 +44,6 @@ export const usePartnerAccess = () => {
       if (!session.session?.user.id) throw new Error("No user session");
 
       const partnerName = weddingDetails?.couple_names?.split(" & ")[1] || "Partner";
-      const inviterName = weddingDetails?.couple_names?.split(" & ")[0] || "Your partner";
 
       const { error: insertError } = await supabase
         .from("partner_access")
@@ -62,10 +61,7 @@ export const usePartnerAccess = () => {
           emailRedirectTo: `${window.location.origin}/auth`,
           data: {
             wedding_id: session.session.user.id,
-            role: 'admin',
-            inviter_name: inviterName,
-            partner_name: partnerName,
-            template: 'partner-admin-invite'
+            role: 'admin'
           }
         }
       });
