@@ -14,15 +14,23 @@ export const AdminAccessDialog = () => {
   const { data: partnerAccess, isLoading } = useQuery({
     queryKey: ["partnerAccess"],
     queryFn: async () => {
+      console.log("Fetching partner access...");
       const { data: session } = await supabase.auth.getSession();
-      if (!session.session?.user.id) throw new Error("No user session");
+      if (!session.session?.user.id) {
+        console.error("No user session found");
+        throw new Error("No user session");
+      }
 
       const { data, error } = await supabase
         .from("partner_access")
         .select("*")
-        .eq("user_id", session.session.user.id);
+        .or(`user_id.eq.${session.session.user.id},partner_email.eq.${session.session.user.email}`);
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching partner access:", error);
+        throw error;
+      }
+      console.log("Partner access data:", data);
       return data;
     },
   });
@@ -90,11 +98,11 @@ export const AdminAccessDialog = () => {
             <h3 className="text-sm font-medium mb-2">Current Admin Access</h3>
             {isLoading ? (
               <div className="text-sm text-muted-foreground">Loading...</div>
-            ) : partnerAccess?.length === 0 ? (
+            ) : !partnerAccess || partnerAccess.length === 0 ? (
               <div className="text-sm text-muted-foreground">No partner admin access granted yet</div>
             ) : (
               <ul className="space-y-2">
-                {partnerAccess?.map((access) => (
+                {partnerAccess.map((access) => (
                   <li key={access.id} className="flex items-center justify-between gap-2 text-sm">
                     <span>{access.partner_email}</span>
                     <Button
