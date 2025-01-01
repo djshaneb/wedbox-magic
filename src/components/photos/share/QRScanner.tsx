@@ -13,39 +13,57 @@ const QRScanner = () => {
   const { toast } = useToast();
 
   const startScanning = () => {
-    // We'll initialize the scanner when the dialog opens instead
     setIsScanning(true);
   };
 
-  const initializeScanner = () => {
+  const initializeScanner = async () => {
     if (!scannerRef.current && isScanning) {
-      // Small delay to ensure DOM element exists
-      setTimeout(() => {
-        try {
-          scannerRef.current = new Html5QrcodeScanner(
-            "qr-reader",
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            false
-          );
+      try {
+        // Request camera permissions first
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        
+        // Small delay to ensure DOM element exists
+        setTimeout(() => {
+          try {
+            scannerRef.current = new Html5QrcodeScanner(
+              "qr-reader",
+              { 
+                fps: 10, 
+                qrbox: { width: 250, height: 250 },
+                videoConstraints: {
+                  facingMode: { ideal: "environment" } // Prefer back camera on mobile
+                }
+              },
+              false
+            );
 
-          scannerRef.current.render(
-            (decodedText) => {
-              handleQRCode(decodedText);
-            },
-            (error) => {
-              console.error("QR Code scanning error:", error);
-            }
-          );
-        } catch (error) {
-          console.error("Error initializing scanner:", error);
-          toast({
-            title: "Scanner Error",
-            description: "Failed to initialize the QR scanner. Please try again.",
-            variant: "destructive"
-          });
-        }
-      }, 100);
+            scannerRef.current.render(
+              (decodedText) => {
+                handleQRCode(decodedText);
+              },
+              (error) => {
+                console.error("QR Code scanning error:", error);
+              }
+            );
+          } catch (error) {
+            console.error("Error initializing scanner:", error);
+            handleScannerError(error);
+          }
+        }, 100);
+      } catch (error) {
+        console.error("Camera access error:", error);
+        handleScannerError(error);
+      }
     }
+  };
+
+  const handleScannerError = (error: any) => {
+    toast({
+      title: "Camera Access Error",
+      description: "Please ensure you have granted camera permissions and try again.",
+      variant: "destructive"
+    });
+    setIsScanning(false);
   };
 
   const handleQRCode = (accessCode: string) => {
