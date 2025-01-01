@@ -7,6 +7,7 @@ import { saveWeddingDetails } from "./useWeddingDetails";
 interface WeddingDetails {
   firstName: string;
   partnerName: string;
+  partnerEmail?: string;
   date?: Date;
   selectedImage: string | null;
 }
@@ -18,6 +19,7 @@ export const useGetStartedSubmit = () => {
   const handleSubmit = async ({
     firstName,
     partnerName,
+    partnerEmail,
     date,
     selectedImage,
   }: WeddingDetails) => {
@@ -48,10 +50,33 @@ export const useGetStartedSubmit = () => {
 
       if (result.error) throw result.error;
 
-      toast({
-        title: "Wedding details saved!",
-        description: "Your wedding information has been saved successfully.",
-      });
+      // If partner email is provided, send an invitation
+      if (partnerEmail) {
+        const { error: inviteError } = await supabase.auth.admin.inviteUserByEmail(partnerEmail, {
+          data: {
+            wedding_id: result.data.id,
+            role: 'admin'
+          }
+        });
+
+        if (inviteError) {
+          toast({
+            title: "Warning",
+            description: "Wedding details saved, but we couldn't send an invitation to your partner. They can be invited later.",
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Success!",
+            description: "Wedding details saved and invitation sent to your partner.",
+          });
+        }
+      } else {
+        toast({
+          title: "Wedding details saved!",
+          description: "Your wedding information has been saved successfully.",
+        });
+      }
 
       navigate("/");
     } catch (error) {
