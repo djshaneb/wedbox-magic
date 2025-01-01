@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface NavigationButtonsProps {
+  step: number;
   onPrevious: () => void;
   onNext: () => void;
   isNextDisabled?: boolean;
@@ -9,6 +10,7 @@ interface NavigationButtonsProps {
 }
 
 export const NavigationButtons = ({
+  step,
   onPrevious,
   onNext,
   isNextDisabled,

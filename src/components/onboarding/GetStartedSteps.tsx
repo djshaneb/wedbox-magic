@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { RoleSelection } from "./RoleSelection";
 import { PartnerInformation } from "./PartnerInformation";
 import { DateSelection } from "./DateSelection";
@@ -7,8 +6,8 @@ import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  partnerName: z.string().min(1, "Partner's name is required"),
-  partnerEmail: z.string().email("Invalid email address"),
+  partnerName: z.string().min(1, "Partner's name is required").optional(),
+  partnerEmail: z.string().email("Invalid email address").optional(),
 });
 
 interface GetStartedStepsProps {
@@ -55,7 +54,7 @@ export const GetStartedSteps = ({
       ) : (
         <WeddingSummary
           firstName={firstName}
-          partnerName={form.getValues().partnerName}
+          partnerName={form.getValues().partnerName || ""}
           date={date}
           onEditDate={setDate}
           onEditNames={(first, partner) => {

@@ -8,7 +8,7 @@ import { GetStartedSteps } from "./GetStartedSteps";
 import { useGetStartedSubmit } from "./form-handlers/useGetStartedSubmit";
 
 const formSchema = z.object({
-  partnerName: z.string().min(1, "Partner's name is required"),
+  partnerName: z.string().min(1, "Partner's name is required").optional(),
   partnerEmail: z.string().email("Invalid email address").optional(),
 });
 
@@ -29,7 +29,7 @@ export const GetStartedForm = () => {
   const navigate = useNavigate();
   const { handleSubmit: handleFormSubmit } = useGetStartedSubmit();
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       partnerName: "",
@@ -41,7 +41,7 @@ export const GetStartedForm = () => {
     const formData = form.getValues();
     await handleFormSubmit({
       firstName,
-      partnerName: formData.partnerName,
+      partnerName: formData.partnerName || "",
       partnerEmail: formData.partnerEmail,
       date,
       selectedImage,
@@ -88,9 +88,10 @@ export const GetStartedForm = () => {
       </div>
       <NavigationButtons
         step={step}
+        onPrevious={handleBack}
         onNext={handleNext}
-        onBack={handleBack}
-        isValid={true}
+        isNextDisabled={false}
+        isLastStep={step === 4}
       />
     </div>
   );
