@@ -44,6 +44,7 @@ export const usePartnerAccess = () => {
       if (!session.session?.user.id) throw new Error("No user session");
 
       const partnerName = weddingDetails?.couple_names?.split(" & ")[1] || "Partner";
+      const inviterName = weddingDetails?.couple_names?.split(" & ")[0] || "Your partner";
 
       const { error: insertError } = await supabase
         .from("partner_access")
@@ -62,8 +63,14 @@ export const usePartnerAccess = () => {
           data: {
             wedding_id: session.session.user.id,
             role: 'admin',
-            inviter_name: weddingDetails?.couple_names?.split(" & ")[0] || "Your partner",
-          }
+            inviter_name: inviterName,
+          },
+          emailContent: `Hi ${partnerName},
+
+${inviterName} would like to give you admin access to the WeddingWin Photo App for your wedding day.
+
+Follow this link to login:
+{link}`,
         }
       });
 
