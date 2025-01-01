@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
@@ -12,7 +12,8 @@ import GetStarted from "./pages/GetStarted";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const AppContent = () => {
+  const navigate = useNavigate();
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
@@ -22,11 +23,13 @@ const App = () => {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error('Error initializing auth:', error);
+          navigate('/auth');
         }
         setIsInitialized(true);
       } catch (error) {
         console.error('Failed to initialize auth:', error);
         setIsInitialized(true);
+        navigate('/auth');
       }
     };
 
@@ -34,16 +37,20 @@ const App = () => {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT') {
-        // Clear any auth-related state or caches if needed
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        // Clear any auth-related state or caches
         queryClient.clear();
+        navigate('/auth');
+      } else if (event === 'SIGNED_IN' && session) {
+        // Handle successful sign in
+        navigate('/');
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   if (!isInitialized) {
     return (
@@ -54,15 +61,21 @@ const App = () => {
   }
 
   return (
+    <Routes>
+      <Route path="/get-started" element={<GetStarted />} />
+      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/shared/:accessCode" element={<SharedGallery />} />
+      <Route path="/" element={<Index />} />
+    </Routes>
+  );
+};
+
+const App = () => {
+  return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/get-started" element={<GetStarted />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/shared/:accessCode" element={<SharedGallery />} />
-            <Route path="/" element={<Index />} />
-          </Routes>
+          <AppContent />
         </BrowserRouter>
         <Toaster />
         <Sonner />
