@@ -22,7 +22,7 @@ const AppContent = () => {
     // Initialize Supabase auth session
     const initializeAuth = async () => {
       try {
-        // If we're on a shared gallery route, don't check auth
+        // If we're on a shared gallery route, skip auth check completely
         if (location.pathname.startsWith('/shared/')) {
           console.log('Shared gallery route detected, skipping auth check');
           setIsInitialized(true);
@@ -59,8 +59,9 @@ const AppContent = () => {
       console.log('Auth state changed:', event, 'New session:', newSession);
       setSession(newSession);
       
-      // Don't redirect if on shared gallery route
+      // Don't handle auth changes if on shared gallery route
       if (location.pathname.startsWith('/shared/')) {
+        console.log('On shared gallery route, ignoring auth change');
         return;
       }
       
@@ -80,6 +81,16 @@ const AppContent = () => {
     };
   }, [navigate, location.pathname]);
 
+  // If on shared gallery route, render immediately without waiting for auth
+  if (location.pathname.startsWith('/shared/')) {
+    return (
+      <Routes>
+        <Route path="/shared/:accessCode" element={<SharedGallery />} />
+      </Routes>
+    );
+  }
+
+  // Show loading spinner while initializing auth (only for non-shared routes)
   if (!isInitialized) {
     return (
       <div className="flex items-center justify-center min-h-screen">
