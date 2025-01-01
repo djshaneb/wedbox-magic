@@ -17,7 +17,6 @@ export const WeddingImageSelector = ({
       <ImageUpload
         imagePreview={selectedImage}
         onImageChange={(file) => {
-          // Create an optimized object URL
           const url = URL.createObjectURL(file);
           onImageSelect(url);
         }}

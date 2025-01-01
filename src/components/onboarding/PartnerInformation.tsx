@@ -23,15 +23,15 @@ export const PartnerInformation = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <h2 className="text-2xl text-center mb-6">My partner is...</h2>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <h2 className="text-2xl text-center text-gray-700 mb-8">My partner is...</h2>
         
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-6 mb-8">
           <Card
-            className={`cursor-pointer transition-all ${
+            className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
               partnerRole === "bride"
-                ? "border-wedding-pink ring-2 ring-wedding-pink"
-                : "hover:border-wedding-pink/50"
+                ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
+                : "hover:border-wedding-pink/50 hover:shadow-md"
             }`}
             onClick={() => setPartnerRole("bride")}
           >
@@ -40,17 +40,17 @@ export const PartnerInformation = ({
                 <img
                   src="/lovable-uploads/b39f9b88-9c30-47ca-9783-bb68659f8de4.png"
                   alt="Bride"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-t-lg"
                 />
               </div>
             </CardContent>
           </Card>
 
           <Card
-            className={`cursor-pointer transition-all ${
+            className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
               partnerRole === "groom"
-                ? "border-wedding-pink ring-2 ring-wedding-pink"
-                : "hover:border-wedding-pink/50"
+                ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
+                : "hover:border-wedding-pink/50 hover:shadow-md"
             }`}
             onClick={() => setPartnerRole("groom")}
           >
@@ -59,7 +59,7 @@ export const PartnerInformation = ({
                 <img
                   src="/lovable-uploads/6b14a633-f382-4acb-8ce5-eb601bdf3075.png"
                   alt="Groom"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-t-lg"
                 />
               </div>
             </CardContent>
@@ -74,7 +74,7 @@ export const PartnerInformation = ({
               <FormControl>
                 <Input
                   placeholder="Your partner's first name"
-                  className="h-14 text-lg"
+                  className="h-12 text-lg"
                   {...field}
                 />
               </FormControl>
@@ -92,7 +92,7 @@ export const PartnerInformation = ({
                 <Input
                   placeholder="Your partner's email"
                   type="email"
-                  className="h-14 text-lg"
+                  className="h-12 text-lg"
                   {...field}
                 />
               </FormControl>
