@@ -13,23 +13,39 @@ const QRScanner = () => {
   const { toast } = useToast();
 
   const startScanning = () => {
-    if (!scannerRef.current) {
-      scannerRef.current = new Html5QrcodeScanner(
-        "qr-reader",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        false
-      );
-
-      scannerRef.current.render(
-        (decodedText) => {
-          handleQRCode(decodedText);
-        },
-        (error) => {
-          console.error("QR Code scanning error:", error);
-        }
-      );
-    }
+    // We'll initialize the scanner when the dialog opens instead
     setIsScanning(true);
+  };
+
+  const initializeScanner = () => {
+    if (!scannerRef.current && isScanning) {
+      // Small delay to ensure DOM element exists
+      setTimeout(() => {
+        try {
+          scannerRef.current = new Html5QrcodeScanner(
+            "qr-reader",
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            false
+          );
+
+          scannerRef.current.render(
+            (decodedText) => {
+              handleQRCode(decodedText);
+            },
+            (error) => {
+              console.error("QR Code scanning error:", error);
+            }
+          );
+        } catch (error) {
+          console.error("Error initializing scanner:", error);
+          toast({
+            title: "Scanner Error",
+            description: "Failed to initialize the QR scanner. Please try again.",
+            variant: "destructive"
+          });
+        }
+      }, 100);
+    }
   };
 
   const handleQRCode = (accessCode: string) => {
@@ -64,6 +80,19 @@ const QRScanner = () => {
     }
     setIsScanning(false);
   };
+
+  // Initialize scanner when dialog content is mounted and scanning is true
+  React.useEffect(() => {
+    if (isScanning) {
+      initializeScanner();
+    }
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear();
+        scannerRef.current = null;
+      }
+    };
+  }, [isScanning]);
 
   return (
     <Dialog onOpenChange={(open) => {
