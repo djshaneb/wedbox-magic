@@ -64,13 +64,8 @@ export const usePartnerAccess = () => {
             wedding_id: session.session.user.id,
             role: 'admin',
             inviter_name: inviterName,
-          },
-          emailContent: `Hi ${partnerName},
-
-${inviterName} would like to give you admin access to the WeddingWin Photo App for your wedding day.
-
-Follow this link to login:
-{link}`
+            partner_name: partnerName
+          }
         }
       });
 
