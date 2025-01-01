@@ -37,7 +37,7 @@ const AppContent = () => {
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+      if (event === 'SIGNED_OUT') {
         // Clear any auth-related state or caches
         queryClient.clear();
         navigate('/auth');
