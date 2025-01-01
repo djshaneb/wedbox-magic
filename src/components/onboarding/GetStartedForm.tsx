@@ -19,6 +19,7 @@ export const GetStartedForm = () => {
   const [firstName, setFirstName] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [hasEditedNames, setHasEditedNames] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { handleSubmit: handleFormSubmit } = useGetStartedSubmit();
@@ -44,7 +45,7 @@ export const GetStartedForm = () => {
       setStep(4);
     } else {
       await handleFormSubmit({
-        firstName: `${firstName} & ${form.getValues().partnerName}`,
+        firstName: hasEditedNames ? firstName : `${firstName} & ${form.getValues().partnerName}`,
         partnerName: form.getValues().partnerName,
         date,
         selectedImage,
@@ -79,7 +80,10 @@ export const GetStartedForm = () => {
           selectedImage={selectedImage}
           date={date}
           setRole={setRole}
-          setFirstName={setFirstName}
+          setFirstName={(name) => {
+            setFirstName(name);
+            if (step === 4) setHasEditedNames(true);
+          }}
           setSelectedImage={setSelectedImage}
           setDate={setDate}
         />
