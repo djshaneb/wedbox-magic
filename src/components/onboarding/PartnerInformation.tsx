@@ -1,68 +1,80 @@
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { UseFormReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
   partnerName: z.string().min(1, "Partner's name is required"),
 });
 
 interface PartnerInformationProps {
-  form: UseFormReturn<z.infer<typeof formSchema>>;
+  form: ReturnType<typeof useForm<z.infer<typeof formSchema>>>;
+  partnerRole: "bride" | "groom" | null;
+  onPartnerRoleChange: (role: "bride" | "groom" | null) => void;
   onSubmit: () => void;
 }
 
 export const PartnerInformation = ({
   form,
+  partnerRole,
+  onPartnerRoleChange,
   onSubmit,
 }: PartnerInformationProps) => {
-  const [partnerRole, setPartnerRole] = useState<"bride" | "groom" | null>(null);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-8 flex-1 flex flex-col">
         <h2 className="text-xl md:text-2xl text-center text-gray-700 mb-4 md:mb-8">My partner is...</h2>
         
-        <div className="grid grid-cols-2 gap-3 md:gap-6 flex-1">
-          <Card
-            className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
-              partnerRole === "bride"
-                ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
-                : "hover:border-wedding-pink/50 hover:shadow-md"
-            }`}
-            onClick={() => setPartnerRole("bride")}
-          >
-            <CardContent className="p-0">
-              <div className="w-full aspect-square">
-                <img
-                  src="/lovable-uploads/b39f9b88-9c30-47ca-9783-bb68659f8de4.png"
-                  alt="Bride"
-                  className="w-full h-full object-cover rounded-t-lg"
-                />
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 gap-3 md:gap-6 justify-center">
+          <div className="w-full max-w-[160px]">
+            <Card
+              className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
+                partnerRole === "bride"
+                  ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
+                  : "hover:border-wedding-pink/50 hover:shadow-md"
+              }`}
+              onClick={() => onPartnerRoleChange("bride")}
+            >
+              <CardContent className="p-0">
+                <div className="aspect-square">
+                  <img
+                    src="/lovable-uploads/b4b88587-9692-4902-af6d-899e3699d26a.png"
+                    alt="Bride"
+                    className="w-full h-full object-cover rounded-t-lg"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card
-            className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
-              partnerRole === "groom"
-                ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
-                : "hover:border-wedding-pink/50 hover:shadow-md"
-            }`}
-            onClick={() => setPartnerRole("groom")}
-          >
-            <CardContent className="p-0">
-              <div className="w-full aspect-square">
-                <img
-                  src="/lovable-uploads/6b14a633-f382-4acb-8ce5-eb601bdf3075.png"
-                  alt="Groom"
-                  className="w-full h-full object-cover rounded-t-lg"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="w-full max-w-[160px]">
+            <Card
+              className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
+                partnerRole === "groom"
+                  ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
+                  : "hover:border-wedding-pink/50 hover:shadow-md"
+              }`}
+              onClick={() => onPartnerRoleChange("groom")}
+            >
+              <CardContent className="p-0">
+                <div className="aspect-square">
+                  <img
+                    src="/lovable-uploads/da2d8b46-2e02-4f6b-a9d7-f7bf866e5243.png"
+                    alt="Groom"
+                    className="w-full h-full object-cover rounded-t-lg"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <FormField

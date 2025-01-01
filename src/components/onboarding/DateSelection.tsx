@@ -16,6 +16,11 @@ interface DateSelectionProps {
 export const DateSelection = ({ date, onDateChange }: DateSelectionProps) => {
   return (
     <div className="flex flex-col items-center space-y-4 md:space-y-10 flex-1">
+      <div className="text-center space-y-2">
+        <h2 className="text-xl md:text-2xl text-gray-700">When's the big day?</h2>
+        <p className="text-sm text-muted-foreground">Select your wedding date</p>
+      </div>
+
       <div className="relative">
         <CalendarIcon className="w-24 h-24 md:w-32 md:h-32 text-wedding-pink mb-4 md:mb-6" />
       </div>
@@ -27,7 +32,7 @@ export const DateSelection = ({ date, onDateChange }: DateSelectionProps) => {
             className="w-[280px] justify-start text-left font-normal border-2 h-12 md:h-14 text-lg hover:border-wedding-pink/50"
           >
             <CalendarIcon className="mr-3 h-5 w-5 text-wedding-pink" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
+            {date ? format(date, "PPP") : <span>Pick your wedding date</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">

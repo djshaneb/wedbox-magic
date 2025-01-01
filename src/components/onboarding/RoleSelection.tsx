@@ -30,44 +30,48 @@ export const RoleSelection = ({
 
       <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
         <Label className="text-lg text-gray-700">I am the...</Label>
-        <div className="grid grid-cols-2 gap-3 md:gap-6 flex-1">
-          <Card
-            className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
-              role === "bride"
-                ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
-                : "hover:border-wedding-pink/50 hover:shadow-md"
-            }`}
-            onClick={() => onRoleChange("bride")}
-          >
-            <CardContent className="p-0">
-              <div className="w-full aspect-square">
-                <img
-                  src="/lovable-uploads/b4b88587-9692-4902-af6d-899e3699d26a.png"
-                  alt="Bride"
-                  className="w-full h-full object-cover rounded-t-lg"
-                />
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 gap-3 md:gap-6 justify-center">
+          <div className="w-full max-w-[160px]">
+            <Card
+              className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
+                role === "bride"
+                  ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
+                  : "hover:border-wedding-pink/50 hover:shadow-md"
+              }`}
+              onClick={() => onRoleChange("bride")}
+            >
+              <CardContent className="p-0">
+                <div className="aspect-square">
+                  <img
+                    src="/lovable-uploads/b4b88587-9692-4902-af6d-899e3699d26a.png"
+                    alt="Bride"
+                    className="w-full h-full object-cover rounded-t-lg"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card
-            className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
-              role === "groom"
-                ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
-                : "hover:border-wedding-pink/50 hover:shadow-md"
-            }`}
-            onClick={() => onRoleChange("groom")}
-          >
-            <CardContent className="p-0">
-              <div className="w-full aspect-square">
-                <img
-                  src="/lovable-uploads/da2d8b46-2e02-4f6b-a9d7-f7bf866e5243.png"
-                  alt="Groom"
-                  className="w-full h-full object-cover rounded-t-lg"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <div className="w-full max-w-[160px]">
+            <Card
+              className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
+                role === "groom"
+                  ? "border-wedding-pink ring-2 ring-wedding-pink shadow-lg"
+                  : "hover:border-wedding-pink/50 hover:shadow-md"
+              }`}
+              onClick={() => onRoleChange("groom")}
+            >
+              <CardContent className="p-0">
+                <div className="aspect-square">
+                  <img
+                    src="/lovable-uploads/da2d8b46-2e02-4f6b-a9d7-f7bf866e5243.png"
+                    alt="Groom"
+                    className="w-full h-full object-cover rounded-t-lg"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
