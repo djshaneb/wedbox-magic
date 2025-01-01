@@ -1,5 +1,5 @@
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
-import { Camera, LogOut, ArrowRight, Menu, Plus, Upload, Image } from "lucide-react";
+import { Camera, LogOut, ArrowRight, Menu, Plus, Upload, Image, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -31,6 +31,10 @@ const Index = () => {
     navigate("/auth");
   };
 
+  const navigateToWeddingSummary = () => {
+    navigate("/get-started?step=4&hideBack=true");
+  };
+
   const MobileMenu = () => (
     <Sheet>
       <SheetTrigger asChild>
@@ -53,6 +57,15 @@ const Index = () => {
           >
             <ArrowRight className="mr-2 h-4 w-4" />
             Get Started
+          </Button>
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={navigateToWeddingSummary}
+            className="justify-start"
+          >
+            <Settings className="mr-2 h-4 w-4" />
+            Wedding Summary
           </Button>
           <Button
             variant="ghost"
@@ -146,6 +159,15 @@ const Index = () => {
                   >
                     Get Started
                     <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="default"
+                    onClick={navigateToWeddingSummary}
+                    className="text-wedding-pink hover:text-wedding-pink/80"
+                  >
+                    Wedding Summary
+                    <Settings className="ml-2 h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
