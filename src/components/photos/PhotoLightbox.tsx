@@ -2,21 +2,10 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import { Photo } from "@/hooks/use-photos";
 import { CloseButton } from "./lightbox/CloseButton";
-import { LikeButton } from "./lightbox/LikeButton";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
 import { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
+import { DeletePhotoDialog } from "./lightbox/DeletePhotoDialog";
+import { LightboxFooter } from "./lightbox/LightboxFooter";
 
 interface PhotoLightboxProps {
   isOpen: boolean;
@@ -77,46 +66,22 @@ export const PhotoLightbox = ({
               />
             </div>
           ),
-          slideFooter: () => !isSharedView && (
-            <>
-              {onDelete && (
-                <div className="absolute bottom-4 left-4">
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => setShowDeleteDialog(true)}
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </Button>
-                </div>
-              )}
-              <div className="absolute bottom-4 right-4">
-                <LikeButton 
-                  photo={photos[currentIndex]}
-                  onLikeUpdate={onLikeUpdate}
-                />
-              </div>
-            </>
+          slideFooter: () => (
+            <LightboxFooter
+              isSharedView={isSharedView}
+              onDelete={onDelete ? () => setShowDeleteDialog(true) : undefined}
+              currentPhoto={photos[currentIndex]}
+              onLikeUpdate={onLikeUpdate}
+            />
           )
         }}
       />
 
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the photo from your gallery.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeletePhotoDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirmDelete={handleDelete}
+      />
     </div>
   );
 };
