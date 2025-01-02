@@ -3,9 +3,10 @@ import { CreateAlbumDialog } from "./CreateAlbumDialog";
 import { AddPhotosToAlbumDialog } from "./AddPhotosToAlbumDialog";
 import { ViewAlbumDialog } from "./ViewAlbumDialog";
 import { Card } from "@/components/ui/card";
-import { Folder, Image as ImageIcon } from "lucide-react";
+import { Folder } from "lucide-react";
 import { useQueries } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 const fetchAlbumThumbnails = async (albumId: string) => {
   const { data: photoAlbums, error: photoAlbumsError } = await supabase
@@ -39,6 +40,7 @@ const fetchAlbumThumbnails = async (albumId: string) => {
 
 export const AlbumList = () => {
   const { albums } = useAlbums();
+  const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   
   const albumQueries = useQueries({
     queries: albums.map(album => ({
@@ -69,37 +71,47 @@ export const AlbumList = () => {
                 <p className="text-xs text-gray-600 line-clamp-2">{album.description}</p>
               )}
 
-              {thumbnails.length > 0 ? (
-                <div className="grid grid-cols-2 gap-1 aspect-square">
-                  {thumbnails.map((url, index) => (
-                    <div 
-                      key={index}
-                      className={`relative bg-gray-100 rounded overflow-hidden ${
-                        index === 3 && thumbnails.length > 4 ? 'relative' : ''
-                      }`}
-                    >
-                      <img
-                        src={url}
-                        alt={`Album thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                      {index === 3 && thumbnails.length > 4 && (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <span className="text-white text-xs font-medium">+{thumbnails.length - 4}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="aspect-square rounded bg-gray-100 flex items-center justify-center">
-                  <ImageIcon className="h-8 w-8 text-gray-400" />
-                </div>
+              {thumbnails.length > 0 && (
+                <>
+                  <div 
+                    className="grid grid-cols-2 gap-1 aspect-square cursor-pointer"
+                    onClick={() => setSelectedAlbumId(album.id)}
+                  >
+                    {thumbnails.map((url, index) => (
+                      <div 
+                        key={index}
+                        className={`relative bg-gray-100 rounded overflow-hidden ${
+                          index === 3 && thumbnails.length > 4 ? 'relative' : ''
+                        }`}
+                      >
+                        <img
+                          src={url}
+                          alt={`Album thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        {index === 3 && thumbnails.length > 4 && (
+                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                            <span className="text-white text-xs font-medium">+{thumbnails.length - 4}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {selectedAlbumId === album.id && (
+                    <ViewAlbumDialog 
+                      albumId={album.id} 
+                      albumName={album.name}
+                      open={true}
+                      onOpenChange={(open) => {
+                        if (!open) setSelectedAlbumId(null);
+                      }}
+                    />
+                  )}
+                </>
               )}
 
-              <div className="space-y-1 pt-1">
+              <div className="pt-1">
                 <AddPhotosToAlbumDialog albumId={album.id} />
-                <ViewAlbumDialog albumId={album.id} albumName={album.name} />
               </div>
             </Card>
           );
