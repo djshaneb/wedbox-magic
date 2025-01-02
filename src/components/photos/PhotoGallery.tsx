@@ -25,7 +25,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const isMobile = useIsMobile();
-  const { photos, isLoading, uploadMutation, deleteMutation } = usePhotos(sharedGalleryOwnerId);
+  const { 
+    photos, 
+    isLoading, 
+    uploadMutation, 
+    deleteMutation,
+    likeMutation,
+    unlikeMutation
+  } = usePhotos(sharedGalleryOwnerId);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -57,6 +64,14 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       storage_path: photo.storage_path 
     });
     setLightboxOpen(false);
+  };
+
+  const handleLike = async (photoId: string) => {
+    await likeMutation.mutateAsync({ photoId });
+  };
+
+  const handleUnlike = async (photoId: string) => {
+    await unlikeMutation.mutateAsync({ photoId });
   };
 
   if (isLoading) {
@@ -98,6 +113,8 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
             setCurrentPhotoIndex(index);
             setLightboxOpen(true);
           }}
+          onLike={handleLike}
+          onUnlike={handleUnlike}
           isMobile={isMobile}
           isSharedView={isSharedView}
         />
