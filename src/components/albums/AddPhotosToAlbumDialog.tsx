@@ -7,13 +7,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { useAlbums } from "@/hooks/use-albums";
 import { usePhotos } from "@/hooks/use-photos";
-import { Check, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { PhotoSelectionGrid } from "./PhotoSelectionGrid";
+import { checkExistingAlbumEntry, addPhotoLike } from "@/utils/albumOperations";
 
 interface AddPhotosToAlbumDialogProps {
   albumId: string;
@@ -38,7 +39,6 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
 
   const handleAddPhotos = async () => {
     try {
-      // Get the current album to check if it's the Favorites album
       const { data: currentAlbum, error: albumError } = await supabase
         .from('albums')
         .select('name')
@@ -52,7 +52,6 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
 
       const isFavoritesAlbum = currentAlbum?.name === 'Favourites';
       
-      // Get current user session
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) {
         console.error('Error getting user:', userError);
@@ -68,43 +67,15 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
 
       for (const photoId of selectedPhotos) {
         try {
-          // Check if photo already exists in album
-          const { data: existingEntry, error: existingEntryError } = await supabase
-            .from('photo_albums')
-            .select()
-            .eq('photo_id', photoId)
-            .eq('album_id', albumId)
-            .maybeSingle();
-
-          if (existingEntryError) {
-            console.error('Error checking existing entry:', existingEntryError);
-            continue;
-          }
+          const { data: existingEntry, error } = await checkExistingAlbumEntry(photoId, albumId);
+          
+          if (error) continue;
 
           if (!existingEntry) {
             await addPhotoToAlbum.mutateAsync({ photoId, albumId });
 
-            // If this is the Favorites album, automatically add a like
             if (isFavoritesAlbum) {
-              // Check if like already exists
-              const { data: existingLike, error: likeError } = await supabase
-                .from('photo_likes')
-                .select()
-                .eq('photo_id', photoId)
-                .eq('user_id', user.id)
-                .maybeSingle();
-
-              if (likeError) {
-                console.error('Error checking existing like:', likeError);
-              } else if (!existingLike) {
-                const { error: insertLikeError } = await supabase
-                  .from('photo_likes')
-                  .insert([{ photo_id: photoId, user_id: user.id }]);
-
-                if (insertLikeError) {
-                  console.error('Error inserting like:', insertLikeError);
-                }
-              }
+              await addPhotoLike(photoId, user.id);
             }
             successCount++;
           } else {
@@ -160,30 +131,11 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
             Select photos to add to this album
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="h-[500px]">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4">
-            {photos.map((photo) => (
-              <div
-                key={photo.id}
-                className="relative cursor-pointer group"
-                onClick={() => handleTogglePhoto(photo.id)}
-              >
-                <img
-                  src={photo.thumbnail_url || photo.url}
-                  alt="Gallery photo"
-                  className={`w-full aspect-square object-cover rounded-lg transition-all duration-200 ${
-                    selectedPhotos.has(photo.id) ? 'brightness-75' : 'group-hover:brightness-90'
-                  }`}
-                />
-                {selectedPhotos.has(photo.id) && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Check className="h-8 w-8 text-white" />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+        <PhotoSelectionGrid
+          photos={photos}
+          selectedPhotos={selectedPhotos}
+          onTogglePhoto={handleTogglePhoto}
+        />
         <div className="flex justify-end mt-4 gap-2">
           <Button
             variant="ghost"
