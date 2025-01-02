@@ -54,27 +54,27 @@ export const AlbumList = () => {
         <CreateAlbumDialog />
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {albums.map((album, index) => {
           const { data: thumbnails = [] } = albumQueries[index];
           
           return (
-            <Card key={album.id} className="p-4 space-y-4 hover:shadow-lg transition-shadow duration-200">
+            <Card key={album.id} className="p-3 space-y-3 hover:shadow-lg transition-shadow duration-200">
               <div className="flex items-center gap-2">
-                <Folder className="h-5 w-5 text-blue-500" />
-                <h3 className="font-medium truncate">{album.name}</h3>
+                <Folder className="h-4 w-4 text-blue-500" />
+                <h3 className="font-medium truncate text-sm">{album.name}</h3>
               </div>
               
               {album.description && (
-                <p className="text-sm text-gray-600 line-clamp-2">{album.description}</p>
+                <p className="text-xs text-gray-600 line-clamp-2">{album.description}</p>
               )}
 
               {thumbnails.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2 aspect-square">
+                <div className="grid grid-cols-2 gap-1 aspect-square">
                   {thumbnails.map((url, index) => (
                     <div 
                       key={index}
-                      className={`relative bg-gray-100 rounded-lg overflow-hidden ${
+                      className={`relative bg-gray-100 rounded overflow-hidden ${
                         index === 3 && thumbnails.length > 4 ? 'relative' : ''
                       }`}
                     >
@@ -85,19 +85,19 @@ export const AlbumList = () => {
                       />
                       {index === 3 && thumbnails.length > 4 && (
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <span className="text-white font-medium">+{thumbnails.length - 4}</span>
+                          <span className="text-white text-xs font-medium">+{thumbnails.length - 4}</span>
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="aspect-square rounded-lg bg-gray-100 flex items-center justify-center">
-                  <ImageIcon className="h-12 w-12 text-gray-400" />
+                <div className="aspect-square rounded bg-gray-100 flex items-center justify-center">
+                  <ImageIcon className="h-8 w-8 text-gray-400" />
                 </div>
               )}
 
-              <div className="space-y-2 pt-2">
+              <div className="space-y-1 pt-1">
                 <AddPhotosToAlbumDialog albumId={album.id} />
                 <ViewAlbumDialog albumId={album.id} albumName={album.name} />
               </div>
