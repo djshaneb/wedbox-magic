@@ -44,7 +44,7 @@ export const LikeButton = ({ photo, onLikeUpdate }: LikeButtonProps) => {
         .select('*')
         .eq('user_id', user.id)
         .eq('name', 'Favourites')
-        .single();
+        .maybeSingle();
 
       if (!favouritesAlbum) {
         console.error('Favourites album not found');
@@ -58,7 +58,7 @@ export const LikeButton = ({ photo, onLikeUpdate }: LikeButtonProps) => {
           .select('*')
           .eq('photo_id', photo.id)
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (!existingLike) {
           // Add like if it doesn't exist
@@ -72,7 +72,7 @@ export const LikeButton = ({ photo, onLikeUpdate }: LikeButtonProps) => {
             .select('*')
             .eq('photo_id', photo.id)
             .eq('album_id', favouritesAlbum.id)
-            .single();
+            .maybeSingle();
 
           if (!existingAlbumPhoto) {
             // Add photo to Favourites album if it's not already there
