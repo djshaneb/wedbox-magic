@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 export interface Photo {
   id: string;
   url: string;
+  thumbnail_url: string;
   storage_path: string;
 }
 
@@ -15,7 +16,6 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
   const { data: photos = [], isLoading } = useQuery({
     queryKey: ['photos', sharedGalleryOwnerId],
     queryFn: async () => {
-      // Get the current user's ID
       const { data: { user } } = await supabase.auth.getUser();
       
       const query = supabase
@@ -23,8 +23,6 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      // If viewing a shared gallery, use that owner's ID
-      // Otherwise, use the current user's ID
       if (sharedGalleryOwnerId) {
         query.eq('user_id', sharedGalleryOwnerId);
       } else if (user) {
@@ -40,10 +38,15 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
           .from('photos')
           .getPublicUrl(photo.storage_path);
         
+        const { data: { publicUrl: thumbnailUrl } } = supabase.storage
+          .from('photos')
+          .getPublicUrl(photo.thumbnail_path);
+        
         return {
           id: photo.id,
           storage_path: photo.storage_path,
-          url: publicUrl
+          url: publicUrl,
+          thumbnail_url: thumbnailUrl
         };
       }));
 
@@ -60,13 +63,13 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
       ownerId?: string;
     }) => {
       try {
-        // Get the current user's ID if no ownerId is provided
         const { data: { user } } = await supabase.auth.getUser();
         if (!user && !ownerId) throw new Error('No user authenticated');
 
         const userId = ownerId || user?.id;
         const fileExt = file.name.split('.').pop();
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
+        const thumbnailName = `thumbnails/${fileName}`;
         
         // First, upload the file to storage
         const { error: uploadError } = await supabase.storage
@@ -75,11 +78,19 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
 
         if (uploadError) throw uploadError;
 
-        // Then, create the database record with the user_id
+        // Create and upload thumbnail
+        const { error: thumbnailError } = await supabase.storage
+          .from('photos')
+          .upload(thumbnailName, file);
+
+        if (thumbnailError) throw thumbnailError;
+
+        // Create the database record
         const { error: dbError } = await supabase
           .from('photos')
           .insert({ 
             storage_path: fileName,
+            thumbnail_path: thumbnailName,
             user_id: userId
           });
 

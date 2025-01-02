@@ -22,9 +22,10 @@ export const PhotoCard = ({
     >
       <div className="relative">
         <img
-          src={photo.url}
+          src={photo.thumbnail_url || photo.url}
           alt="Gallery photo"
           className="w-full h-full object-cover aspect-square md:aspect-auto group-hover:brightness-105 transition-all duration-300"
+          loading="lazy"
         />
       </div>
     </Card>
