@@ -6,8 +6,6 @@ import { usePhotos } from "@/hooks/use-photos";
 import { useToast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PhotoLightbox } from "@/components/photos/PhotoLightbox";
-import { useState } from "react";
 
 interface ViewAlbumDialogProps {
   albumId: string;
@@ -25,8 +23,6 @@ export const ViewAlbumDialog = ({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isFavoritesAlbum = albumName === 'Favourites';
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   const { data: albumPhotos = [], isLoading } = useQuery({
     queryKey: ['album-photos', albumId],
@@ -90,7 +86,6 @@ export const ViewAlbumDialog = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['album-photos', albumId] });
-      setLightboxOpen(false);
       toast({
         title: "Photo removed",
         description: `Photo has been removed from ${albumName}`,
@@ -137,26 +132,13 @@ export const ViewAlbumDialog = ({
           ) : albumPhotos.length === 0 ? (
             <p className="text-center text-gray-500 py-8">No photos in this album yet.</p>
           ) : (
-            <>
-              <PhotoGrid
-                photos={albumPhotos}
-                onPhotoClick={(index) => {
-                  setCurrentPhotoIndex(index);
-                  setLightboxOpen(true);
-                }}
-                isMobile={false}
-              />
-              {lightboxOpen && (
-                <PhotoLightbox
-                  isOpen={lightboxOpen}
-                  onClose={() => setLightboxOpen(false)}
-                  currentIndex={currentPhotoIndex}
-                  photos={albumPhotos}
-                  showRemoveButton={!isFavoritesAlbum}
-                  onRemovePhoto={handleRemovePhoto}
-                />
-              )}
-            </>
+            <PhotoGrid
+              photos={albumPhotos}
+              onPhotoClick={() => {}}
+              isMobile={false}
+              showRemoveButton={!isFavoritesAlbum}
+              onRemovePhoto={handleRemovePhoto}
+            />
           )}
         </div>
       </DialogContent>
