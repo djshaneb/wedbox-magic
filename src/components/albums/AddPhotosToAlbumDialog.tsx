@@ -51,69 +51,95 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
       }
 
       const isFavoritesAlbum = currentAlbum?.name === 'Favourites';
-      const { data: { user } } = await supabase.auth.getUser();
-
+      
+      // Get current user session
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        console.error('Error getting user:', userError);
+        throw userError;
+      }
+      
       if (!user) {
         throw new Error('User not authenticated');
       }
 
+      let successCount = 0;
+      const totalPhotos = selectedPhotos.size;
+
       for (const photoId of selectedPhotos) {
-        // Check if photo already exists in album
-        const { data: existingEntry, error: existingEntryError } = await supabase
-          .from('photo_albums')
-          .select()
-          .eq('photo_id', photoId)
-          .eq('album_id', albumId)
-          .maybeSingle();
+        try {
+          // Check if photo already exists in album
+          const { data: existingEntry, error: existingEntryError } = await supabase
+            .from('photo_albums')
+            .select()
+            .eq('photo_id', photoId)
+            .eq('album_id', albumId)
+            .maybeSingle();
 
-        if (existingEntryError) {
-          console.error('Error checking existing entry:', existingEntryError);
-          continue;
-        }
+          if (existingEntryError) {
+            console.error('Error checking existing entry:', existingEntryError);
+            continue;
+          }
 
-        if (!existingEntry) {
-          await addPhotoToAlbum.mutateAsync({ photoId, albumId });
+          if (!existingEntry) {
+            await addPhotoToAlbum.mutateAsync({ photoId, albumId });
 
-          // If this is the Favorites album, automatically add a like
-          if (isFavoritesAlbum) {
-            // Check if like already exists
-            const { data: existingLike, error: likeError } = await supabase
-              .from('photo_likes')
-              .select()
-              .eq('photo_id', photoId)
-              .eq('user_id', user.id)
-              .maybeSingle();
-
-            if (likeError) {
-              console.error('Error checking existing like:', likeError);
-              continue;
-            }
-
-            if (!existingLike) {
-              const { error: insertLikeError } = await supabase
+            // If this is the Favorites album, automatically add a like
+            if (isFavoritesAlbum) {
+              // Check if like already exists
+              const { data: existingLike, error: likeError } = await supabase
                 .from('photo_likes')
-                .insert([{ photo_id: photoId, user_id: user.id }]);
+                .select()
+                .eq('photo_id', photoId)
+                .eq('user_id', user.id)
+                .maybeSingle();
 
-              if (insertLikeError) {
-                console.error('Error inserting like:', insertLikeError);
-                continue;
+              if (likeError) {
+                console.error('Error checking existing like:', likeError);
+              } else if (!existingLike) {
+                const { error: insertLikeError } = await supabase
+                  .from('photo_likes')
+                  .insert([{ photo_id: photoId, user_id: user.id }]);
+
+                if (insertLikeError) {
+                  console.error('Error inserting like:', insertLikeError);
+                }
               }
             }
+            successCount++;
+          } else {
+            console.log('Photo already exists in album:', photoId);
           }
+        } catch (error) {
+          console.error('Error processing photo:', photoId, error);
         }
       }
 
       setOpen(false);
       setSelectedPhotos(new Set());
-      toast({
-        title: "Success",
-        description: "Photos have been added to the album",
-      });
+      
+      if (successCount === totalPhotos) {
+        toast({
+          title: "Success",
+          description: "All photos have been added to the album",
+        });
+      } else if (successCount > 0) {
+        toast({
+          title: "Partial Success",
+          description: `Added ${successCount} out of ${totalPhotos} photos to the album`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to add photos to the album",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error adding photos to album:', error);
       toast({
         title: "Error",
-        description: "Failed to add some photos to the album",
+        description: "Failed to add photos to the album",
         variant: "destructive",
       });
     }
