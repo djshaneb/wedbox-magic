@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      albums: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       partner_access: {
         Row: {
           created_at: string
@@ -32,6 +56,42 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      photo_albums: {
+        Row: {
+          album_id: string
+          created_at: string
+          id: string
+          photo_id: string
+        }
+        Insert: {
+          album_id: string
+          created_at?: string
+          id?: string
+          photo_id: string
+        }
+        Update: {
+          album_id?: string
+          created_at?: string
+          id?: string
+          photo_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_albums_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_albums_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "photos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       photo_likes: {
         Row: {

@@ -21,6 +21,7 @@ const Index = () => {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
+  const [activeTab, setActiveTab] = useState<"photos" | "albums">("photos");
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -160,10 +161,30 @@ const Index = () => {
               )}
             </div>
           </div>
+          <div className="flex space-x-4 mt-4">
+            <Button
+              variant={activeTab === "photos" ? "default" : "ghost"}
+              onClick={() => setActiveTab("photos")}
+              className="text-sm"
+            >
+              Photos
+            </Button>
+            <Button
+              variant={activeTab === "albums" ? "default" : "ghost"}
+              onClick={() => setActiveTab("albums")}
+              className="text-sm"
+            >
+              Albums
+            </Button>
+          </div>
         </div>
       </div>
-      <main className={`container mx-auto ${isMobile ? 'px-2' : 'p-6'}`}>
-        <PhotoGallery isPhotoBooth={isPhotoBooth} setIsPhotoBooth={setIsPhotoBooth} />
+      <main className={`container mx-auto ${isMobile ? 'px-2' : 'p-6'} mt-32`}>
+        {activeTab === "photos" ? (
+          <PhotoGallery isPhotoBooth={isPhotoBooth} setIsPhotoBooth={setIsPhotoBooth} />
+        ) : (
+          <AlbumList />
+        )}
       </main>
     </div>
   );
