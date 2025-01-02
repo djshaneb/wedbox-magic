@@ -76,7 +76,7 @@ export const ViewAlbumDialog = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl z-40">
           <h2 className="text-2xl font-semibold mb-4">{albumName}</h2>
           {isLoading ? (
             <div>Loading...</div>
@@ -91,15 +91,17 @@ export const ViewAlbumDialog = ({
           )}
         </DialogContent>
       </Dialog>
-      {/* Render PhotoLightbox outside of Dialog to avoid z-index issues */}
+
       {photos && (
-        <PhotoLightbox
-          isOpen={lightboxOpen}
-          onClose={() => setLightboxOpen(false)}
-          currentIndex={selectedPhotoIndex}
-          photos={photos}
-          isSharedView={true} // This will disable likes functionality
-        />
+        <div className="relative z-50">
+          <PhotoLightbox
+            isOpen={lightboxOpen}
+            onClose={() => setLightboxOpen(false)}
+            currentIndex={selectedPhotoIndex}
+            photos={photos}
+            isSharedView={true}
+          />
+        </div>
       )}
     </>
   );
