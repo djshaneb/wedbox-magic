@@ -12,6 +12,8 @@ import { useState } from "react";
 import { useAlbums } from "@/hooks/use-albums";
 import { usePhotos } from "@/hooks/use-photos";
 import { Check, Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface AddPhotosToAlbumDialogProps {
   albumId: string;
@@ -22,6 +24,7 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
   const { photos } = usePhotos();
   const { addPhotoToAlbum } = useAlbums();
   const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  const { toast } = useToast();
 
   const handleTogglePhoto = (photoId: string) => {
     const newSelected = new Set(selectedPhotos);
@@ -34,11 +37,34 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
   };
 
   const handleAddPhotos = async () => {
-    for (const photoId of selectedPhotos) {
-      await addPhotoToAlbum.mutateAsync({ photoId, albumId });
+    try {
+      for (const photoId of selectedPhotos) {
+        // Check if photo already exists in album
+        const { data: existingEntry } = await supabase
+          .from('photo_albums')
+          .select('*')
+          .eq('photo_id', photoId)
+          .eq('album_id', albumId)
+          .single();
+
+        if (!existingEntry) {
+          await addPhotoToAlbum.mutateAsync({ photoId, albumId });
+        }
+      }
+      setOpen(false);
+      setSelectedPhotos(new Set());
+      toast({
+        title: "Success",
+        description: "Photos have been added to the album",
+      });
+    } catch (error) {
+      console.error('Error adding photos to album:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add some photos to the album",
+        variant: "destructive",
+      });
     }
-    setOpen(false);
-    setSelectedPhotos(new Set());
   };
 
   return (
