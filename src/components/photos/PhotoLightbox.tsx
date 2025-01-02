@@ -102,15 +102,6 @@ export const PhotoLightbox = ({
                   <Trash2 className="h-5 w-5" />
                 </Button>
               )}
-              {onDelete && (
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => setShowDeleteDialog(true)}
-                >
-                  <Trash2 className="h-5 w-5" />
-                </Button>
-              )}
             </div>
           )
         }}
