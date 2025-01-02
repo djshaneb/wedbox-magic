@@ -38,6 +38,20 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
 
   const handleAddPhotos = async () => {
     try {
+      // Get the current album to check if it's the Favorites album
+      const { data: currentAlbum } = await supabase
+        .from('albums')
+        .select('name')
+        .eq('id', albumId)
+        .single();
+
+      const isFavoritesAlbum = currentAlbum?.name === 'Favourites';
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
       for (const photoId of selectedPhotos) {
         // Check if photo already exists in album using maybeSingle() instead of single()
         const { data: existingEntry } = await supabase
@@ -49,6 +63,23 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
 
         if (!existingEntry) {
           await addPhotoToAlbum.mutateAsync({ photoId, albumId });
+
+          // If this is the Favorites album, automatically add a like
+          if (isFavoritesAlbum) {
+            // Check if like already exists
+            const { data: existingLike } = await supabase
+              .from('photo_likes')
+              .select('*')
+              .eq('photo_id', photoId)
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+            if (!existingLike) {
+              await supabase
+                .from('photo_likes')
+                .upsert([{ photo_id: photoId, user_id: user.id }]);
+            }
+          }
         }
       }
       setOpen(false);
