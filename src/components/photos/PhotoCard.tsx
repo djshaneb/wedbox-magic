@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Photo } from "@/hooks/use-photos";
-import { Heart } from "lucide-react";
+import { Heart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,8 @@ interface PhotoCardProps {
   hideDelete?: boolean;
   isSharedView?: boolean;
   onLikeUpdate?: (photoId: string, isLiked: boolean, likeCount: number) => void;
+  showRemoveButton?: boolean;
+  onRemovePhoto?: (photoId: string) => void;
 }
 
 export const PhotoCard = ({ 
@@ -20,7 +22,9 @@ export const PhotoCard = ({
   onClick, 
   isMobile,
   isSharedView = false,
-  onLikeUpdate
+  onLikeUpdate,
+  showRemoveButton = false,
+  onRemovePhoto
 }: PhotoCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -138,6 +142,13 @@ export const PhotoCard = ({
     }
   };
 
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onRemovePhoto) {
+      onRemovePhoto(photo.id);
+    }
+  };
+
   return (
     <Card 
       className={`mb-2 overflow-hidden ${
@@ -152,23 +163,35 @@ export const PhotoCard = ({
           className="w-full h-full object-cover aspect-square md:aspect-auto group-hover:brightness-105 transition-all duration-300"
           loading="lazy"
         />
-        {!isSharedView && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute bottom-2 right-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
-            onClick={handleLike}
-          >
-            <Heart 
-              className={`h-5 w-5 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
-            />
-            {likeCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {likeCount}
-              </span>
-            )}
-          </Button>
-        )}
+        <div className="absolute bottom-2 right-2 flex gap-2">
+          {showRemoveButton && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
+              onClick={handleRemove}
+            >
+              <X className="h-5 w-5 text-gray-600" />
+            </Button>
+          )}
+          {!isSharedView && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
+              onClick={handleLike}
+            >
+              <Heart 
+                className={`h-5 w-5 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
+              />
+              {likeCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {likeCount}
+                </span>
+              )}
+            </Button>
+          )}
+        </div>
       </div>
     </Card>
   );
