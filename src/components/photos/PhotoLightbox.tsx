@@ -26,6 +26,8 @@ interface PhotoLightboxProps {
   onDelete?: (photo: Photo) => void;
   isSharedView?: boolean;
   onLikeUpdate?: (photoId: string, isLiked: boolean, likeCount: number) => void;
+  showRemoveButton?: boolean;
+  onRemovePhoto?: (photoId: string) => void;
 }
 
 export const PhotoLightbox = ({
@@ -35,7 +37,9 @@ export const PhotoLightbox = ({
   photos,
   onDelete,
   isSharedView = false,
-  onLikeUpdate
+  onLikeUpdate,
+  showRemoveButton = false,
+  onRemovePhoto
 }: PhotoLightboxProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   useSwipeGesture(onClose);
@@ -45,6 +49,12 @@ export const PhotoLightbox = ({
       onDelete(photos[currentIndex]);
     }
     setShowDeleteDialog(false);
+  };
+
+  const handleRemove = () => {
+    if (onRemovePhoto) {
+      onRemovePhoto(photos[currentIndex].id);
+    }
   };
 
   return (
@@ -83,6 +93,15 @@ export const PhotoLightbox = ({
                 photo={photos[currentIndex]}
                 onLikeUpdate={onLikeUpdate}
               />
+              {showRemoveButton && onRemovePhoto && (
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={handleRemove}
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
+              )}
               {onDelete && (
                 <Button
                   variant="destructive"
