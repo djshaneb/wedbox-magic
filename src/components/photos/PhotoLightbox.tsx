@@ -78,11 +78,7 @@ export const PhotoLightbox = ({
             </div>
           ),
           slideFooter: () => !isSharedView && (
-            <div className="absolute bottom-4 left-4 flex gap-2">
-              <LikeButton 
-                photo={photos[currentIndex]}
-                onLikeUpdate={onLikeUpdate}
-              />
+            <div className="absolute bottom-4 right-4 flex gap-2">
               {onDelete && (
                 <Button
                   variant="destructive"
@@ -92,6 +88,10 @@ export const PhotoLightbox = ({
                   <Trash2 className="h-5 w-5" />
                 </Button>
               )}
+              <LikeButton 
+                photo={photos[currentIndex]}
+                onLikeUpdate={onLikeUpdate}
+              />
             </div>
           )
         }}
