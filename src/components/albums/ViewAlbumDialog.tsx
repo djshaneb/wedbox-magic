@@ -3,6 +3,8 @@ import { PhotoGrid } from "@/components/photos/PhotoGrid";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Photo } from "@/hooks/use-photos";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
 
 interface ViewAlbumDialogProps {
   albumId: string;
@@ -17,6 +19,9 @@ export const ViewAlbumDialog = ({
   open,
   onOpenChange
 }: ViewAlbumDialogProps) => {
+  const isMobile = useIsMobile();
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
+
   const { data: photos, isLoading } = useQuery({
     queryKey: ['album-photos', albumId],
     queryFn: async () => {
@@ -57,6 +62,11 @@ export const ViewAlbumDialog = ({
     },
   });
 
+  const handlePhotoClick = (index: number) => {
+    setSelectedPhotoIndex(index);
+    // You can add additional logic here if needed, like opening a lightbox
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
@@ -66,7 +76,11 @@ export const ViewAlbumDialog = ({
         ) : !photos?.length ? (
           <div>No photos in this album yet</div>
         ) : (
-          <PhotoGrid photos={photos} />
+          <PhotoGrid 
+            photos={photos} 
+            onPhotoClick={handlePhotoClick}
+            isMobile={isMobile}
+          />
         )}
       </DialogContent>
     </Dialog>
