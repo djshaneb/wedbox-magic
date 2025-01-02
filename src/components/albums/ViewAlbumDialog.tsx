@@ -7,7 +7,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Photo } from "@/hooks/use-photos";
@@ -16,11 +15,11 @@ import { LoadingSpinner } from "../ui/loading-spinner";
 interface ViewAlbumDialogProps {
   albumId: string;
   albumName: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const ViewAlbumDialog = ({ albumId, albumName }: ViewAlbumDialogProps) => {
-  const [open, setOpen] = useState(false);
-
+export const ViewAlbumDialog = ({ albumId, albumName, open, onOpenChange }: ViewAlbumDialogProps) => {
   const { data: photos = [], isLoading } = useQuery({
     queryKey: ['album-photos', albumId],
     queryFn: async () => {
@@ -65,12 +64,7 @@ export const ViewAlbumDialog = ({ albumId, albumName }: ViewAlbumDialogProps) =>
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full mt-2">
-          View Photos
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle>{albumName}</DialogTitle>
