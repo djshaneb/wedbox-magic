@@ -7,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { AdminAccessDialog } from "@/components/admin/AdminAccessDialog";
+import { AlbumList } from "@/components/albums/AlbumList";
 import {
   Sheet,
   SheetContent,
