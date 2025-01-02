@@ -45,7 +45,7 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
           .select('*')
           .eq('photo_id', photoId)
           .eq('album_id', albumId)
-          .single();
+          .maybeSingle();
 
         if (!existingEntry) {
           await addPhotoToAlbum.mutateAsync({ photoId, albumId });
