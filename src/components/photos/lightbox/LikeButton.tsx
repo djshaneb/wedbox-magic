@@ -1,27 +1,16 @@
-import { Card } from "@/components/ui/card";
-import { Photo } from "@/hooks/use-photos";
-import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Photo } from "@/hooks/use-photos";
 
-interface PhotoCardProps {
+interface LikeButtonProps {
   photo: Photo;
-  onClick: () => void;
-  isMobile: boolean;
-  hideDelete?: boolean;
-  isSharedView?: boolean;
   onLikeUpdate?: (photoId: string, isLiked: boolean, likeCount: number) => void;
 }
 
-export const PhotoCard = ({ 
-  photo, 
-  onClick, 
-  isMobile,
-  isSharedView = false,
-  onLikeUpdate
-}: PhotoCardProps) => {
+export const LikeButton = ({ photo, onLikeUpdate }: LikeButtonProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const { toast } = useToast();
@@ -41,13 +30,10 @@ export const PhotoCard = ({
       setLikeCount(likes?.length || 0);
     };
 
-    if (!isSharedView) {
-      fetchLikeState();
-    }
-  }, [photo.id, isSharedView]);
+    fetchLikeState();
+  }, [photo.id]);
 
-  const handleLike = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleLike = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -66,12 +52,10 @@ export const PhotoCard = ({
       }
 
       if (!isLiked) {
-        // Add like
         await supabase
           .from('photo_likes')
           .insert([{ photo_id: photo.id, user_id: user.id }]);
 
-        // Add photo to Favourites album
         await supabase
           .from('photo_albums')
           .insert([{ photo_id: photo.id, album_id: favouritesAlbum.id }]);
@@ -86,13 +70,11 @@ export const PhotoCard = ({
           description: "Photo has been added to your Favourites album",
         });
       } else {
-        // Remove like
         await supabase
           .from('photo_likes')
           .delete()
           .match({ photo_id: photo.id, user_id: user.id });
 
-        // Remove photo from Favourites album
         await supabase
           .from('photo_albums')
           .delete()
@@ -119,37 +101,20 @@ export const PhotoCard = ({
   };
 
   return (
-    <Card 
-      className={`mb-2 overflow-hidden ${
-        isMobile ? 'shadow-none border-violet-200/20' : 'shadow-md'
-      } cursor-pointer transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group relative`}
-      onClick={onClick}
+    <Button
+      variant="ghost"
+      size="icon"
+      className="bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
+      onClick={handleLike}
     >
-      <div className="relative">
-        <img
-          src={photo.thumbnail_url || photo.url}
-          alt="Gallery photo"
-          className="w-full h-full object-cover aspect-square md:aspect-auto group-hover:brightness-105 transition-all duration-300"
-          loading="lazy"
-        />
-        {!isSharedView && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute bottom-2 right-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
-            onClick={handleLike}
-          >
-            <Heart 
-              className={`h-5 w-5 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
-            />
-            {likeCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {likeCount}
-              </span>
-            )}
-          </Button>
-        )}
-      </div>
-    </Card>
+      <Heart 
+        className={`h-5 w-5 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
+      />
+      {likeCount > 0 && (
+        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+          {likeCount}
+        </span>
+      )}
+    </Button>
   );
 };
