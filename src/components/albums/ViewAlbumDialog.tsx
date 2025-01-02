@@ -74,30 +74,33 @@ export const ViewAlbumDialog = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
-        <h2 className="text-2xl font-semibold mb-4">{albumName}</h2>
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : !photos?.length ? (
-          <div>No photos in this album yet</div>
-        ) : (
-          <>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl">
+          <h2 className="text-2xl font-semibold mb-4">{albumName}</h2>
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : !photos?.length ? (
+            <div>No photos in this album yet</div>
+          ) : (
             <PhotoGrid 
               photos={photos} 
               onPhotoClick={handlePhotoClick}
               isMobile={isMobile}
             />
-            <PhotoLightbox
-              isOpen={lightboxOpen}
-              onClose={() => setLightboxOpen(false)}
-              currentIndex={selectedPhotoIndex}
-              photos={photos}
-              isSharedView={true} // This will disable likes functionality
-            />
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+          )}
+        </DialogContent>
+      </Dialog>
+      {/* Render PhotoLightbox outside of Dialog to avoid z-index issues */}
+      {photos && (
+        <PhotoLightbox
+          isOpen={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          currentIndex={selectedPhotoIndex}
+          photos={photos}
+          isSharedView={true} // This will disable likes functionality
+        />
+      )}
+    </>
   );
 };
