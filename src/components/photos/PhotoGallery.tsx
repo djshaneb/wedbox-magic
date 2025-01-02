@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePhotos } from "@/hooks/use-photos";
 import { PhotoUploadSection } from "./PhotoUploadSection";
@@ -59,6 +59,12 @@ export const PhotoGallery = ({
     setLightboxOpen(false);
   };
 
+  const handleLikeUpdate = useCallback((photoId: string, isLiked: boolean, likeCount: number) => {
+    // This function will be called from both PhotoCard and PhotoLightbox
+    // to keep the like state in sync
+    console.log('Like updated:', { photoId, isLiked, likeCount });
+  }, []);
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -92,6 +98,7 @@ export const PhotoGallery = ({
           }}
           isMobile={isMobile}
           isSharedView={isSharedView}
+          onLikeUpdate={handleLikeUpdate}
         />
       )}
 
@@ -102,6 +109,7 @@ export const PhotoGallery = ({
         photos={photos}
         onDelete={!isSharedView ? handleDeletePhoto : undefined}
         isSharedView={isSharedView}
+        onLikeUpdate={handleLikeUpdate}
       />
     </div>
   );

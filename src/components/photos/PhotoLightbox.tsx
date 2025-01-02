@@ -5,7 +5,7 @@ import { CloseButton } from "./lightbox/CloseButton";
 import { Button } from "@/components/ui/button";
 import { Heart, Trash2 } from "lucide-react";
 import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -26,6 +26,7 @@ interface PhotoLightboxProps {
   photos: Photo[];
   onDelete?: (photo: Photo) => void;
   isSharedView?: boolean;
+  onLikeUpdate?: (photoId: string, isLiked: boolean, likeCount: number) => void;
 }
 
 export const PhotoLightbox = ({
@@ -34,7 +35,8 @@ export const PhotoLightbox = ({
   currentIndex,
   photos,
   onDelete,
-  isSharedView = false
+  isSharedView = false,
+  onLikeUpdate
 }: PhotoLightboxProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -42,6 +44,29 @@ export const PhotoLightbox = ({
   const [lastTap, setLastTap] = useState(0);
   const { toast } = useToast();
   useSwipeGesture(onClose);
+
+  // Fetch initial like state when photo changes
+  useEffect(() => {
+    const fetchLikeState = async () => {
+      if (!photos[currentIndex]) return;
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: likes } = await supabase
+        .from('photo_likes')
+        .select('*')
+        .eq('photo_id', photos[currentIndex].id);
+
+      const userLike = likes?.find(like => like.user_id === user.id);
+      setIsLiked(!!userLike);
+      setLikeCount(likes?.length || 0);
+    };
+
+    if (isOpen && !isSharedView) {
+      fetchLikeState();
+    }
+  }, [currentIndex, isOpen, photos, isSharedView]);
 
   const handleDelete = () => {
     if (onDelete) {
@@ -61,6 +86,9 @@ export const PhotoLightbox = ({
           .insert([{ photo_id: photos[currentIndex].id, user_id: user.id }]);
         setIsLiked(true);
         setLikeCount(prev => prev + 1);
+        if (onLikeUpdate) {
+          onLikeUpdate(photos[currentIndex].id, true, likeCount + 1);
+        }
         toast({
           title: "Photo liked!",
           description: "You've liked this photo",
@@ -72,6 +100,9 @@ export const PhotoLightbox = ({
           .match({ photo_id: photos[currentIndex].id, user_id: user.id });
         setIsLiked(false);
         setLikeCount(prev => prev - 1);
+        if (onLikeUpdate) {
+          onLikeUpdate(photos[currentIndex].id, false, likeCount - 1);
+        }
         toast({
           title: "Like removed",
           description: "You've unliked this photo",

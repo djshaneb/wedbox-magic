@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Photo } from "@/hooks/use-photos";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,17 +12,39 @@ interface PhotoCardProps {
   isMobile: boolean;
   hideDelete?: boolean;
   isSharedView?: boolean;
+  onLikeUpdate?: (photoId: string, isLiked: boolean, likeCount: number) => void;
 }
 
 export const PhotoCard = ({ 
   photo, 
   onClick, 
   isMobile,
-  isSharedView = false
+  isSharedView = false,
+  onLikeUpdate
 }: PhotoCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchLikeState = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: likes } = await supabase
+        .from('photo_likes')
+        .select('*')
+        .eq('photo_id', photo.id);
+
+      const userLike = likes?.find(like => like.user_id === user.id);
+      setIsLiked(!!userLike);
+      setLikeCount(likes?.length || 0);
+    };
+
+    if (!isSharedView) {
+      fetchLikeState();
+    }
+  }, [photo.id, isSharedView]);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent opening the lightbox
@@ -36,6 +58,9 @@ export const PhotoCard = ({
           .insert([{ photo_id: photo.id, user_id: user.id }]);
         setIsLiked(true);
         setLikeCount(prev => prev + 1);
+        if (onLikeUpdate) {
+          onLikeUpdate(photo.id, true, likeCount + 1);
+        }
         toast({
           title: "Photo liked!",
           description: "You've liked this photo",
@@ -47,6 +72,9 @@ export const PhotoCard = ({
           .match({ photo_id: photo.id, user_id: user.id });
         setIsLiked(false);
         setLikeCount(prev => prev - 1);
+        if (onLikeUpdate) {
+          onLikeUpdate(photo.id, false, likeCount - 1);
+        }
         toast({
           title: "Like removed",
           description: "You've unliked this photo",

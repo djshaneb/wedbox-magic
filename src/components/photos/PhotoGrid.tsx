@@ -7,13 +7,15 @@ interface PhotoGridProps {
   onPhotoClick: (index: number) => void;
   isMobile: boolean;
   isSharedView?: boolean;
+  onLikeUpdate?: (photoId: string, isLiked: boolean, likeCount: number) => void;
 }
 
 export const PhotoGrid = ({
   photos,
   onPhotoClick,
   isMobile,
-  isSharedView = false
+  isSharedView = false,
+  onLikeUpdate
 }: PhotoGridProps) => {
   const breakpointColumns = {
     default: 3,
@@ -35,6 +37,7 @@ export const PhotoGrid = ({
           onClick={() => onPhotoClick(index)}
           isMobile={isMobile}
           isSharedView={isSharedView}
+          onLikeUpdate={onLikeUpdate}
         />
       ))}
     </Masonry>
