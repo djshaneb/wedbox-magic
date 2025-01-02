@@ -5,7 +5,7 @@ import { CloseButton } from "./lightbox/CloseButton";
 import { Button } from "@/components/ui/button";
 import { Heart, Trash2 } from "lucide-react";
 import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -39,6 +39,7 @@ export const PhotoLightbox = ({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [lastTap, setLastTap] = useState(0);
   const { toast } = useToast();
   useSwipeGesture(onClose);
 
@@ -86,6 +87,18 @@ export const PhotoLightbox = ({
     }
   };
 
+  const handleDoubleTap = useCallback((e: React.TouchEvent) => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+    
+    if (lastTap && (now - lastTap) < DOUBLE_TAP_DELAY) {
+      e.preventDefault();
+      handleLike();
+    } else {
+      setLastTap(now);
+    }
+  }, [lastTap, handleLike]);
+
   return (
     <div className="relative">
       <Lightbox
@@ -107,6 +120,18 @@ export const PhotoLightbox = ({
           iconPrev: () => null,
           buttonNext: () => null,
           buttonPrev: () => null,
+          slide: ({ slide }) => (
+            <div 
+              onTouchStart={!isSharedView ? handleDoubleTap : undefined}
+              className="w-full h-full flex items-center justify-center"
+            >
+              <img 
+                src={slide.src} 
+                alt="" 
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          ),
           slideFooter: () => !isSharedView && (
             <div className="absolute bottom-4 left-4 flex gap-2">
               <Button
