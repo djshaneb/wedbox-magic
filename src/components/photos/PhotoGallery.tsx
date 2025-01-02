@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePhotos } from "@/hooks/use-photos";
 import { PhotoUploadSection } from "./PhotoUploadSection";
-import { ShareGalleryButton } from "./ShareGalleryButton";
 import { EmptyGallery } from "./EmptyGallery";
 import { PhotoGrid } from "./PhotoGrid";
 import { PhotoLightbox } from "./PhotoLightbox";
 import { Photo } from "@/hooks/use-photos";
-import { WeddingHeader } from "@/components/wedding/WeddingHeader";
+import { GalleryHeader } from "./gallery/GalleryHeader";
+import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface PhotoGalleryProps {
   sharedGalleryOwnerId?: string;
@@ -16,12 +16,12 @@ interface PhotoGalleryProps {
   setIsPhotoBooth?: (value: boolean) => void;
 }
 
-export const PhotoGallery: React.FC<PhotoGalleryProps> = ({ 
+export const PhotoGallery = ({ 
   sharedGalleryOwnerId,
   isSharedView = false,
   isPhotoBooth = false,
   setIsPhotoBooth = () => {}
-}) => {
+}: PhotoGalleryProps) => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const isMobile = useIsMobile();
@@ -60,25 +60,17 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className={`space-y-2 max-w-7xl mx-auto px-4 md:px-6 ${isSharedView ? '-mt-2' : ''}`}>
       {!lightboxOpen && (
-        <div className="flex flex-col gap-2">
-          <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-sm">
-            <WeddingHeader sharedGalleryOwnerId={sharedGalleryOwnerId} />
-          </div>
-          {!isSharedView && (
-            <div className="w-full max-w-3xl mx-auto">
-              <ShareGalleryButton />
-            </div>
-          )}
+        <>
+          <GalleryHeader 
+            sharedGalleryOwnerId={sharedGalleryOwnerId}
+            isSharedView={isSharedView}
+          />
           <PhotoUploadSection
             onFileUpload={handleFileUpload}
             onPhotoTaken={handlePhotoTaken}
@@ -86,7 +78,7 @@ export const PhotoGallery: React.FC<PhotoGalleryProps> = ({
             setIsPhotoBooth={setIsPhotoBooth}
             isMobile={isMobile}
           />
-        </div>
+        </>
       )}
 
       {photos.length === 0 ? (
