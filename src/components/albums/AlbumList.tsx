@@ -1,6 +1,7 @@
 import { useAlbums } from "@/hooks/use-albums";
 import { CreateAlbumDialog } from "./CreateAlbumDialog";
 import { AddPhotosToAlbumDialog } from "./AddPhotosToAlbumDialog";
+import { ViewAlbumDialog } from "./ViewAlbumDialog";
 import { Card } from "@/components/ui/card";
 import { Folder } from "lucide-react";
 
@@ -23,7 +24,10 @@ export const AlbumList = () => {
             {album.description && (
               <p className="text-sm text-gray-600">{album.description}</p>
             )}
-            <AddPhotosToAlbumDialog albumId={album.id} />
+            <div className="space-y-2">
+              <AddPhotosToAlbumDialog albumId={album.id} />
+              <ViewAlbumDialog albumId={album.id} albumName={album.name} />
+            </div>
           </Card>
         ))}
       </div>
