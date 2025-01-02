@@ -5,8 +5,6 @@ import Masonry from 'react-masonry-css';
 interface PhotoGridProps {
   photos: Photo[];
   onPhotoClick: (index: number) => void;
-  onLike?: (photoId: string) => void;
-  onUnlike?: (photoId: string) => void;
   isMobile: boolean;
   isSharedView?: boolean;
 }
@@ -14,8 +12,6 @@ interface PhotoGridProps {
 export const PhotoGrid = ({
   photos,
   onPhotoClick,
-  onLike,
-  onUnlike,
   isMobile,
   isSharedView = false
 }: PhotoGridProps) => {
@@ -37,8 +33,6 @@ export const PhotoGrid = ({
           key={photo.id}
           photo={photo}
           onClick={() => onPhotoClick(index)}
-          onLike={onLike ? () => onLike(photo.id) : undefined}
-          onUnlike={onUnlike ? () => onUnlike(photo.id) : undefined}
           isMobile={isMobile}
         />
       ))}

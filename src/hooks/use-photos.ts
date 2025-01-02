@@ -7,8 +7,6 @@ export interface Photo {
   url: string;
   thumbnail_url: string;
   storage_path: string;
-  likes_count?: number;
-  is_liked?: boolean;
 }
 
 export const usePhotos = (sharedGalleryOwnerId?: string) => {
@@ -22,11 +20,7 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
       
       const query = supabase
         .from('photos')
-        .select(`
-          *,
-          likes:photo_likes(count),
-          user_likes:photo_likes!inner(user_id)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (sharedGalleryOwnerId) {
@@ -52,9 +46,7 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
           id: photo.id,
           storage_path: photo.storage_path,
           url: publicUrl,
-          thumbnail_url: thumbnailUrl,
-          likes_count: photo.likes?.[0]?.count ?? 0,
-          is_liked: photo.user_likes?.length > 0
+          thumbnail_url: thumbnailUrl
         };
       }));
 
@@ -159,62 +151,10 @@ export const usePhotos = (sharedGalleryOwnerId?: string) => {
     }
   });
 
-  const likeMutation = useMutation({
-    mutationFn: async ({ photoId }: { photoId: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user authenticated');
-
-      const { error } = await supabase
-        .from('photo_likes')
-        .insert({ photo_id: photoId, user_id: user.id });
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['photos'] });
-    },
-    onError: (error) => {
-      console.error('Like error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to like the photo",
-        variant: "destructive",
-      });
-    }
-  });
-
-  const unlikeMutation = useMutation({
-    mutationFn: async ({ photoId }: { photoId: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user authenticated');
-
-      const { error } = await supabase
-        .from('photo_likes')
-        .delete()
-        .eq('photo_id', photoId)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['photos'] });
-    },
-    onError: (error) => {
-      console.error('Unlike error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to unlike the photo",
-        variant: "destructive",
-      });
-    }
-  });
-
   return {
     photos,
     isLoading,
     uploadMutation,
-    deleteMutation,
-    likeMutation,
-    unlikeMutation
+    deleteMutation
   };
 };
