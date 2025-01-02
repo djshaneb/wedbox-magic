@@ -76,7 +76,7 @@ export const ViewAlbumDialog = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl z-40">
+        <DialogContent className="max-w-4xl">
           <h2 className="text-2xl font-semibold mb-4">{albumName}</h2>
           {isLoading ? (
             <div>Loading...</div>
@@ -93,7 +93,7 @@ export const ViewAlbumDialog = ({
       </Dialog>
 
       {photos && (
-        <div className="relative z-50">
+        <div className="fixed inset-0 z-[60]" style={{ pointerEvents: lightboxOpen ? 'auto' : 'none' }}>
           <PhotoLightbox
             isOpen={lightboxOpen}
             onClose={() => setLightboxOpen(false)}
