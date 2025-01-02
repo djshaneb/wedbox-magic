@@ -52,29 +52,53 @@ export const LikeButton = ({ photo, onLikeUpdate }: LikeButtonProps) => {
       }
 
       if (!isLiked) {
-        await supabase
+        // Check if like already exists
+        const { data: existingLike } = await supabase
           .from('photo_likes')
-          .insert([{ photo_id: photo.id, user_id: user.id }]);
+          .select('*')
+          .eq('photo_id', photo.id)
+          .eq('user_id', user.id)
+          .single();
 
-        await supabase
-          .from('photo_albums')
-          .insert([{ photo_id: photo.id, album_id: favouritesAlbum.id }]);
+        if (!existingLike) {
+          // Add like if it doesn't exist
+          await supabase
+            .from('photo_likes')
+            .upsert([{ photo_id: photo.id, user_id: user.id }]);
 
-        setIsLiked(true);
-        setLikeCount(prev => prev + 1);
-        if (onLikeUpdate) {
-          onLikeUpdate(photo.id, true, likeCount + 1);
+          // Check if photo is already in Favourites album
+          const { data: existingAlbumPhoto } = await supabase
+            .from('photo_albums')
+            .select('*')
+            .eq('photo_id', photo.id)
+            .eq('album_id', favouritesAlbum.id)
+            .single();
+
+          if (!existingAlbumPhoto) {
+            // Add photo to Favourites album if it's not already there
+            await supabase
+              .from('photo_albums')
+              .upsert([{ photo_id: photo.id, album_id: favouritesAlbum.id }]);
+          }
+
+          setIsLiked(true);
+          setLikeCount(prev => prev + 1);
+          if (onLikeUpdate) {
+            onLikeUpdate(photo.id, true, likeCount + 1);
+          }
+          toast({
+            title: "Photo liked!",
+            description: "Photo has been added to your Favourites album",
+          });
         }
-        toast({
-          title: "Photo liked!",
-          description: "Photo has been added to your Favourites album",
-        });
       } else {
+        // Remove like
         await supabase
           .from('photo_likes')
           .delete()
           .match({ photo_id: photo.id, user_id: user.id });
 
+        // Remove photo from Favourites album
         await supabase
           .from('photo_albums')
           .delete()
