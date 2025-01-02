@@ -93,7 +93,7 @@ export const ViewAlbumDialog = ({
       </Dialog>
 
       {photos && (
-        <div className="fixed inset-0 z-[100]" style={{ pointerEvents: lightboxOpen ? 'auto' : 'none' }}>
+        <div className="fixed inset-0 z-[60]" style={{ pointerEvents: lightboxOpen ? 'auto' : 'none' }}>
           <PhotoLightbox
             isOpen={lightboxOpen}
             onClose={() => setLightboxOpen(false)}

@@ -61,7 +61,7 @@ export const PhotoLightbox = ({
         }}
         styles={{
           container: { backgroundColor: "rgba(0, 0, 0, 0.9)" },
-          root: { zIndex: 100 }
+          root: { zIndex: 40 }
         }}
         render={{
           iconNext: () => null,

@@ -39,13 +39,13 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
   const handleAddPhotos = async () => {
     try {
       for (const photoId of selectedPhotos) {
-        // Check if photo already exists in album using maybeSingle() instead of single()
+        // Check if photo already exists in album
         const { data: existingEntry } = await supabase
           .from('photo_albums')
           .select('*')
           .eq('photo_id', photoId)
           .eq('album_id', albumId)
-          .maybeSingle();
+          .single();
 
         if (!existingEntry) {
           await addPhotoToAlbum.mutateAsync({ photoId, albumId });
