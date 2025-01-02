@@ -34,6 +34,7 @@ export const PhotoGrid = ({
           photo={photo}
           onClick={() => onPhotoClick(index)}
           isMobile={isMobile}
+          isSharedView={isSharedView}
         />
       ))}
     </Masonry>
