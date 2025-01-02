@@ -61,19 +61,19 @@ export const AlbumList = () => {
           const { data: thumbnails = [] } = albumQueries[index];
           
           return (
-            <Card key={album.id} className="p-3 space-y-3 hover:shadow-lg transition-shadow duration-200">
-              <div className="flex items-center gap-2">
+            <Card key={album.id} className="p-3 hover:shadow-lg transition-shadow duration-200">
+              <div className="flex items-center gap-2 mb-2">
                 <Folder className="h-4 w-4 text-blue-500" />
                 <h3 className="font-medium truncate text-sm">{album.name}</h3>
               </div>
               
               {album.description && (
-                <p className="text-xs text-gray-600 line-clamp-2">{album.description}</p>
+                <p className="text-xs text-gray-600 line-clamp-2 mb-2">{album.description}</p>
               )}
 
-              {thumbnails.length > 0 ? (
+              {thumbnails.length > 0 && (
                 <div 
-                  className="grid grid-cols-2 gap-1 aspect-square cursor-pointer"
+                  className="grid grid-cols-2 gap-1 aspect-square cursor-pointer mb-2"
                   onClick={() => setSelectedAlbumId(album.id)}
                 >
                   {thumbnails.map((url, index) => (
@@ -96,7 +96,7 @@ export const AlbumList = () => {
                     </div>
                   ))}
                 </div>
-              ) : null}
+              )}
 
               {selectedAlbumId === album.id && (
                 <ViewAlbumDialog 
@@ -109,9 +109,7 @@ export const AlbumList = () => {
                 />
               )}
 
-              <div className="pt-1">
-                <AddPhotosToAlbumDialog albumId={album.id} />
-              </div>
+              <AddPhotosToAlbumDialog albumId={album.id} />
             </Card>
           );
         })}
