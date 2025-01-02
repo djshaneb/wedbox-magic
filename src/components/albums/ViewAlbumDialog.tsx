@@ -1,11 +1,10 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { PhotoGrid } from "@/components/photos/PhotoGrid";
-import { usePhotos } from "@/hooks/use-photos";
-import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
+import { PhotoLightbox } from "@/components/photos/PhotoLightbox";
 
 interface ViewAlbumDialogProps {
   albumId: string;
@@ -17,131 +16,93 @@ interface ViewAlbumDialogProps {
 export const ViewAlbumDialog = ({ 
   albumId, 
   albumName,
-  open, 
-  onOpenChange 
+  open,
+  onOpenChange
 }: ViewAlbumDialogProps) => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const isFavoritesAlbum = albumName === 'Favourites';
+  const isMobile = useIsMobile();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
 
-  const { data: albumPhotos = [], isLoading } = useQuery({
+  const { data: photos, isLoading } = useQuery({
     queryKey: ['album-photos', albumId],
     queryFn: async () => {
+      // First get the photo IDs from the photo_albums junction table
       const { data: photoAlbums, error: photoAlbumsError } = await supabase
         .from('photo_albums')
         .select('photo_id')
         .eq('album_id', albumId);
 
       if (photoAlbumsError) throw photoAlbumsError;
-      if (!photoAlbums.length) return [];
+      if (!photoAlbums?.length) return [];
 
       const photoIds = photoAlbums.map(pa => pa.photo_id);
 
+      // Then get the actual photos
       const { data: photos, error: photosError } = await supabase
         .from('photos')
         .select('*')
         .in('id', photoIds);
 
       if (photosError) throw photosError;
+      if (!photos) return [];
 
+      // Transform the photos to include public URLs
       const photosWithUrls = await Promise.all(photos.map(async (photo) => {
-        const { data: { publicUrl: url } } = supabase.storage
+        const { data: { publicUrl } } = supabase.storage
           .from('photos')
           .getPublicUrl(photo.storage_path);
-
+        
         const { data: { publicUrl: thumbnailUrl } } = supabase.storage
           .from('photos')
           .getPublicUrl(photo.thumbnail_path);
-
+        
         return {
-          ...photo,
-          url,
+          id: photo.id,
+          storage_path: photo.storage_path,
+          url: publicUrl,
           thumbnail_url: thumbnailUrl
         };
       }));
 
       return photosWithUrls;
-    }
+    },
   });
 
-  const removePhotoMutation = useMutation({
-    mutationFn: async ({ photoId }: { photoId: string }) => {
-      // If it's the Favourites album, also remove the like
-      if (isFavoritesAlbum) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error('User not authenticated');
-
-        await supabase
-          .from('photo_likes')
-          .delete()
-          .match({ photo_id: photoId, user_id: user.id });
-      }
-
-      const { error } = await supabase
-        .from('photo_albums')
-        .delete()
-        .match({ photo_id: photoId, album_id: albumId });
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['album-photos', albumId] });
-      toast({
-        title: "Photo removed",
-        description: `Photo has been removed from ${albumName}`,
-      });
-    },
-    onError: (error) => {
-      console.error('Error removing photo:', error);
-      toast({
-        title: "Error",
-        description: "Failed to remove photo from album",
-        variant: "destructive",
-      });
-    }
-  });
-
-  const handleRemovePhoto = async (photoId: string) => {
-    try {
-      await removePhotoMutation.mutateAsync({ photoId });
-    } catch (error) {
-      console.error('Error removing photo:', error);
-    }
+  const handlePhotoClick = (index: number) => {
+    setSelectedPhotoIndex(index);
+    setLightboxOpen(true);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-y-auto">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold">{albumName}</h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenChange(false)}
-              className="rounded-full"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl">
+          <h2 className="text-2xl font-semibold mb-4">{albumName}</h2>
           {isLoading ? (
-            <div className="flex items-center justify-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500"></div>
-            </div>
-          ) : albumPhotos.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">No photos in this album yet.</p>
+            <div>Loading...</div>
+          ) : !photos?.length ? (
+            <div>No photos in this album yet</div>
           ) : (
-            <PhotoGrid
-              photos={albumPhotos}
-              onPhotoClick={() => {}}
-              isMobile={false}
-              showRemoveButton={!isFavoritesAlbum}
-              onRemovePhoto={handleRemovePhoto}
+            <PhotoGrid 
+              photos={photos} 
+              onPhotoClick={handlePhotoClick}
+              isMobile={isMobile}
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      {photos && (
+        <div className="fixed inset-0 z-[100]" style={{ pointerEvents: lightboxOpen ? 'auto' : 'none' }}>
+          <PhotoLightbox
+            isOpen={lightboxOpen}
+            onClose={() => setLightboxOpen(false)}
+            currentIndex={selectedPhotoIndex}
+            photos={photos}
+            isSharedView={true}
+          />
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    </>
   );
 };
