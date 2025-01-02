@@ -25,22 +25,27 @@ export const ViewAlbumDialog = ({
   const { data: photos, isLoading } = useQuery({
     queryKey: ['album-photos', albumId],
     queryFn: async () => {
-      const { data: photoAlbums } = await supabase
+      // First get the photo IDs from the photo_albums junction table
+      const { data: photoAlbums, error: photoAlbumsError } = await supabase
         .from('photo_albums')
         .select('photo_id')
         .eq('album_id', albumId);
 
+      if (photoAlbumsError) throw photoAlbumsError;
       if (!photoAlbums?.length) return [];
 
       const photoIds = photoAlbums.map(pa => pa.photo_id);
 
-      const { data: photos } = await supabase
+      // Then get the actual photos
+      const { data: photos, error: photosError } = await supabase
         .from('photos')
         .select('*')
         .in('id', photoIds);
 
+      if (photosError) throw photosError;
       if (!photos) return [];
 
+      // Transform the photos to include public URLs
       const photosWithUrls = await Promise.all(photos.map(async (photo) => {
         const { data: { publicUrl } } = supabase.storage
           .from('photos')
