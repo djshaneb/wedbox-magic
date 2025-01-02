@@ -1,0 +1,103 @@
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from "react";
+import { useAlbums } from "@/hooks/use-albums";
+import { usePhotos } from "@/hooks/use-photos";
+import { Check, Plus } from "lucide-react";
+
+interface AddPhotosToAlbumDialogProps {
+  albumId: string;
+}
+
+export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps) => {
+  const [open, setOpen] = useState(false);
+  const { photos } = usePhotos();
+  const { addPhotoToAlbum } = useAlbums();
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+
+  const handleTogglePhoto = (photoId: string) => {
+    const newSelected = new Set(selectedPhotos);
+    if (newSelected.has(photoId)) {
+      newSelected.delete(photoId);
+    } else {
+      newSelected.add(photoId);
+    }
+    setSelectedPhotos(newSelected);
+  };
+
+  const handleAddPhotos = async () => {
+    for (const photoId of selectedPhotos) {
+      await addPhotoToAlbum.mutateAsync({ photoId, albumId });
+    }
+    setOpen(false);
+    setSelectedPhotos(new Set());
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Photos
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[800px]">
+        <DialogHeader>
+          <DialogTitle>Add Photos to Album</DialogTitle>
+          <DialogDescription>
+            Select photos to add to this album
+          </DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="h-[500px]">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4">
+            {photos.map((photo) => (
+              <div
+                key={photo.id}
+                className="relative cursor-pointer group"
+                onClick={() => handleTogglePhoto(photo.id)}
+              >
+                <img
+                  src={photo.thumbnail_url || photo.url}
+                  alt="Gallery photo"
+                  className={`w-full aspect-square object-cover rounded-lg transition-all duration-200 ${
+                    selectedPhotos.has(photo.id) ? 'brightness-75' : 'group-hover:brightness-90'
+                  }`}
+                />
+                {selectedPhotos.has(photo.id) && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Check className="h-8 w-8 text-white" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+        <div className="flex justify-end mt-4 gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setOpen(false);
+              setSelectedPhotos(new Set());
+            }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleAddPhotos} 
+            disabled={selectedPhotos.size === 0}
+          >
+            Add Selected Photos
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};

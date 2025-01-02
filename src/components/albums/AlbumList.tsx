@@ -1,41 +1,32 @@
-import { useAlbums, Album } from "@/hooks/use-albums";
+import { useAlbums } from "@/hooks/use-albums";
 import { CreateAlbumDialog } from "./CreateAlbumDialog";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { format } from "date-fns";
+import { AddPhotosToAlbumDialog } from "./AddPhotosToAlbumDialog";
+import { Card } from "@/components/ui/card";
+import { Folder } from "lucide-react";
 
 export const AlbumList = () => {
-  const { albums, isLoading } = useAlbums();
-
-  if (isLoading) {
-    return <div>Loading albums...</div>;
-  }
+  const { albums } = useAlbums();
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Albums</h2>
+    <div className="space-y-6">
+      <div className="flex justify-end">
         <CreateAlbumDialog />
       </div>
-      <ScrollArea className="h-[calc(100vh-200px)]">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-          {albums.map((album: Album) => (
-            <Card key={album.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>{album.name}</CardTitle>
-                <CardDescription>
-                  Created {format(new Date(album.created_at), 'PPP')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-500">
-                  {album.description || "No description"}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </ScrollArea>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {albums.map((album) => (
+          <Card key={album.id} className="p-4 space-y-4">
+            <div className="flex items-center gap-2">
+              <Folder className="h-5 w-5 text-blue-500" />
+              <h3 className="font-medium">{album.name}</h3>
+            </div>
+            {album.description && (
+              <p className="text-sm text-gray-600">{album.description}</p>
+            )}
+            <AddPhotosToAlbumDialog albumId={album.id} />
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };

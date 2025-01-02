@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { AddToAlbumDialog } from "@/components/albums/AddToAlbumDialog";
 
 interface PhotoCardProps {
   photo: Photo;
@@ -106,24 +105,21 @@ export const PhotoCard = ({
           loading="lazy"
         />
         {!isSharedView && (
-          <>
-            <AddToAlbumDialog photoId={photo.id} />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute bottom-2 right-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
-              onClick={handleLike}
-            >
-              <Heart 
-                className={`h-5 w-5 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
-              />
-              {likeCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {likeCount}
-                </span>
-              )}
-            </Button>
-          </>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute bottom-2 right-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
+            onClick={handleLike}
+          >
+            <Heart 
+              className={`h-5 w-5 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
+            />
+            {likeCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {likeCount}
+              </span>
+            )}
+          </Button>
         )}
       </div>
     </Card>
