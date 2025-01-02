@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
@@ -15,8 +14,8 @@ import { LoadingSpinner } from "../ui/loading-spinner";
 interface ViewAlbumDialogProps {
   albumId: string;
   albumName: string;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export const ViewAlbumDialog = ({ albumId, albumName, open, onOpenChange }: ViewAlbumDialogProps) => {

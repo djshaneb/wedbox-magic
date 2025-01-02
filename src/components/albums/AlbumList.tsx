@@ -71,43 +71,42 @@ export const AlbumList = () => {
                 <p className="text-xs text-gray-600 line-clamp-2">{album.description}</p>
               )}
 
-              {thumbnails.length > 0 && (
-                <>
-                  <div 
-                    className="grid grid-cols-2 gap-1 aspect-square cursor-pointer"
-                    onClick={() => setSelectedAlbumId(album.id)}
-                  >
-                    {thumbnails.map((url, index) => (
-                      <div 
-                        key={index}
-                        className={`relative bg-gray-100 rounded overflow-hidden ${
-                          index === 3 && thumbnails.length > 4 ? 'relative' : ''
-                        }`}
-                      >
-                        <img
-                          src={url}
-                          alt={`Album thumbnail ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                        {index === 3 && thumbnails.length > 4 && (
-                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                            <span className="text-white text-xs font-medium">+{thumbnails.length - 4}</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  {selectedAlbumId === album.id && (
-                    <ViewAlbumDialog 
-                      albumId={album.id} 
-                      albumName={album.name}
-                      open={true}
-                      onOpenChange={(open) => {
-                        if (!open) setSelectedAlbumId(null);
-                      }}
-                    />
-                  )}
-                </>
+              {thumbnails.length > 0 ? (
+                <div 
+                  className="grid grid-cols-2 gap-1 aspect-square cursor-pointer"
+                  onClick={() => setSelectedAlbumId(album.id)}
+                >
+                  {thumbnails.map((url, index) => (
+                    <div 
+                      key={index}
+                      className={`relative bg-gray-100 rounded overflow-hidden ${
+                        index === 3 && thumbnails.length > 4 ? 'relative' : ''
+                      }`}
+                    >
+                      <img
+                        src={url}
+                        alt={`Album thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      {index === 3 && thumbnails.length > 4 && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <span className="text-white text-xs font-medium">+{thumbnails.length - 4}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {selectedAlbumId === album.id && (
+                <ViewAlbumDialog 
+                  albumId={album.id} 
+                  albumName={album.name}
+                  open={true}
+                  onOpenChange={(open) => {
+                    if (!open) setSelectedAlbumId(null);
+                  }}
+                />
               )}
 
               <div className="pt-1">
