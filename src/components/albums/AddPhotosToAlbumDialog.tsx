@@ -39,11 +39,16 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
   const handleAddPhotos = async () => {
     try {
       // Get the current album to check if it's the Favorites album
-      const { data: currentAlbum } = await supabase
+      const { data: currentAlbum, error: albumError } = await supabase
         .from('albums')
         .select('name')
         .eq('id', albumId)
-        .single();
+        .maybeSingle();
+
+      if (albumError) {
+        console.error('Error fetching album:', albumError);
+        throw albumError;
+      }
 
       const isFavoritesAlbum = currentAlbum?.name === 'Favourites';
       const { data: { user } } = await supabase.auth.getUser();
@@ -53,13 +58,18 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
       }
 
       for (const photoId of selectedPhotos) {
-        // Check if photo already exists in album using maybeSingle() instead of single()
-        const { data: existingEntry } = await supabase
+        // Check if photo already exists in album
+        const { data: existingEntry, error: existingEntryError } = await supabase
           .from('photo_albums')
-          .select('*')
+          .select()
           .eq('photo_id', photoId)
           .eq('album_id', albumId)
           .maybeSingle();
+
+        if (existingEntryError) {
+          console.error('Error checking existing entry:', existingEntryError);
+          continue;
+        }
 
         if (!existingEntry) {
           await addPhotoToAlbum.mutateAsync({ photoId, albumId });
@@ -67,21 +77,32 @@ export const AddPhotosToAlbumDialog = ({ albumId }: AddPhotosToAlbumDialogProps)
           // If this is the Favorites album, automatically add a like
           if (isFavoritesAlbum) {
             // Check if like already exists
-            const { data: existingLike } = await supabase
+            const { data: existingLike, error: likeError } = await supabase
               .from('photo_likes')
-              .select('*')
+              .select()
               .eq('photo_id', photoId)
               .eq('user_id', user.id)
               .maybeSingle();
 
+            if (likeError) {
+              console.error('Error checking existing like:', likeError);
+              continue;
+            }
+
             if (!existingLike) {
-              await supabase
+              const { error: insertLikeError } = await supabase
                 .from('photo_likes')
-                .upsert([{ photo_id: photoId, user_id: user.id }]);
+                .insert([{ photo_id: photoId, user_id: user.id }]);
+
+              if (insertLikeError) {
+                console.error('Error inserting like:', insertLikeError);
+                continue;
+              }
             }
           }
         }
       }
+
       setOpen(false);
       setSelectedPhotos(new Set());
       toast({
