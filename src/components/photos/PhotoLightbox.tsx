@@ -3,8 +3,11 @@ import "yet-another-react-lightbox/styles.css";
 import { Photo } from "@/hooks/use-photos";
 import { CloseButton } from "./lightbox/CloseButton";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 import { useSwipeGesture } from "@/hooks/use-swipe-gesture";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +18,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
 
 interface PhotoLightboxProps {
   isOpen: boolean;
@@ -35,6 +37,9 @@ export const PhotoLightbox = ({
   isSharedView = false
 }: PhotoLightboxProps) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const { toast } = useToast();
   useSwipeGesture(onClose);
 
   const handleDelete = () => {
@@ -42,6 +47,43 @@ export const PhotoLightbox = ({
       onDelete(photos[currentIndex]);
     }
     setShowDeleteDialog(false);
+  };
+
+  const handleLike = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      if (!isLiked) {
+        await supabase
+          .from('photo_likes')
+          .insert([{ photo_id: photos[currentIndex].id, user_id: user.id }]);
+        setIsLiked(true);
+        setLikeCount(prev => prev + 1);
+        toast({
+          title: "Photo liked!",
+          description: "You've liked this photo",
+        });
+      } else {
+        await supabase
+          .from('photo_likes')
+          .delete()
+          .match({ photo_id: photos[currentIndex].id, user_id: user.id });
+        setIsLiked(false);
+        setLikeCount(prev => prev - 1);
+        toast({
+          title: "Like removed",
+          description: "You've unliked this photo",
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update like status",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -65,15 +107,32 @@ export const PhotoLightbox = ({
           iconPrev: () => null,
           buttonNext: () => null,
           buttonPrev: () => null,
-          slideFooter: () => !isSharedView && onDelete && (
-            <div className="absolute bottom-4 left-4">
+          slideFooter: () => !isSharedView && (
+            <div className="absolute bottom-4 left-4 flex gap-2">
               <Button
-                variant="destructive"
+                variant="ghost"
                 size="icon"
-                onClick={() => setShowDeleteDialog(true)}
+                className="bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full shadow-lg"
+                onClick={handleLike}
               >
-                <Trash2 className="h-5 w-5" />
+                <Heart 
+                  className={`h-5 w-5 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
+                />
+                {likeCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {likeCount}
+                  </span>
+                )}
               </Button>
+              {onDelete && (
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
+              )}
             </div>
           )
         }}
