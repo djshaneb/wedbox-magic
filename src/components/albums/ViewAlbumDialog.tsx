@@ -2,6 +2,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { PhotoGrid } from "@/components/photos/PhotoGrid";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Photo } from "@/hooks/use-photos";
 
 interface ViewAlbumDialogProps {
   albumId: string;
@@ -33,7 +34,26 @@ export const ViewAlbumDialog = ({
         .select('*')
         .in('id', photoIds);
 
-      return photos || [];
+      if (!photos) return [];
+
+      const photosWithUrls = await Promise.all(photos.map(async (photo) => {
+        const { data: { publicUrl } } = supabase.storage
+          .from('photos')
+          .getPublicUrl(photo.storage_path);
+        
+        const { data: { publicUrl: thumbnailUrl } } = supabase.storage
+          .from('photos')
+          .getPublicUrl(photo.thumbnail_path);
+        
+        return {
+          id: photo.id,
+          storage_path: photo.storage_path,
+          url: publicUrl,
+          thumbnail_url: thumbnailUrl
+        };
+      }));
+
+      return photosWithUrls;
     },
   });
 
