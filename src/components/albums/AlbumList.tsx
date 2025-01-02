@@ -7,43 +7,43 @@ import { Folder, Image as ImageIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+const useAlbumThumbnails = (albumId: string) => {
+  return useQuery({
+    queryKey: ['album-thumbnails', albumId],
+    queryFn: async () => {
+      const { data: photoAlbums, error: photoAlbumsError } = await supabase
+        .from('photo_albums')
+        .select('photo_id')
+        .eq('album_id', albumId)
+        .limit(4);
+
+      if (photoAlbumsError) throw photoAlbumsError;
+      if (!photoAlbums.length) return [];
+
+      const photoIds = photoAlbums.map(pa => pa.photo_id);
+
+      const { data: photos, error: photosError } = await supabase
+        .from('photos')
+        .select('*')
+        .in('id', photoIds);
+
+      if (photosError) throw photosError;
+
+      const photosWithUrls = await Promise.all(photos.map(async (photo) => {
+        const { data: { publicUrl: thumbnailUrl } } = supabase.storage
+          .from('photos')
+          .getPublicUrl(photo.thumbnail_path);
+        
+        return thumbnailUrl;
+      }));
+
+      return photosWithUrls;
+    }
+  });
+};
+
 export const AlbumList = () => {
   const { albums } = useAlbums();
-
-  const getAlbumThumbnails = (albumId: string) => {
-    return useQuery({
-      queryKey: ['album-thumbnails', albumId],
-      queryFn: async () => {
-        const { data: photoAlbums, error: photoAlbumsError } = await supabase
-          .from('photo_albums')
-          .select('photo_id')
-          .eq('album_id', albumId)
-          .limit(4);
-
-        if (photoAlbumsError) throw photoAlbumsError;
-        if (!photoAlbums.length) return [];
-
-        const photoIds = photoAlbums.map(pa => pa.photo_id);
-
-        const { data: photos, error: photosError } = await supabase
-          .from('photos')
-          .select('*')
-          .in('id', photoIds);
-
-        if (photosError) throw photosError;
-
-        const photosWithUrls = await Promise.all(photos.map(async (photo) => {
-          const { data: { publicUrl: thumbnailUrl } } = supabase.storage
-            .from('photos')
-            .getPublicUrl(photo.thumbnail_path);
-          
-          return thumbnailUrl;
-        }));
-
-        return photosWithUrls;
-      }
-    });
-  };
 
   return (
     <div className="space-y-6">
@@ -54,7 +54,7 @@ export const AlbumList = () => {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {albums.map((album) => {
-          const { data: thumbnails = [] } = getAlbumThumbnails(album.id);
+          const { data: thumbnails = [] } = useAlbumThumbnails(album.id);
           
           return (
             <Card key={album.id} className="p-4 space-y-4 hover:shadow-lg transition-shadow duration-200">
