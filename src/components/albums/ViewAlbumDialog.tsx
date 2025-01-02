@@ -1,15 +1,7 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { PhotoGrid } from "@/components/photos/PhotoGrid";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Photo } from "@/hooks/use-photos";
-import { LoadingSpinner } from "../ui/loading-spinner";
 
 interface ViewAlbumDialogProps {
   albumId: string;
@@ -18,79 +10,44 @@ interface ViewAlbumDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const ViewAlbumDialog = ({ albumId, albumName, open, onOpenChange }: ViewAlbumDialogProps) => {
-  const { data: photos = [], isLoading } = useQuery({
+export const ViewAlbumDialog = ({ 
+  albumId, 
+  albumName,
+  open,
+  onOpenChange
+}: ViewAlbumDialogProps) => {
+  const { data: photos, isLoading } = useQuery({
     queryKey: ['album-photos', albumId],
     queryFn: async () => {
-      const { data: photoAlbums, error: photoAlbumsError } = await supabase
+      const { data: photoAlbums } = await supabase
         .from('photo_albums')
         .select('photo_id')
         .eq('album_id', albumId);
 
-      if (photoAlbumsError) throw photoAlbumsError;
+      if (!photoAlbums?.length) return [];
 
       const photoIds = photoAlbums.map(pa => pa.photo_id);
 
-      if (photoIds.length === 0) return [];
-
-      const { data: photos, error: photosError } = await supabase
+      const { data: photos } = await supabase
         .from('photos')
         .select('*')
         .in('id', photoIds);
 
-      if (photosError) throw photosError;
-
-      const photosWithUrls = await Promise.all(photos.map(async (photo) => {
-        const { data: { publicUrl } } = supabase.storage
-          .from('photos')
-          .getPublicUrl(photo.storage_path);
-        
-        const { data: { publicUrl: thumbnailUrl } } = supabase.storage
-          .from('photos')
-          .getPublicUrl(photo.thumbnail_path);
-        
-        return {
-          id: photo.id,
-          storage_path: photo.storage_path,
-          url: publicUrl,
-          thumbnail_url: thumbnailUrl
-        };
-      }));
-
-      return photosWithUrls;
+      return photos || [];
     },
-    enabled: open
   });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px]">
-        <DialogHeader>
-          <DialogTitle>{albumName}</DialogTitle>
-        </DialogHeader>
-        <ScrollArea className="h-[500px]">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <LoadingSpinner />
-            </div>
-          ) : photos.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">
-              No photos in this album yet
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-4">
-              {photos.map((photo: Photo) => (
-                <div key={photo.id} className="relative aspect-square">
-                  <img
-                    src={photo.thumbnail_url || photo.url}
-                    alt="Album photo"
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
+      <DialogContent className="max-w-4xl">
+        <h2 className="text-2xl font-semibold mb-4">{albumName}</h2>
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : !photos?.length ? (
+          <div>No photos in this album yet</div>
+        ) : (
+          <PhotoGrid photos={photos} />
+        )}
       </DialogContent>
     </Dialog>
   );
