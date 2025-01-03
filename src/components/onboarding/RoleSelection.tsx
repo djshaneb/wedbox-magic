@@ -16,22 +16,22 @@ export const RoleSelection = ({
   onFirstNameChange,
 }: RoleSelectionProps) => {
   return (
-    <div className="space-y-4 md:space-y-8 flex-1 flex flex-col">
+    <div className="space-y-3 md:space-y-8 flex-1 flex flex-col">
       <div className="space-y-2 md:space-y-4">
-        <Label htmlFor="firstName" className="text-lg text-gray-700">Your first name</Label>
+        <Label htmlFor="firstName" className="text-base md:text-lg text-gray-700">Your first name</Label>
         <Input
           id="firstName"
           value={firstName}
           onChange={(e) => onFirstNameChange(e.target.value)}
           placeholder="Enter your first name"
-          className="h-10 md:h-12 text-lg"
+          className="h-9 md:h-12 text-base md:text-lg"
         />
       </div>
 
-      <div className="space-y-4 md:space-y-6 flex-1 flex flex-col">
-        <Label className="text-lg text-gray-700">I am the...</Label>
-        <div className="grid grid-cols-2 gap-3 md:gap-6 justify-center">
-          <div className="w-full max-w-[160px]">
+      <div className="space-y-3 md:space-y-6 flex-1 flex flex-col">
+        <Label className="text-base md:text-lg text-gray-700">I am the...</Label>
+        <div className="grid grid-cols-2 gap-2 md:gap-6 justify-center">
+          <div className="w-full max-w-[140px] md:max-w-[160px]">
             <Card
               className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
                 role === "bride"
@@ -52,7 +52,7 @@ export const RoleSelection = ({
             </Card>
           </div>
 
-          <div className="w-full max-w-[160px]">
+          <div className="w-full max-w-[140px] md:max-w-[160px]">
             <Card
               className={`cursor-pointer transition-all transform hover:scale-105 duration-200 ${
                 role === "groom"
