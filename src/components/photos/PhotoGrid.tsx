@@ -35,7 +35,6 @@ export const PhotoGrid = ({
           key={photo.id}
           photo={photo}
           onClick={() => onPhotoClick(index)}
-          isMobile={isMobile}
           isSharedView={isSharedView}
           onLikeUpdate={onLikeUpdate}
         />
