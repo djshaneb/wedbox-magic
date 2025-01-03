@@ -74,24 +74,24 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen bg-background flex items-center justify-center p-2 sm:p-4">
+      <div className="w-full max-w-md space-y-4 sm:space-y-6">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="rounded-full bg-wedding-pink/10 p-3">
-              <Camera className="h-8 w-8 text-wedding-pink" />
+            <div className="rounded-full bg-wedding-pink/10 p-2 sm:p-3">
+              <Camera className="h-6 w-6 sm:h-8 sm:w-8 text-wedding-pink" />
             </div>
           </div>
-          <h2 className="mt-4 text-2xl font-bold tracking-tight">
+          <h2 className="mt-2 sm:mt-4 text-xl sm:text-2xl font-bold tracking-tight">
             <span className="text-wedding-pink font-extrabold">WeddingWin</span>{" "}
             <span className="font-semibold tracking-wide">Photo Share</span>
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">
             Sign in to start sharing your wedding photos
           </p>
         </div>
         
-        <div className="bg-white shadow-md rounded-lg p-6 space-y-6">
+        <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -103,6 +103,11 @@ const AuthPage = () => {
                     brandAccent: '#d88f93',
                   },
                 },
+              },
+              className: {
+                container: 'space-y-2 sm:space-y-4',
+                button: 'py-2',
+                input: 'py-1.5',
               },
             }}
             providers={[]}
@@ -125,7 +130,7 @@ const AuthPage = () => {
               <DialogTrigger asChild>
                 <Button 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full py-1.5"
                 >
                   Enter Event Code
                 </Button>
