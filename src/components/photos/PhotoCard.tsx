@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePhotoLikes } from "@/hooks/use-photo-likes";
-import { PhotoThumbnail } from "./PhotoThumbnail";
 
 interface PhotoCardProps {
   photo: Photo;
@@ -48,7 +47,13 @@ export const PhotoCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <PhotoThumbnail photo={photo} />
+      <img
+        src={photo.thumbnail_url}
+        alt="Gallery photo"
+        className="w-full h-full object-cover aspect-square transition-all duration-300 group-hover:brightness-105"
+        loading="lazy"
+        decoding="async"
+      />
       
       {!isSharedView && (
         <Button

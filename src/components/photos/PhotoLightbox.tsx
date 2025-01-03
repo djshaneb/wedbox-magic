@@ -42,7 +42,7 @@ export const PhotoLightbox = ({
         open={isOpen}
         close={onClose}
         index={currentIndex}
-        slides={photos.map(photo => ({ src: photo.url }))}
+        slides={photos.map(photo => ({ src: photo.url }))} // Using full-size image URL here
         toolbar={{
           buttons: [
             <CloseButton key="close" onClose={onClose} />
@@ -60,7 +60,7 @@ export const PhotoLightbox = ({
           slide: ({ slide }) => (
             <div className="w-full h-full flex items-center justify-center">
               <img 
-                src={slide.src} 
+                src={slide.src}
                 alt="" 
                 className="max-h-full max-w-full object-contain"
               />
