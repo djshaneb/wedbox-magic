@@ -47,13 +47,17 @@ export const PhotoCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <img
-        src={photo.thumbnail_url}
-        alt="Gallery photo"
-        className="w-full h-auto object-cover transition-all duration-300 group-hover:brightness-105"
-        loading="lazy"
-        decoding="async"
-      />
+      <div className="aspect-square w-full h-full">
+        <img
+          src={photo.thumbnail_url}
+          alt="Gallery photo"
+          className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-105"
+          loading="lazy"
+          decoding="async"
+          width="300"
+          height="300"
+        />
+      </div>
       
       {!isSharedView && (
         <Button

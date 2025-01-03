@@ -38,9 +38,9 @@ const optimizeImage = async (
   fileName: string
 ): Promise<{ blob: Blob; type: string; thumbnail: Blob }> => {
   const img = new Image();
-  const canvas = new OffscreenCanvas(192, 192);
-  // Reduced thumbnail canvas size from 48x48 to 32x32
-  const thumbnailCanvas = new OffscreenCanvas(32, 32);
+  const canvas = new OffscreenCanvas(1200, 1200);
+  // Reduced thumbnail size to 300x300 for gallery view
+  const thumbnailCanvas = new OffscreenCanvas(300, 300);
   const ctx = canvas.getContext('2d');
   const thumbnailCtx = thumbnailCanvas.getContext('2d');
 
@@ -51,9 +51,8 @@ const optimizeImage = async (
   const blob = new Blob([imageData]);
   const bitmap = await createImageBitmap(blob);
 
-  const mainDimensions = calculateDimensions(bitmap.width, bitmap.height, 192);
-  // Reduced max thumbnail size from 48 to 32
-  const thumbnailDimensions = calculateDimensions(bitmap.width, bitmap.height, 32);
+  const mainDimensions = calculateDimensions(bitmap.width, bitmap.height, 1200);
+  const thumbnailDimensions = calculateDimensions(bitmap.width, bitmap.height, 300);
 
   canvas.width = mainDimensions.width;
   canvas.height = mainDimensions.height;
@@ -61,8 +60,8 @@ const optimizeImage = async (
   thumbnailCanvas.height = thumbnailDimensions.height;
 
   const optimizedImage = await createOptimizedImage(bitmap, canvas, ctx, 0.85);
-  // Reduced thumbnail quality from 0.60 to 0.50 for smaller file size
-  const optimizedThumbnail = await createOptimizedImage(bitmap, thumbnailCanvas, thumbnailCtx, 0.50);
+  // Reduced thumbnail quality to 0.7 for smaller file size while maintaining decent quality
+  const optimizedThumbnail = await createOptimizedImage(bitmap, thumbnailCanvas, thumbnailCtx, 0.7);
 
   return {
     blob: optimizedImage,
