@@ -18,10 +18,10 @@ export const PhotoGrid = ({
   onLikeUpdate
 }: PhotoGridProps) => {
   const breakpointColumns = {
-    default: 4,
+    default: 3,
     1100: 3,
-    700: 2,
-    500: 2
+    768: 3,
+    500: 3
   };
 
   return (
@@ -35,6 +35,7 @@ export const PhotoGrid = ({
           key={photo.id}
           photo={photo}
           onClick={() => onPhotoClick(index)}
+          isMobile={isMobile}
           isSharedView={isSharedView}
           onLikeUpdate={onLikeUpdate}
         />

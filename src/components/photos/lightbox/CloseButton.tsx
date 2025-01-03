@@ -7,6 +7,7 @@ interface CloseButtonProps {
 
 export const CloseButton = ({ onClose }: CloseButtonProps) => (
   <Button
+    key="close"
     variant="ghost"
     size="icon"
     className="text-white absolute top-4 right-4"
