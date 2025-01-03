@@ -19,24 +19,22 @@ export const LightboxFooter = ({
   if (isSharedView) return null;
 
   return (
-    <>
+    <div className="absolute bottom-4 w-full flex justify-between px-4">
       {onDelete && (
-        <div className="absolute bottom-4 left-4">
-          <Button
-            variant="destructive"
-            size="icon"
-            onClick={onDelete}
-          >
-            <Trash2 className="h-5 w-5" />
-          </Button>
-        </div>
+        <Button
+          variant="destructive"
+          size="icon"
+          onClick={onDelete}
+        >
+          <Trash2 className="h-5 w-5" />
+        </Button>
       )}
-      <div className="absolute bottom-4 right-4">
+      <div className="ml-auto">
         <LikeButton 
           photo={currentPhoto}
           onLikeUpdate={onLikeUpdate}
         />
       </div>
-    </>
+    </div>
   );
 };

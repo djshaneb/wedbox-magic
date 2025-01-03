@@ -68,7 +68,7 @@ export const PhotoLightbox = ({
     };
   }, [index]);
 
-  const { handleTouchStart, handleTouchMove, handleTouchEnd } = useSwipeGesture({
+  const swipeHandlers = useSwipeGesture({
     onSwipeLeft: handleNext,
     onSwipeRight: handlePrevious,
   });
@@ -79,20 +79,18 @@ export const PhotoLightbox = ({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={() => onClose()}>
+      <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent
           className="max-w-7xl w-full h-[calc(100vh-2rem)] p-0 gap-0 bg-black/90"
           ref={containerRef}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          {...swipeHandlers}
         >
           <div className="relative w-full h-full flex flex-col">
             <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
               {!isSharedView && onDelete && (
                 <DeleteButton onClick={() => setShowDeleteDialog(true)} />
               )}
-              <CloseButton onClick={onClose} />
+              <CloseButton onClose={onClose} />
             </div>
 
             <div className="flex-1 flex items-center justify-center p-4">
@@ -104,35 +102,19 @@ export const PhotoLightbox = ({
             </div>
 
             <LightboxFooter
-              currentIndex={index + 1}
-              totalPhotos={photos.length}
-              onPrevious={handlePrevious}
-              onNext={handleNext}
-              showNavigation={photos.length > 1}
-            >
-              {!isSharedView && (
-                <LikeButton
-                  isLiked={isLiked}
-                  likeCount={likeCount}
-                  onClick={async () => {
-                    await toggleLike();
-                    onLikeUpdate?.(
-                      currentPhoto.id,
-                      !isLiked,
-                      isLiked ? likeCount - 1 : likeCount + 1
-                    );
-                  }}
-                />
-              )}
-            </LightboxFooter>
+              isSharedView={isSharedView}
+              onDelete={() => setShowDeleteDialog(true)}
+              currentPhoto={currentPhoto}
+              onLikeUpdate={onLikeUpdate}
+            />
           </div>
         </DialogContent>
       </Dialog>
 
       <DeletePhotoDialog
-        isOpen={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
-        onConfirm={() => {
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirmDelete={() => {
           onDelete?.(currentPhoto);
           setShowDeleteDialog(false);
         }}
