@@ -1,0 +1,82 @@
+:root {
+  /* Default theme colors */
+  --wedding-pink: 351 65% 76%;
+  --pink-400: 338 71% 76%;
+  --gray-600: 215 14% 34%;
+
+  /* Purple theme colors */
+  --purple-400: 262 83% 78%;
+  --indigo-400: 226 83% 73%;
+  --purple-700: 262 47% 37%;
+
+  /* Pink theme colors */
+  --rose-400: 340 82% 76%;
+  --pink-500: 330 81% 60%;
+  --rose-700: 345 83% 41%;
+
+  /* Blue theme colors */
+  --blue-400: 213 94% 68%;
+  --blue-700: 224 76% 48%;
+
+  /* Peach theme colors */
+  --orange-400: 27 96% 61%;
+  --red-400: 0 91% 71%;
+  --orange-700: 24 91% 37%;
+
+  /* Green theme colors */
+  --green-400: 142 69% 58%;
+  --emerald-400: 156 71% 59%;
+  --green-700: 142 72% 29%;
+
+  /* Dynamic theme colors */
+  --primary: var(--wedding-pink);
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  --accent: var(--pink-400);
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: var(--primary);
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
