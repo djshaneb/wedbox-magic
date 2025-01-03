@@ -2,24 +2,26 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const uploadWeddingPhoto = async (selectedImage: string): Promise<string | null> => {
   try {
+    // Get the original file
     const response = await fetch(selectedImage);
-    const blob = await response.blob();
-    const file = new File([blob], 'wedding-photo.jpg', { type: 'image/jpeg' });
-    const fileName = `wedding-photos/${crypto.randomUUID()}.jpg`;
-    const thumbnailName = `wedding-photos/thumbnails/${crypto.randomUUID()}.jpg`;
+    const originalBlob = await response.blob();
     
-    // Upload main image
-    const { error: uploadError } = await supabase.storage
+    // Generate unique IDs for both files
+    const originalFileName = `wedding-photos/${crypto.randomUUID()}.${originalBlob.type.split('/')[1]}`;
+    const thumbnailName = `wedding-photos/thumbnails/${crypto.randomUUID()}.webp`;
+    
+    // Upload original image
+    const { error: originalUploadError } = await supabase.storage
       .from('photos')
-      .upload(fileName, file);
+      .upload(originalFileName, originalBlob);
 
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      throw uploadError;
+    if (originalUploadError) {
+      console.error('Original upload error:', originalUploadError);
+      throw originalUploadError;
     }
 
     // Create and upload thumbnail
-    const thumbnailFile = new File([blob], 'thumbnail.jpg', { type: 'image/jpeg' });
+    const thumbnailFile = new File([originalBlob], 'thumbnail.webp', { type: 'image/webp' });
     const { error: thumbnailError } = await supabase.storage
       .from('photos')
       .upload(thumbnailName, thumbnailFile);
@@ -29,9 +31,10 @@ export const uploadWeddingPhoto = async (selectedImage: string): Promise<string 
       throw thumbnailError;
     }
 
+    // Get the public URL for the original image
     const { data: { publicUrl } } = supabase.storage
       .from('photos')
-      .getPublicUrl(fileName);
+      .getPublicUrl(originalFileName);
 
     return publicUrl;
   } catch (error) {

@@ -37,39 +37,24 @@ const createOptimizedImage = async (
 const optimizeImage = async (
   imageData: ArrayBuffer,
   fileName: string
-): Promise<{ blob: Blob; type: string; thumbnail: Blob }> => {
-  const img = new Image();
-  // Set full size image to 1200px max
-  const canvas = new OffscreenCanvas(1200, 1200);
-  // Set thumbnail to 150px max for gallery view
-  const thumbnailCanvas = new OffscreenCanvas(150, 150);
-  const ctx = canvas.getContext('2d');
+): Promise<{ blob: Blob; type: string }> => {
+  const blob = new Blob([imageData]);
+  const bitmap = await createImageBitmap(blob);
+  
+  // Create thumbnail (max 300px)
+  const thumbnailDimensions = calculateDimensions(bitmap.width, bitmap.height, 300);
+  const thumbnailCanvas = new OffscreenCanvas(thumbnailDimensions.width, thumbnailDimensions.height);
   const thumbnailCtx = thumbnailCanvas.getContext('2d');
 
-  if (!ctx || !thumbnailCtx) {
+  if (!thumbnailCtx) {
     throw new Error('Failed to get canvas context');
   }
 
-  const blob = new Blob([imageData]);
-  const bitmap = await createImageBitmap(blob);
-
-  const mainDimensions = calculateDimensions(bitmap.width, bitmap.height, 1200);
-  const thumbnailDimensions = calculateDimensions(bitmap.width, bitmap.height, 150);
-
-  canvas.width = mainDimensions.width;
-  canvas.height = mainDimensions.height;
-  thumbnailCanvas.width = thumbnailDimensions.width;
-  thumbnailCanvas.height = thumbnailDimensions.height;
-
-  // Higher quality for full-size images
-  const optimizedImage = await createOptimizedImage(bitmap, canvas, ctx, 0.85);
-  // Lower quality for thumbnails since they're smaller
-  const optimizedThumbnail = await createOptimizedImage(bitmap, thumbnailCanvas, thumbnailCtx, 0.6);
+  const optimizedThumbnail = await createOptimizedImage(bitmap, thumbnailCanvas, thumbnailCtx, 0.7);
 
   return {
-    blob: optimizedImage,
+    blob: optimizedThumbnail,
     type: 'image/webp',
-    thumbnail: optimizedThumbnail,
   };
 };
 
