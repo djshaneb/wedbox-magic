@@ -83,7 +83,7 @@ const AuthPage = () => {
             </div>
           </div>
           <h2 className="mt-4 text-2xl font-bold tracking-tight">
-            Welcome to Wedding Win
+            Welcome to WeddingWin Photo Share
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Sign in to start sharing your wedding photos
