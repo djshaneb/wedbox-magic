@@ -20,11 +20,49 @@ export const uploadWeddingPhoto = async (selectedImage: string): Promise<string 
       throw originalUploadError;
     }
 
-    // Create and upload thumbnail
-    const thumbnailFile = new File([originalBlob], 'thumbnail.webp', { type: 'image/webp' });
+    // Create thumbnail
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = selectedImage;
+    });
+
+    // Calculate thumbnail dimensions (max 300px)
+    const maxSize = 300;
+    let width = img.width;
+    let height = img.height;
+    
+    if (width > height) {
+      if (width > maxSize) {
+        height = Math.round((height * maxSize) / width);
+        width = maxSize;
+      }
+    } else {
+      if (height > maxSize) {
+        width = Math.round((width * maxSize) / height);
+        height = maxSize;
+      }
+    }
+
+    canvas.width = width;
+    canvas.height = height;
+    ctx?.drawImage(img, 0, 0, width, height);
+
+    // Convert to WebP
+    const thumbnailBlob = await new Promise<Blob>((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob!);
+      }, 'image/webp', 0.8);
+    });
+
+    // Upload thumbnail
     const { error: thumbnailError } = await supabase.storage
       .from('photos')
-      .upload(thumbnailName, thumbnailFile);
+      .upload(thumbnailName, thumbnailBlob);
 
     if (thumbnailError) {
       console.error('Thumbnail upload error:', thumbnailError);

@@ -13,7 +13,7 @@ export const PhotoThumbnail = ({ photo, onClick, className }: PhotoThumbnailProp
   
   return (
     <img
-      src={photo.thumbnail_url}
+      src={photo.thumbnail_url || photo.url} // Fallback to original URL if thumbnail not available
       alt="Gallery photo"
       className={cn(
         "w-full h-full object-cover aspect-square md:aspect-auto group-hover:brightness-105 transition-all duration-300",
@@ -22,7 +22,6 @@ export const PhotoThumbnail = ({ photo, onClick, className }: PhotoThumbnailProp
       onClick={onClick}
       loading="lazy"
       decoding="async"
-      // Updated dimensions to match new thumbnail size
       width={isMobile ? "32" : "64"}
       height={isMobile ? "32" : "64"}
     />
