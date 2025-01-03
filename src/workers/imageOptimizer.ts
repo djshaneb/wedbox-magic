@@ -39,7 +39,8 @@ const optimizeImage = async (
 ): Promise<{ blob: Blob; type: string; thumbnail: Blob }> => {
   const img = new Image();
   const canvas = new OffscreenCanvas(192, 192);
-  const thumbnailCanvas = new OffscreenCanvas(48, 48);
+  // Reduced thumbnail canvas size from 48x48 to 32x32
+  const thumbnailCanvas = new OffscreenCanvas(32, 32);
   const ctx = canvas.getContext('2d');
   const thumbnailCtx = thumbnailCanvas.getContext('2d');
 
@@ -51,7 +52,8 @@ const optimizeImage = async (
   const bitmap = await createImageBitmap(blob);
 
   const mainDimensions = calculateDimensions(bitmap.width, bitmap.height, 192);
-  const thumbnailDimensions = calculateDimensions(bitmap.width, bitmap.height, 48);
+  // Reduced max thumbnail size from 48 to 32
+  const thumbnailDimensions = calculateDimensions(bitmap.width, bitmap.height, 32);
 
   canvas.width = mainDimensions.width;
   canvas.height = mainDimensions.height;
@@ -59,7 +61,8 @@ const optimizeImage = async (
   thumbnailCanvas.height = thumbnailDimensions.height;
 
   const optimizedImage = await createOptimizedImage(bitmap, canvas, ctx, 0.85);
-  const optimizedThumbnail = await createOptimizedImage(bitmap, thumbnailCanvas, thumbnailCtx, 0.60);
+  // Reduced thumbnail quality from 0.60 to 0.50 for smaller file size
+  const optimizedThumbnail = await createOptimizedImage(bitmap, thumbnailCanvas, thumbnailCtx, 0.50);
 
   return {
     blob: optimizedImage,

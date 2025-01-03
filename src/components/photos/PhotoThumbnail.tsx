@@ -22,8 +22,9 @@ export const PhotoThumbnail = ({ photo, onClick, className }: PhotoThumbnailProp
       onClick={onClick}
       loading="lazy"
       decoding="async"
-      width={isMobile ? "48" : "96"}
-      height={isMobile ? "48" : "96"}
+      // Updated dimensions to match new thumbnail size
+      width={isMobile ? "32" : "64"}
+      height={isMobile ? "32" : "64"}
     />
   );
 };
