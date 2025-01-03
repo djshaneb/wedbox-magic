@@ -21,24 +21,36 @@ const SharedGallery = () => {
 
   const validateAccessCode = async () => {
     if (!accessCode) {
+      console.error('No access code provided');
       setIsValid(false);
       return;
     }
 
-    const { data, error } = await supabase
-      .from('shared_galleries')
-      .select('owner_id')
-      .eq('access_code', accessCode)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('shared_galleries')
+        .select('owner_id')
+        .eq('access_code', accessCode)
+        .maybeSingle();
 
-    if (error || !data) {
+      if (error) {
+        console.error('Error validating access code:', error);
+        setIsValid(false);
+        return;
+      }
+
+      if (!data) {
+        console.error('No gallery found with access code:', accessCode);
+        setIsValid(false);
+        return;
+      }
+
+      setOwnerId(data.owner_id);
+      setIsValid(true);
+    } catch (error) {
       console.error('Error validating access code:', error);
       setIsValid(false);
-      return;
     }
-
-    setOwnerId(data.owner_id);
-    setIsValid(true);
   };
 
   useEffect(() => {
