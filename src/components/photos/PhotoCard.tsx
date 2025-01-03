@@ -40,7 +40,7 @@ export const PhotoCard = ({
   return (
     <div
       className={cn(
-        "relative group cursor-pointer rounded-lg overflow-hidden bg-gray-100",
+        "relative group cursor-pointer rounded-lg overflow-hidden bg-gray-100 mb-2",
         className
       )}
       onClick={onClick}
@@ -50,7 +50,7 @@ export const PhotoCard = ({
       <img
         src={photo.thumbnail_url}
         alt="Gallery photo"
-        className="w-full h-full object-cover aspect-square transition-all duration-300 group-hover:brightness-105"
+        className="w-full h-auto object-cover transition-all duration-300 group-hover:brightness-105"
         loading="lazy"
         decoding="async"
       />
