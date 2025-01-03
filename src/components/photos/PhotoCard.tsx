@@ -151,6 +151,9 @@ export const PhotoCard = ({
           alt="Gallery photo"
           className="w-full h-full object-cover aspect-square md:aspect-auto group-hover:brightness-105 transition-all duration-300"
           loading="lazy"
+          decoding="async"
+          width={isMobile ? "48" : "96"}
+          height={isMobile ? "48" : "96"}
         />
         {!isSharedView && (
           <Button
