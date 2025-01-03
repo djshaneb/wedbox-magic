@@ -26,6 +26,7 @@ const createOptimizedImage = async (
   ctx: OffscreenCanvasRenderingContext2D,
   quality: number
 ): Promise<Blob> => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   return await canvas.convertToBlob({
     type: 'image/webp',
@@ -38,9 +39,10 @@ const optimizeImage = async (
   fileName: string
 ): Promise<{ blob: Blob; type: string; thumbnail: Blob }> => {
   const img = new Image();
+  // Set full size image to 1200px max
   const canvas = new OffscreenCanvas(1200, 1200);
-  // Reduced thumbnail size to 300x300 for gallery view
-  const thumbnailCanvas = new OffscreenCanvas(300, 300);
+  // Set thumbnail to 150px max for gallery view
+  const thumbnailCanvas = new OffscreenCanvas(150, 150);
   const ctx = canvas.getContext('2d');
   const thumbnailCtx = thumbnailCanvas.getContext('2d');
 
@@ -52,16 +54,17 @@ const optimizeImage = async (
   const bitmap = await createImageBitmap(blob);
 
   const mainDimensions = calculateDimensions(bitmap.width, bitmap.height, 1200);
-  const thumbnailDimensions = calculateDimensions(bitmap.width, bitmap.height, 300);
+  const thumbnailDimensions = calculateDimensions(bitmap.width, bitmap.height, 150);
 
   canvas.width = mainDimensions.width;
   canvas.height = mainDimensions.height;
   thumbnailCanvas.width = thumbnailDimensions.width;
   thumbnailCanvas.height = thumbnailDimensions.height;
 
+  // Higher quality for full-size images
   const optimizedImage = await createOptimizedImage(bitmap, canvas, ctx, 0.85);
-  // Reduced thumbnail quality to 0.7 for smaller file size while maintaining decent quality
-  const optimizedThumbnail = await createOptimizedImage(bitmap, thumbnailCanvas, thumbnailCtx, 0.7);
+  // Lower quality for thumbnails since they're smaller
+  const optimizedThumbnail = await createOptimizedImage(bitmap, thumbnailCanvas, thumbnailCtx, 0.6);
 
   return {
     blob: optimizedImage,
