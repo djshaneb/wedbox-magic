@@ -1,5 +1,5 @@
 import { PhotoGallery } from "@/components/photos/PhotoGallery";
-import { Camera, LogOut, ArrowRight, Menu, Plus, Upload, Image } from "lucide-react";
+import { Camera, LogOut, ArrowRight, Menu, Plus, Upload, Image, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +22,8 @@ const Index = () => {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPhotoBooth, setIsPhotoBooth] = useState(false);
-  const [activeTab, setActiveTab] = useState<"photos" | "albums">("photos");
+  const [activeTab, setActiveTab] = useState<"photos" | "albums" | "theme">("photos");
+  const [bgColor, setBgColor] = useState("bg-background");
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -32,6 +33,40 @@ const Index = () => {
     });
     navigate("/auth");
   };
+
+  const colorOptions = [
+    { name: "Default", class: "bg-background" },
+    { name: "Soft Purple", class: "bg-[#E5DEFF]" },
+    { name: "Soft Pink", class: "bg-[#FFDEE2]" },
+    { name: "Soft Blue", class: "bg-[#D3E4FD]" },
+    { name: "Soft Peach", class: "bg-[#FDE1D3]" },
+    { name: "Soft Green", class: "bg-[#F2FCE2]" },
+  ];
+
+  const ThemeContent = () => (
+    <div className="p-4 space-y-6">
+      <h2 className="text-lg font-semibold">Choose Background Color</h2>
+      <div className="grid grid-cols-2 gap-4">
+        {colorOptions.map((color) => (
+          <button
+            key={color.name}
+            onClick={() => {
+              setBgColor(color.class);
+              toast({
+                title: "Background Updated",
+                description: `Theme changed to ${color.name}`,
+              });
+            }}
+            className={`p-4 rounded-lg border transition-all ${
+              bgColor === color.class ? "ring-2 ring-wedding-pink" : ""
+            } ${color.class} hover:scale-105`}
+          >
+            <span className="text-sm font-medium">{color.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   const MobileMenu = () => (
     <Sheet>
@@ -71,7 +106,7 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen transition-colors duration-300 ${bgColor}`}>
       <div className="fixed top-0 left-0 right-0 z-10 bg-white/95 backdrop-blur-sm border-b border-wedding-pink/20 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
@@ -177,14 +212,24 @@ const Index = () => {
             >
               Albums
             </Button>
+            <Button
+              variant={activeTab === "theme" ? "default" : "ghost"}
+              onClick={() => setActiveTab("theme")}
+              className="text-sm"
+            >
+              <Palette className="w-4 h-4 mr-2" />
+              Theme
+            </Button>
           </div>
         </div>
       </div>
       <main className={`container mx-auto ${isMobile ? 'px-2' : 'p-6'} mt-32`}>
         {activeTab === "photos" ? (
           <PhotoGallery isPhotoBooth={isPhotoBooth} setIsPhotoBooth={setIsPhotoBooth} />
-        ) : (
+        ) : activeTab === "albums" ? (
           <AlbumList />
+        ) : (
+          <ThemeContent />
         )}
       </main>
     </div>
