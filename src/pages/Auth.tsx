@@ -74,7 +74,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FEF7CD] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
