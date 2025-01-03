@@ -49,7 +49,7 @@ export const PhotoCard = ({
     >
       <div className="aspect-square w-full h-full">
         <img
-          src={photo.thumbnail_url || photo.url} // Fallback to original URL if thumbnail not available
+          src={photo.thumbnail_url}
           alt="Gallery photo"
           className="w-full h-full object-cover transition-all duration-300 group-hover:brightness-105"
           loading="lazy"

@@ -52,11 +52,11 @@ export const uploadWeddingPhoto = async (selectedImage: string): Promise<string 
     canvas.height = height;
     ctx?.drawImage(img, 0, 0, width, height);
 
-    // Convert to WebP
+    // Convert to WebP with lower quality for thumbnails
     const thumbnailBlob = await new Promise<Blob>((resolve) => {
       canvas.toBlob((blob) => {
         resolve(blob!);
-      }, 'image/webp', 0.8);
+      }, 'image/webp', 0.6); // Lower quality for thumbnails
     });
 
     // Upload thumbnail
